@@ -1,0 +1,100 @@
+{
+  // --------------------------------------------------------------------------
+  // 저장 시 자동 포맷 및 ESLint/Prettier 적용
+  // --------------------------------------------------------------------------
+
+  "editor.formatOnSave": true, // 저장할 때 자동 포맷
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // 기본 포맷터 설정
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit", // 저장 시 ESLint 자동 수정
+    "source.organizeImports": "explicit" // 저장 시 import 정리
+  },
+
+  // --------------------------------------------------------------------------
+  // ESLint 관련 설정
+  // --------------------------------------------------------------------------
+
+  "eslint.useFlatConfig": true, // Flat config 사용 (eslint.config.js)
+  "eslint.workingDirectories": ["."], // 현재 폴더 기준으로 ESLint 적용
+  "eslint.validate": [
+    "javascript", // JS 파일 ESLint 검사
+    "javascriptreact", // JSX 파일 ESLint 검사
+    "typescript", // TS 파일 ESLint 검사
+    "typescriptreact" // TSX 파일 ESLint 검사
+  ],
+
+  // --------------------------------------------------------------------------
+  // TypeScript Import 관련 설정
+  // --------------------------------------------------------------------------
+
+  // import 경로를 상대경로로 자동 생성
+  "typescript.preferences.importModuleSpecifier": "relative",
+  // package.json 기반 자동 import 제안
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+
+  // --------------------------------------------------------------------------
+  // 파일 확장자별 언어 모드 설정
+  // --------------------------------------------------------------------------
+
+  "files.associations": {
+    "*.js": "javascript",
+    "*.jsx": "javascriptreact",
+    "*.ts": "typescript",
+    "*.tsx": "typescriptreact"
+  },
+
+  // --------------------------------------------------------------------------
+  // 파일 이동 시 import 경로 자동 업데이트
+  // --------------------------------------------------------------------------
+
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  // --------------------------------------------------------------------------
+  // Emmet 설정: React에서 Emmet 사용 가능하도록 언어 연결
+  // --------------------------------------------------------------------------
+
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+
+  // --------------------------------------------------------------------------
+  // Path Intellisense 설정
+  // --------------------------------------------------------------------------
+
+  // 기본 경로 자동완성 비활성화 (Path Intellisense만 사용)
+  "typescript.suggest.paths": false,
+  "javascript.suggest.paths": false,
+
+  // import 시 파일 확장자 자동완성 비활성화
+  "path-intellisense.extensionOnImport": false,
+  // 숨김 파일도 자동완성에 포함
+  "path-intellisense.showHiddenFiles": true,
+  // 폴더 뒤에 슬래시(/) 자동 추가 비활성화
+  "path-intellisense.autoSlashAfterDirectory": false,
+  // 절대경로를 워크스페이스 기준으로 자동완성
+  "path-intellisense.absolutePathToWorkspace": true,
+  // jsconfig/tsconfig의 baseUrl, paths도 자동완성에 반영
+  "path-intellisense.ignoreTsConfigBaseUrl": false,
+
+  // --------------------------------------------------------------------------
+  // TypeScript 버전 지정 (로컬 node_modules 사용)
+  // --------------------------------------------------------------------------
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // --------------------------------------------------------------------------
+  // Tailwind CSS 설정
+  // --------------------------------------------------------------------------
+
+  // Tailwind CSS 클래스 속성 설정: 다양한 클래스 속성명 지원
+  "tailwindCSS.classAttributes": ["class", "classNames?", ".*Class.*"],
+  // Tailwind CSS 정규식 설정: tw(), tw``, clsx() 함수 내부의 클래스 인식
+  "tailwindCSS.experimental.classRegex": [
+    "clsx\\('([^']*)'\\)",
+    "tw\\('([^']*)'\\)",
+    "tw`((\\S|\\s)*?)`"
+  ]
+}

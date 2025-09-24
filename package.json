@@ -1,0 +1,45 @@
+{
+  "private": true,
+  "type": "module",
+  "name": "next-js",
+  "version": "1.0.0",
+  "description": "파이널 프로젝트 템플릿",
+  "scripts": {
+    "dev": "bun --bun next dev --turbopack",
+    "prod": "next build --turbopack",
+    "start": "next start",
+    "lint": "bun lint:check --fix",
+    "lint:check": "eslint . --cache --cache-location ./node_modules/.cache/eslint/.eslintcache",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json}\" --cache --list-different --ignore-path .gitignore",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json}\" --cache --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "24.5.1",
+    "@types/react": "19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.4.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2"
+  }
+}
