@@ -11,7 +11,7 @@
 
 | 이성은       | 정윤서       | 최도형       | 허시온       |
 | ------------ | ------------ | ------------ | ------------ |
-| ![profile]() | ![profile]() | ![profile]() | ![profile]() |
+| ![profile](public/dev_profiles/lucky_seongeun.png) | ![profile](public/dev_profiles/lucky_yoonseo.png) | ![profile](public/dev_profiles/lucky_dohyeong.png) | ![profile](public/dev_profiles/lucky_sion.png) |
 | [HanUL072](https://github.com/hanul072) | [yoonseo23](https://github.com/yoonseo23) | [Stylechoi](https://github.com/stylechoi) | [HeoSion](https://github.com/heosion) |
 | INTP         | ENTJ         | ENTJ         | INFP         |
 
