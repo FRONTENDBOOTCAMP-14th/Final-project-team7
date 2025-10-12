@@ -3,10 +3,16 @@
 import Script from 'next/script'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export default function KakaoMap() {
+import { useGeolocation } from '../../hooks/main/useGeolocation'
+
+export default function DrawMap() {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [sdkReady, setSdkReady] = useState(false)
   const mapRef = useRef<kakao.maps.Map | null>(null) // 중복 초기화 방지
+
+  const { coords, error, loading, permission, requestOnce } = useGeolocation()
+
+  const DEFAULT_CENTER = { lat: 37.570447943807935, lng: 126.97934326898095 }
 
   const initMap = useCallback(() => {
     if (!sdkReady) return
@@ -18,13 +24,13 @@ export default function KakaoMap() {
     window.kakao.maps.load(() => {
       // 컨테이너 실제 크기 체크 (0이면 바로 리턴)
       const rect = containerRef.current?.getBoundingClientRect()
-      if (rect?.height === 0) {
-        // console.warn('[KakaoMap] container height is 0 — 스타일 확인 필요')
-        return
-      }
+      if (rect.height === 0) return
+
+      const centerLat = coords?.latitude ?? DEFAULT_CENTER.lat
+      const centerLng = coords?.longitude ?? DEFAULT_CENTER.lng
 
       const mapOption = {
-        center: new window.kakao.maps.LatLng(33.450701, 126.570667),
+        center: new window.kakao.maps.LatLng(centerLat, centerLng),
         level: 3,
       }
 
@@ -34,17 +40,23 @@ export default function KakaoMap() {
       )
       // console.log('[KakaoMap] map initialized')
     })
-  }, [sdkReady])
+  }, [sdkReady, coords])
 
   // SDK가 로드된 뒤에만 init 시도
   useEffect(() => {
     initMap()
   }, [initMap])
 
+  useEffect(() => {
+    if (!coords || !mapRef.current || !window.kakao) return
+    const { latitude, longitude } = coords
+    const center = new window.kakao.maps.LatLng(latitude, longitude)
+    mapRef.current.panTo(center)
+  }, [coords])
+
   return (
     <>
       <Script
-        id="kakao-maps-sdk"
         src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JS_KEY}&autoload=false&libraries=drawing`}
         strategy="afterInteractive"
         onLoad={() => {
@@ -52,16 +64,23 @@ export default function KakaoMap() {
           setSdkReady(true)
         }}
       />
-      {/* 부모가 접히지 않도록 높이 확정 */}
       <div
         ref={containerRef}
-        style={{
-          width: '100%',
-          height: 140,
-          border: '1px solid #e5e7eb',
-          borderRadius: 8,
-        }}
-      />
+        className="relative w-[314px] h-[300px] border border-gray-200 rounded-lg"
+      >
+        <button
+          type="button"
+          onClick={requestOnce}
+          disabled={loading}
+          className="absolute top-3 left-1/2 -translate-x-1/2 
+                  bg-black text-white text-sm font-medium 
+                  px-2 py-2 rounded-md shadow-md z-10 w-24 text-[12px]
+                  hover:bg-gray-800
+                  disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          현재 위치로 이동
+        </button>
+      </div>
     </>
   )
 }
