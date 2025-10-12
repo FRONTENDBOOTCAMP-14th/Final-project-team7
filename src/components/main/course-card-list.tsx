@@ -1,4 +1,5 @@
 'use client'
+
 import { useState } from 'react'
 
 import { useCourses } from '@/features/main/course-crud/context'
@@ -8,19 +9,21 @@ import CourseCard from './course-card'
 import CourseDetailModal from './course-detail-modal'
 
 export function CourseCardList() {
-  const { courses } = useCourses()
-  const courseList = courses
+  const { courses, loading, error } = useCourses()
   const [selected, setSelected] = useState<Course | null>(null)
 
-  if (!Array.isArray(courseList)) {
-    // console.log('NOT ARRAY:', courseList)
-    return null
-  }
+  if (error)
+    return <div className="p-4 text-red-600 text-sm">에러: {error}</div>
+  if (!Array.isArray(courses)) return null
 
   return (
     <>
-      <ul className="flex flex-col justify-center inset-0 p-4">
-        {courseList.map(course => (
+      {loading && (
+        <div className="px-4 py-2 text-sm text-gray-500">불러오는 중…</div>
+      )}
+
+      <ul className="flex flex-col justify-center p-4">
+        {courses.map((course) => (
           <li key={course.id}>
             <CourseCard
               course={course}
@@ -29,7 +32,13 @@ export function CourseCardList() {
           </li>
         ))}
       </ul>
-      <CourseDetailModal course={selected} onClose={() => setSelected(null)} />
+
+      {selected && (
+        <CourseDetailModal
+          course={selected}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </>
   )
 }
