@@ -45,7 +45,7 @@ export function CourseProvider({
       setLoading(true)
       setError(null)
 
-      let q = supabase.from('courses').select('*')
+      let q = supabase.from('course').select('*')
       q = q.order(column, { ascending })
 
       const { data, error } = await q

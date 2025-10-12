@@ -2,7 +2,7 @@ import { supabase } from '../../../lib/supabase/supabase-client'
 
 export async function getInitialCourse() {
   const { data } = await supabase
-    .from('courses')
+    .from('course')
     .select('*')
     .order('created_at', { ascending: false })
 
