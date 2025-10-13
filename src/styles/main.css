@@ -4,7 +4,7 @@
 @import 'tailwindcss/preflight.css' layer(base);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
-
+@import './common/theme.css' layer(theme);
 @import './common/_base.css' layer(base);
 @import './common/_a11y.css' layer(utilities);
 @import './common/_animation.css' layer(utilities);
