@@ -23,7 +23,7 @@ export function CourseCardList() {
       )}
 
       <ul className="flex flex-col justify-center p-4">
-        {courses.map((course) => (
+        {courses.map(course => (
           <li key={course.id}>
             <CourseCard
               course={course}

@@ -2,9 +2,9 @@
 
 import { produce } from 'immer'
 import Script from 'next/script'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { useGeolocation } from '../../hooks/main/useGeolocation'
+import { useGeolocation } from '@/hooks/main/useGeolocation'
 
 /** kakao 전역 선언 (TS 에러 방지) */
 declare global {
@@ -36,7 +36,10 @@ export default function DrawMap() {
   /** 지오로케이션 훅 */
   const { coords, loading, requestOnce } = useGeolocation()
 
-  const DEFAULT_CENTER = { lat: 37.570447943807935, lng: 126.97934326898095 }
+  const DEFAULT_CENTER = useMemo(
+    () => ({ lat: 37.570447943807935, lng: 126.97934326898095 }),
+    []
+  )
 
   /** 지도 & DrawingManager 초기화 */
   const initMapAndDrawing = useCallback(() => {
@@ -84,7 +87,7 @@ export default function DrawMap() {
       )
       managerRef.current = manager
 
-      // 그리기 종료시 오버레이를 immer로 기록 (수동 관리가 필요할 때)
+      // 그리기 종료시 오버레이를 immer로 기록
       window.kakao.maps.event.addListener(manager, 'drawend', (data: any) => {
         const overlay = data?.target
         if (!overlay) return
@@ -148,7 +151,6 @@ export default function DrawMap() {
       line.points.map(point => ({ lat: point.y, lng: point.x }))
     )
 
-    console.log('[Polyline paths]', paths)
     // TODO: Supabase 저장 로직 연결 가능
     return paths
   }
@@ -168,7 +170,7 @@ export default function DrawMap() {
       // (구버전/환경에 따라 remove가 없을 수 있으니) 수동 제거 fallback
     }
 
-    // 우리가 수집해둔 overlay들도 안전하게 제거
+    // 수집해둔 overlay들도 안전하게 제거
     setOverlays(prev =>
       produce(prev, draft => {
         draft.forEach(overlay => {

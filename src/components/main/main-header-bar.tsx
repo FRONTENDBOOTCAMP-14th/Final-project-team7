@@ -1,7 +1,7 @@
 'use client'
-import { useCourses } from '../../features/main/course-crud/context'
+import { AddCourseButton } from '@/components/main/add-course-button'
+import { useCourses } from '@/features/main/course-crud/context'
 
-import { AddCourseButton } from './add-course-button'
 import { SortDropdown } from './sort-dropdown'
 
 export function MainHeaderBar() {

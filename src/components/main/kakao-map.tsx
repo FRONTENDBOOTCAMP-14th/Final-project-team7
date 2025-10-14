@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 export default function KakaoMap() {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [sdkReady, setSdkReady] = useState(false)
-  const mapRef = useRef<kakao.maps.Map | null>(null) // 중복 초기화 방지
+  const mapRef = useRef<kakao.maps.Map | null>(null)
 
   const initMap = useCallback(() => {
     if (!sdkReady) return
@@ -14,12 +14,9 @@ export default function KakaoMap() {
     if (!containerRef.current) return
     if (mapRef.current) return // 이미 초기화됨
 
-    // SDK는 autoload=false이므로 load 콜백 안에서 초기화
     window.kakao.maps.load(() => {
-      // 컨테이너 실제 크기 체크 (0이면 바로 리턴)
       const rect = containerRef.current?.getBoundingClientRect()
       if (rect?.height === 0) {
-        // console.warn('[KakaoMap] container height is 0 — 스타일 확인 필요')
         return
       }
 
@@ -32,7 +29,6 @@ export default function KakaoMap() {
         containerRef.current!,
         mapOption
       )
-      // console.log('[KakaoMap] map initialized')
     })
   }, [sdkReady])
 
@@ -52,7 +48,6 @@ export default function KakaoMap() {
           setSdkReady(true)
         }}
       />
-      {/* 부모가 접히지 않도록 높이 확정 */}
       <div
         ref={containerRef}
         style={{

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { useState } from 'react'
+
 import { SORT, type SortKey } from '@/constants/main/sort'
 
 export function SortDropdown({
@@ -14,14 +15,14 @@ export function SortDropdown({
   const [open, setOpen] = useState(false)
 
   const handleSort = (key: SortKey) => {
-    onChange?.(key) // 안전 가드
+    onChange?.(key)
     setOpen(false)
   }
 
   return (
     <div className="relative inline-block text-left">
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen(open => !open)}
         className="inline-flex items-center justify-between w-32 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none"
       >
         <span>{SORT[value]}</span>
@@ -29,9 +30,9 @@ export function SortDropdown({
       </button>
 
       {open && (
-        <div className="absolute right-0 z-10 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div className="absolute right-0 z-10 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg">
           <ul className="py-1 text-sm text-gray-700">
-            {(Object.keys(SORT) as SortKey[]).map((key) => (
+            {(Object.keys(SORT) as SortKey[]).map(key => (
               <li key={key}>
                 <button
                   onClick={() => handleSort(key)}

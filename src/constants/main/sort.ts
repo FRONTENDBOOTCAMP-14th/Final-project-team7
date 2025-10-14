@@ -5,10 +5,8 @@ export const SORT = {
   NAME: '가나다순',
 } as const
 
-// 'LATEST' | 'OLDEST' | 'NAME'
 export type SortKey = keyof typeof SORT
 
-// 서버 쿼리에서 사용할 정렬 컬럼/방향 매핑
 export const SORT_ORDER: Record<
   SortKey,
   { column: string; ascending: boolean }
