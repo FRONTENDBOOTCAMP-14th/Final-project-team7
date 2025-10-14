@@ -11,3 +11,7 @@ export type RecordUpdate = TablesUpdate<'running_record'>
 export type Profile = Tables<'profiles'>
 export type ProfileInsert = TablesInsert<'profiles'>
 export type ProfileUpdate = TablesUpdate<'profiles'>
+
+export type MusicLink = Tables<'music_links'>
+export type MusicLinkInsert = TablesInsert<'music_links'>
+export type MusicLinkUpdate = TablesUpdate<'music_links'>
