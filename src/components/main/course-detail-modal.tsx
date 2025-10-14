@@ -14,6 +14,10 @@ export default function CourseDetailModal({
 }: CourseDetailModalProps) {
   if (!course) return null
 
+  const year = course.created_at.slice(0, 4)
+  const month = course.created_at.slice(5, 7)
+  const day = course.created_at.slice(8, 10)
+
   const path = normalizePath(course.course_map)
 
   return (
@@ -36,13 +40,16 @@ export default function CourseDetailModal({
           <p className="mb-2.5 text-[#202020] text-[14px] font-normal">
             {course.course_desc}
           </p>
+          <div className="flex flex-row-reverse pb-2 w-full">
+            <span className="text-gray-400 font-medium text-[14px]">{`코스 생성 : ${year}년 ${month}월 ${day}일`}</span>
+          </div>
           {course.image ? (
             <Image
               src={course.image}
               alt="코스 이미지"
-              width={300}
-              height={300}
-              className="rounded-md object-contain"
+              width={200}
+              height={200}
+              className="rounded-md object-contain mx-auto"
               unoptimized
             />
           ) : (
