@@ -1,16 +1,18 @@
 'use client'
 
-import { CircleArrowLeft, Trash2 } from 'lucide-react'
+import { CircleArrowLeft, Loader2, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
-import { useModalFocusTrap } from '@/features/running/hooks/use-modal-focus-trap'
-import type { EditRecordModalProps } from '@/features/running/types/record'
 import {
   calculatePace,
   parseDuration,
 } from '@/features/running/utils/pace-utils'
-import { isValidRecordForm } from '@/features/running/utils/validation-utils'
 import { supabase } from '@/lib/supabase/supabase-client'
+
+import { useModalFocusTrap } from '../hooks'
+import type { EditRecordModalProps } from '../types'
+import { isValidRecordForm } from '../utils'
 
 import InputTimeWithLabel from './common/input-time-with-label'
 import DropDown from './drop-down'
@@ -23,6 +25,8 @@ export default function EditRecordModal({
   onDeleteSuccess,
 }: EditRecordModalProps) {
   const modalRef = useRef<HTMLDivElement | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const [selectedCourse, setSelectedCourse] = useState(record.course_name)
   const [date, setDate] = useState(record.date ?? '')
@@ -47,21 +51,23 @@ export default function EditRecordModal({
     setPace(paceValue === '--:-- / km' ? '' : paceValue)
   }, [distance, hours, minutes, seconds])
 
-  const isFormValid = isValidRecordForm({
-    course: selectedCourse,
-    date,
-    distance,
-    hours,
-    minutes,
-    seconds,
-    pace,
-  })
+  const isFormValid =
+    isValidRecordForm({
+      course: selectedCourse,
+      date,
+      distance,
+      hours,
+      minutes,
+      seconds,
+      pace,
+    }) &&
+    hours &&
+    minutes &&
+    seconds
 
   const handleUpdate = async () => {
-    if (!isFormValid) {
-      alert('수정 값(날짜, 거리, 시간)을 모두 채워주세요.')
-      return
-    }
+    if (!isFormValid) return toast.error('모든 입력 값을 채워주세요.')
+    setIsSubmitting(true)
 
     const { data, error } = await supabase
       .from('running_record')
@@ -76,82 +82,119 @@ export default function EditRecordModal({
       .select()
       .single()
 
-    if (error) {
-      alert('기록 수정에 실패했습니다.')
-    } else {
+    setIsSubmitting(false)
+    if (error) toast.error('기록 수정 실패')
+    else {
+      toast.success('기록이 수정되었습니다!')
       onUpdateSuccess(data)
-      alert('기록이 수정되었습니다!')
       onClose()
     }
   }
 
-  // 🗑 삭제 처리
-  const handleDelete = async () => {
-    if (!confirm('이 기록을 삭제하시겠습니까?')) return
+  // 기록삭제 여부 Toast 커스텀
+  const handleDelete = () => {
+    toast.custom(
+      id => (
+        <div className="flex flex-col gap-3 p-3">
+          <p className="text-sm font-medium text-gray-800">
+            정말 이 기록을 삭제하시겠습니까?
+          </p>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={async () => {
+                toast.dismiss(id)
+                setIsDeleting(true)
 
-    const { error } = await supabase
-      .from('running_record')
-      .delete()
-      .eq('id', record.id)
+                const { error } = await supabase
+                  .from('running_record')
+                  .delete()
+                  .eq('id', record.id)
 
-    if (error) {
-      alert('삭제 실패')
-    } else {
-      alert('기록이 삭제되었습니다.')
-      onDeleteSuccess(record.id)
-      onClose()
-    }
+                setIsDeleting(false)
+
+                if (error) {
+                  toast.error('기록 삭제 실패했습니다!')
+                } else {
+                  toast.success('기록이 삭제 되었습니다!')
+                  onDeleteSuccess(record.id)
+                  onClose()
+                }
+              }}
+              className="px-3 py-1 text-sm rounded bg-red-500 text-white hover:bg-red-600 transition"
+            >
+              삭제
+            </button>
+            <button
+              onClick={() => toast.dismiss(id)}
+              className="px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300 transition"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: Infinity,
+        closeButton: false,
+        classNames: {
+          toast: 'rounded-lg shadow-md border border-gray-200 bg-white',
+        },
+      }
+    )
   }
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-xs z-50"
+      ref={modalRef}
+      className="fixed inset-0 flex items-center justify-center bg-black/30 z-50 p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
     >
       <div
-        ref={modalRef}
-        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        className="
+          bg-white rounded-lg shadow-lg
+          w-[80vw] sm:w-[70vw] md:w-[60vw] lg:w-[50vw]
+          max-w-[800px] min-w-[280px]
+          max-h-[90vh] overflow-y-auto
+          p-5 sm:p-6 md:p-8
+        "
       >
-        {/* Header */}
         <div className="flex justify-between items-center pb-4">
           <button
             type="button"
             onClick={onClose}
-            aria-label="닫기"
-            className="p-2 cursor-pointer rounded transition hover:bg-gray-200"
+            aria-label="닫기 버튼"
+            className="cursor-pointer rounded hover:bg-gray-200 p-1"
           >
-            <CircleArrowLeft size={30} aria-hidden="true" />
+            <CircleArrowLeft size={28} />
           </button>
           <button
             type="button"
             onClick={handleDelete}
-            aria-label="삭제하기"
-            className="text-red-500 p-2 cursor-pointer rounded transition hover:bg-gray-200"
+            aria-label="삭제하기 버튼"
+            disabled={isDeleting}
+            className="cursor-pointer text-red-500 rounded p-1 hover:bg-gray-200 disabled:opacity-50"
           >
-            <Trash2 size={30} aria-hidden="true" />
+            <Trash2 size={28} />
           </button>
         </div>
 
-        {/* 코스 선택 */}
         <DropDown
           courses={courses}
           selectedCourse={selectedCourse}
           onCourseChange={setSelectedCourse}
         />
 
-        {/* 날짜 */}
         <div className="mt-3">
-          <label className="text-gray-700 mb-1">날짜 선택</label>
+          <label className="text-gray-700" aria-label="날짜 선택" />
           <input
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full border border-gray-300 rounded-md p-2 text-gray-700 cursor-pointer"
+            className="w-full border border-gray-300 rounded-md p-2 sm:p-3 text-gray-700 cursor-pointer"
           />
         </div>
 
-        {/* 거리 */}
         <div className="mt-3">
           <InputTimeWithLabel
             label="km"
@@ -162,8 +205,7 @@ export default function EditRecordModal({
           />
         </div>
 
-        {/* 시간 입력 */}
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="mt-3 flex flex-col gap-2 sm:grid sm:grid-cols-3">
           <InputTimeWithLabel
             label="시간"
             value={hours}
@@ -187,25 +229,31 @@ export default function EditRecordModal({
           />
         </div>
 
-        {/* 페이스 표시 */}
-        <div className="mt-4 text-center text-gray-700">
-          <p className="text-sm">km 페이스</p>
-          <p className="text-lg font-semibold text-green-600">
-            {pace || '--:-- / km'}
-          </p>
+        <div className="mt-4 text-center">
+          <p className="text-sm sm:text-base">km 페이스</p>
+          <p className="text-lg font-semibold">{pace || '--:-- / km'}</p>
         </div>
 
-        {/* 저장 버튼 */}
         <button
           onClick={handleUpdate}
-          disabled={!isFormValid}
-          className={`w-full mt-5 py-2 rounded-md transition-colors ${
-            isFormValid
-              ? 'bg-blue-500 cursor-pointer text-white'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          disabled={!isFormValid || isSubmitting || isDeleting}
+          className={`w-full mt-5 py-2 sm:py-3 rounded-md transition-colors cursor-pointer ${
+            isDeleting
+              ? 'bg-red-500 text-white cursor-wait'
+              : isFormValid
+                ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
         >
-          저장하기
+          {isSubmitting || isDeleting ? (
+            <Loader2
+              className={`w-5 h-5 animate-spin mx-auto ${
+                isDeleting ? 'text-white' : 'text-blue-200'
+              }`}
+            />
+          ) : (
+            '저장하기'
+          )}
         </button>
       </div>
     </div>

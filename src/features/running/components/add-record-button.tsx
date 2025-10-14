@@ -1,12 +1,24 @@
 'use client'
 
-import { Plus } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
 
 import type { CourseOption } from '@/features/running/types/course'
 import type { RunningRecord } from '@/features/running/types/record'
 
-import AddRecordModal from './add-record-modal'
+// 동적 기능 이용해서, 모달 컴포넌트 지연 로딩(lazy load)
+// 모달을 열 때만, modal.tsx 파일을 불러옴
+const AddRecordModal = dynamic(() => import('./add-record-modal'), {
+  ssr: false, // 모달 -> 클라이언트 전용 UI 이므로 false로 설정
+  loading: () => (
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+      <div className="bg-white p-6 rounded-lg shadow-md text-gray-700">
+        <Loader2 className="animate-spin text-blue-600" />
+      </div>
+    </div>
+  ),
+})
 
 interface AddRecordButtonProps {
   courses: CourseOption[]
@@ -23,7 +35,6 @@ export default function AddRecordButton({
   const handleOpen = () => setIsModalOpen(true)
   const handleClose = () => {
     setIsModalOpen(false)
-    setTimeout(() => buttonRef.current?.focus(), 0)
   }
 
   return (

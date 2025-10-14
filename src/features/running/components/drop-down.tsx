@@ -3,20 +3,20 @@
 import { ChevronDown } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-import type { CourseOption } from '@/features/running/types/course'
-import type { DropdownProps } from '@/features/running/types/dropdown'
+import { useToggleState } from '@/hooks/use-toggle-state'
+
+import type { CourseOption, DropdownProps } from '../types'
 
 export default function DropDown({
   courses,
   selectedCourse,
   onCourseChange,
 }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, { on: open, off: close, toggle }] = useToggleState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const listboxRef = useRef<HTMLUListElement | null>(null)
 
-  // 전체 코스 목록
   const allOptions: CourseOption[] = [...courses]
 
   const selectedIndex = courses.findIndex(c => c.course_name === selectedCourse)
@@ -28,7 +28,6 @@ export default function DropDown({
         ? `코스 ${selectedIndex + 1}: ${courses[selectedIndex].course_name}`
         : selectedCourse
 
-  // 포커스 관리
   useEffect(() => {
     if (isOpen) setFocusedIndex(0)
     else setFocusedIndex(-1)
@@ -42,15 +41,14 @@ export default function DropDown({
     }
   }, [focusedIndex])
 
-  // 키보드 이벤트
   const handleKeyDownOnButton = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      setIsOpen(!isOpen)
+      toggle()
     }
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setIsOpen(true)
+      open()
     }
   }
 
@@ -65,14 +63,33 @@ export default function DropDown({
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       onCourseChange(allOptions[focusedIndex].course_name)
-      setIsOpen(false)
-      dropdownRef.current?.focus()
+      close()
+
+      // 코스 선택 한 후에, 날짜 input에 포커스 이동
+      requestAnimationFrame(() => {
+        const dateInputfocus =
+          document.querySelector<HTMLInputElement>('input[type="date"]')
+        dateInputfocus?.focus()
+      })
     } else if (e.key === 'Escape') {
       e.preventDefault()
-      setIsOpen(false)
+      close()
       dropdownRef.current?.focus()
     }
   }
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        close()
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [close])
 
   return (
     <div ref={dropdownRef} className="relative">
@@ -81,7 +98,7 @@ export default function DropDown({
         tabIndex={0}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggle}
         onKeyDown={handleKeyDownOnButton}
         className="flex relative z-20 justify-between items-center border border-gray-300 bg-white p-3 rounded cursor-pointer transition shadow-[0_0_10px_0_rgba(0,0,0,0.25)]"
       >
@@ -93,8 +110,6 @@ export default function DropDown({
           aria-hidden="true"
         />
       </div>
-
-      {/* 코스 리스트 */}
       {isOpen && (
         <ul
           ref={listboxRef}
@@ -114,7 +129,16 @@ export default function DropDown({
               }`}
               onClick={() => {
                 onCourseChange(option.course_name)
-                setIsOpen(false)
+                close()
+
+                // ✅ 코스 선택 후 날짜로 포커스 이동
+                requestAnimationFrame(() => {
+                  const dateInputfocus =
+                    document.querySelector<HTMLInputElement>(
+                      'input[type="date"]'
+                    )
+                  dateInputfocus?.focus()
+                })
               }}
             >
               {`코스 ${index + 1}: ${option.course_name}`}

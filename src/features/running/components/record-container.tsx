@@ -2,18 +2,16 @@
 
 import { useState } from 'react'
 
-import AddRecordButton from '@/features/running/components/add-record-button'
-import DropDown from '@/features/running/components/drop-down'
-import RecordTable from '@/features/running/components/record-table'
-import { useRecords } from '@/features/running/hooks/use-records'
-import type { CourseOption } from '@/features/running/types/course'
-import type { RunningRecord } from '@/features/running/types/record'
+import { AddRecordButton, DropDown, RecordTable } from '../components/index'
+import { useRecords } from '../hooks'
+import type { CourseOption, RunningRecord } from '../types'
 
 interface CourseRecordProps {
   courses: CourseOption[]
   records: RunningRecord[]
 }
 
+// drop-down, record-table 컴포넌트를 묶어놓은 컨테이너
 export default function RecordContainer({
   courses,
   records,

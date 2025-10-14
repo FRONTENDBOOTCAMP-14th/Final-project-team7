@@ -17,7 +17,7 @@ export interface Database {
       course: {
         Row: {
           course_desc: string | null
-          course_map: string | null
+          course_map: Json | null
           course_name: string
           created_at: string
           id: string
@@ -25,7 +25,7 @@ export interface Database {
         }
         Insert: {
           course_desc?: string | null
-          course_map?: string | null
+          course_map?: Json | null
           course_name?: string
           created_at?: string
           id: string
@@ -33,7 +33,7 @@ export interface Database {
         }
         Update: {
           course_desc?: string | null
-          course_map?: string | null
+          course_map?: Json | null
           course_name?: string
           created_at?: string
           id?: string
@@ -70,32 +70,29 @@ export interface Database {
       }
       profiles: {
         Row: {
-          age: number | null
           bio: string | null
           created_at: string
           email: string | null
-          gender: string | null
           id: string
+          profile_image_url: string | null
           signup_date: string | null
           user_name: string | null
         }
         Insert: {
-          age?: number | null
           bio?: string | null
           created_at?: string
           email?: string | null
-          gender?: string | null
           id: string
+          profile_image_url?: string | null
           signup_date?: string | null
           user_name?: string | null
         }
         Update: {
-          age?: number | null
           bio?: string | null
           created_at?: string
           email?: string | null
-          gender?: string | null
           id?: string
+          profile_image_url?: string | null
           signup_date?: string | null
           user_name?: string | null
         }
@@ -117,7 +114,7 @@ export interface Database {
           date?: string | null
           distance?: string | null
           duration?: string | null
-          id: string
+          id?: string
           pace?: string | null
         }
         Update: {
@@ -129,15 +126,7 @@ export interface Database {
           id?: string
           pace?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: 'running_record_course_name_fkey'
-            columns: ['course_name']
-            isOneToOne: true
-            referencedRelation: 'course'
-            referencedColumns: ['course_name']
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
