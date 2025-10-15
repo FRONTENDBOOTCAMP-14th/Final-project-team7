@@ -24,7 +24,9 @@ export default function RecordContainer({
     addRecord,
     updateRecord,
     deleteRecord,
+    isLoading, // ✅ 추가된 부분
   } = useRecords(records)
+
   const [selectedCourse, setSelectedCourse] = useState<'all' | string>('all')
 
   const filteredRecords =
@@ -47,10 +49,12 @@ export default function RecordContainer({
         <AddRecordButton courses={courses} onAddSuccess={addRecord} />
       </div>
 
+      {/* ✅ isLoading을 함께 전달 */}
       <RecordTable
         records={filteredRecords}
         onUpdateSuccess={updateRecord}
         onDeleteSuccess={deleteRecord}
+        isLoading={isLoading}
       />
     </>
   )

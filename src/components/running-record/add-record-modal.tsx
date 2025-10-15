@@ -4,12 +4,12 @@ import { CircleArrowLeft, Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import InputTimeWithLabel from '@/components/running-record/common/input-time-with-label'
+import DistanceWithTime from '@/components/running-record/common/distance-with-time'
 import DropDown from '@/components/running-record/drop-down'
 import { useModalFocusTrap } from '@/hooks/running-record'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { AddRecordModalProps } from '@/types/running-record'
-import { calculatePace, isValidRecordForm } from '@/utils/running-record'
+import { calculatePace, validRecordForm } from '@/utils/running-record/index'
 
 export default function AddRecordModal({
   courses,
@@ -36,7 +36,7 @@ export default function AddRecordModal({
 
   const isTimeFilled = hours.trim() && minutes.trim() && seconds.trim()
   const isFormValid =
-    isValidRecordForm({
+    validRecordForm({
       course: selectedCourse,
       date,
       distance,
@@ -81,13 +81,12 @@ export default function AddRecordModal({
       aria-modal="true"
     >
       <div
-        className="
-        overflow-y-auto
-        w-[320px] md:w-[768px] xl:max-w-[1280px]
-        h-[550px] md:max-h-[600px] xl:max-h-[800px]
-        bg-white rounded-lg shadow-lg p-5
-        transition-all
-      "
+        className="overflow-y-auto
+        w-[70%]
+        max-w-[420px]
+        max-h-[80%]
+      bg-white rounded-lg shadow-lg p-2
+        transition-all"
       >
         <div className="flex items-center justify-between pb-4">
           <button
@@ -107,7 +106,7 @@ export default function AddRecordModal({
         />
 
         <div className="mt-3">
-          <label htmlFor="record-date" className="sr-only">
+          <label htmlFor="add-record-date" className="sr-only">
             날짜 선택
           </label>
           <input
@@ -120,31 +119,34 @@ export default function AddRecordModal({
         </div>
 
         <div className="mt-3">
-          <InputTimeWithLabel
-            label="km"
+          <DistanceWithTime
+            id="record-distance"
+            label="거리"
             value={distance}
             onChange={setDistance}
-            placeholder="거리"
+            placeholder="0"
             type="number"
           />
         </div>
-
-        <div className="flex flex-col md:grid md:grid-cols-3 mt-3 gap-2">
-          <InputTimeWithLabel
-            label="시간"
+        <div className="flex mt-3 gap-2">
+          <DistanceWithTime
+            id="record-hours"
+            label="시"
             value={hours}
             onChange={setHours}
             type="number"
             placeholder="0"
           />
-          <InputTimeWithLabel
+          <DistanceWithTime
+            id="record-minutes"
             label="분"
             value={minutes}
             onChange={setMinutes}
             type="number"
             placeholder="0"
           />
-          <InputTimeWithLabel
+          <DistanceWithTime
+            id="record-seconds"
             label="초"
             value={seconds}
             onChange={setSeconds}
@@ -163,7 +165,7 @@ export default function AddRecordModal({
           onClick={handleSave}
           disabled={!isFormValid || isSubmitting}
           aria-busy={isSubmitting}
-          className={`mt-5 w-full rounded-md py-2 md:py-3 transition-colors ${
+          className={`mt-5 w-full rounded-md py-2 transition-colors ${
             isFormValid
               ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'

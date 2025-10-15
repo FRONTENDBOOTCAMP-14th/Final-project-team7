@@ -4,13 +4,16 @@ import { CircleArrowLeft, Loader2, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-import InputTimeWithLabel from '@/components/running-record/common/input-time-with-label'
+import DistanceWithTime from '@/components/running-record/common/distance-with-time'
 import DropDown from '@/components/running-record/drop-down'
 import { useModalFocusTrap } from '@/hooks/running-record'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { EditRecordModalProps } from '@/types/running-record'
-import { isValidRecordForm } from '@/utils/running-record'
-import { calculatePace, parseDuration } from '@/utils/running-record/pace-utils'
+import {
+  calculatePace,
+  parseDuration,
+  validRecordForm,
+} from '@/utils/running-record'
 
 export default function EditRecordModal({
   courses,
@@ -47,7 +50,7 @@ export default function EditRecordModal({
   }, [distance, hours, minutes, seconds])
 
   const isFormValid =
-    isValidRecordForm({
+    validRecordForm({
       course: selectedCourse,
       date,
       distance,
@@ -86,7 +89,7 @@ export default function EditRecordModal({
     }
   }
 
-  // 기록 삭제 확인 토스트
+  // 삭제 확인 토스트 커스텀
   const handleDelete = () => {
     toast.custom(
       id => (
@@ -133,9 +136,6 @@ export default function EditRecordModal({
       {
         duration: Infinity,
         closeButton: false,
-        classNames: {
-          toast: '', // 개별 컨텐츠에 클래스 부여하므로 여기선 비움
-        },
       }
     )
   }
@@ -148,13 +148,12 @@ export default function EditRecordModal({
       aria-modal="true"
     >
       <div
-        className="
-        overflow-y-auto
-        w-[320px] md:w-[768px] xl:max-w-[1280px]
-        h-[550px] md:max-h-[600px] xl:max-h-[800px]
-        bg-white rounded-lg shadow-lg p-5
-        transition-all
-      "
+        className="overflow-y-auto
+        w-[70%]
+        max-w-[420px]
+        max-h-[80%]
+      bg-white rounded-lg shadow-lg p-2
+        transition-all"
       >
         <div className="flex items-center justify-between pb-4">
           <button
@@ -196,31 +195,34 @@ export default function EditRecordModal({
         </div>
 
         <div className="mt-3">
-          <InputTimeWithLabel
-            label="km"
+          <DistanceWithTime
+            id="record-distance"
+            label="거리"
             value={distance}
             onChange={setDistance}
-            placeholder="거리"
+            placeholder="0"
             type="number"
           />
         </div>
-
-        <div className="flex flex-col md:grid md:grid-cols-3 mt-3 gap-2">
-          <InputTimeWithLabel
-            label="시간"
+        <div className="flex mt-3 gap-2">
+          <DistanceWithTime
+            id="record-hours"
+            label="시"
             value={hours}
             onChange={setHours}
             type="number"
             placeholder="0"
           />
-          <InputTimeWithLabel
+          <DistanceWithTime
+            id="record-minutes"
             label="분"
             value={minutes}
             onChange={setMinutes}
             type="number"
             placeholder="0"
           />
-          <InputTimeWithLabel
+          <DistanceWithTime
+            id="record-seconds"
             label="초"
             value={seconds}
             onChange={setSeconds}
@@ -235,11 +237,10 @@ export default function EditRecordModal({
         </div>
 
         <button
-          type="button"
           onClick={handleUpdate}
           disabled={!isFormValid || isSubmitting || isDeleting}
           aria-busy={isSubmitting || isDeleting}
-          className={`mt-5 w-full rounded-md py-2 sm:py-3 transition-colors ${
+          className={`mt-5 w-full rounded-md py-2 transition-colors ${
             isDeleting
               ? 'bg-red-500 text-white cursor-wait'
               : isFormValid

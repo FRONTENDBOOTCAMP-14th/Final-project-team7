@@ -1,4 +1,4 @@
-export function isValidRecordForm({
+export function validRecordForm({
   course,
   date,
   distance,

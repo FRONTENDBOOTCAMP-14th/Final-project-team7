@@ -1,11 +1,32 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-import type { RunningRecord } from '@/types/running-record/record'
+import { supabase } from '@/lib/supabase/supabase-client'
+import type { RunningRecord } from '@/types/running-record/record-table-props'
 
 export function useRecords(initialRecords: RunningRecord[]) {
   const [records, setRecords] = useState(initialRecords)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      setIsLoading(true)
+
+      const { data, error } = await supabase
+        .from('running_record')
+        .select('*')
+        .order('date', { ascending: false })
+
+      if (!error && data) {
+        setRecords(data)
+      }
+
+      setIsLoading(false)
+    }
+
+    fetchRecords()
+  }, [])
 
   const addRecord = useCallback(
     (newRecord: RunningRecord) => setRecords(prev => [...prev, newRecord]),
@@ -26,5 +47,5 @@ export function useRecords(initialRecords: RunningRecord[]) {
     []
   )
 
-  return { records, addRecord, updateRecord, deleteRecord }
+  return { records, addRecord, updateRecord, deleteRecord, isLoading }
 }

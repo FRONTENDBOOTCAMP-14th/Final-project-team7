@@ -39,7 +39,6 @@ export default function EditRecordButton({
 
   const handleClose = () => {
     setIsModalOpen(false)
-    // 모달 닫힌 뒤 트리거 버튼으로 포커스 복원 (접근성)
     requestAnimationFrame(() => buttonRef.current?.focus())
   }
 
