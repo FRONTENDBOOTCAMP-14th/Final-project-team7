@@ -85,7 +85,7 @@ export default function AddRecordModal({
         w-[70%]
         max-w-[420px]
         max-h-[80%]
-      bg-white rounded-lg shadow-lg p-2
+      p-2 bg-white rounded-lg shadow-lg
         transition-all"
       >
         <div className="flex items-center justify-between pb-4">
@@ -93,7 +93,7 @@ export default function AddRecordModal({
             type="button"
             aria-label="닫기"
             onClick={onClose}
-            className="rounded p-1 hover:bg-gray-200 cursor-pointer"
+            className="p-1 rounded hover:bg-gray-200 cursor-pointer"
           >
             <CircleArrowLeft size={28} />
           </button>
@@ -114,7 +114,7 @@ export default function AddRecordModal({
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 text-gray-700 cursor-pointer"
+            className="w-full p-2 rounded-md border border-gray-300  text-gray-700 cursor-pointer"
           />
         </div>
 
@@ -165,7 +165,7 @@ export default function AddRecordModal({
           onClick={handleSave}
           disabled={!isFormValid || isSubmitting}
           aria-busy={isSubmitting}
-          className={`mt-5 w-full rounded-md py-2 transition-colors ${
+          className={`mt-5 w-full py-2 rounded-md transition-colors ${
             isFormValid
               ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'

@@ -50,7 +50,7 @@ export default function DistanceWithTime({
         onChange={handleChange}
         placeholder={placeholder}
         disabled={disabled}
-        className={`w-full border border-gray-300 rounded-md p-2 text-gray-700
+        className={`w-full border p-2 border-gray-300 rounded-md text-gray-700
           ${
             disabled
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'

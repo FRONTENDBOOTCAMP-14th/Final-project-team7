@@ -42,7 +42,7 @@ export default function RecordTable({
 
   return (
     <>
-      <table className="hidden md:table min-w-full relative bg-white overflow-hidden rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left text-gray-800">
+      <table className="relative hidden md:table min-w-full overflow-hidden bg-white rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left text-gray-800">
         <thead className="bg-blue-100 border-b border-blue-200">
           <tr>
             <th className="px-4 py-3">날짜</th>
@@ -65,7 +65,7 @@ export default function RecordTable({
               <td className="px-4 py-3">{record.distance} km</td>
               <td className="px-4 py-3">{record.duration}</td>
               <td className="px-4 py-3">{record.pace}</td>
-              <td className="px-4 py-3 flex justify-center items-center">
+              <td className="flex justify-center items-center px-4 py-3">
                 <EditRecordButton
                   record={record}
                   courses={[{ id: record.id, course_name: record.course_name }]}
@@ -84,7 +84,7 @@ export default function RecordTable({
             <button
               type="button"
               onClick={() => setSelectedRecord(record)}
-              className="w-full text-left p-4 bg-white border border-gray-200 rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] transition hover:bg-gray-50 active:scale-[0.99]"
+              className="w-full p-4 bg-white border border-gray-200 rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-left transition active:scale-[0.99]"
             >
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-gray-800 text-sm">
@@ -102,14 +102,13 @@ export default function RecordTable({
                   <span className="font-medium text-gray-600">시간:</span>{' '}
                   {record.duration}
                 </p>
-                <p className="font-medium mt-1">페이스: {record.pace}</p>
+                <p className="mt-1 font-medium">페이스: {record.pace}</p>
               </div>
             </button>
           </li>
         ))}
       </ul>
 
-      {/* 🧩 수정 모달 */}
       {selectedRecord && (
         <EditRecordModal
           record={selectedRecord}

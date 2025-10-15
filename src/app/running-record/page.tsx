@@ -1,4 +1,4 @@
-import { RecordClient as CourseRecord } from '@/app/running-record'
+import { RecordContainer } from '@/app/running-record'
 import { supabase } from '@/lib/supabase/supabase-client'
 
 export default async function RunningPage() {
@@ -7,7 +7,7 @@ export default async function RunningPage() {
 
   return (
     <>
-      <CourseRecord courses={courses ?? []} records={records ?? []} />
+      <RecordContainer courses={courses ?? []} records={records ?? []} />
     </>
   )
 }

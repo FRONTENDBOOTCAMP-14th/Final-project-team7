@@ -119,7 +119,7 @@ export default function EditRecordModal({
                   onClose()
                 }
               }}
-              className="flex items-center justify-center px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-sm transition"
+              className="flex items-center justify-center px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white text-sm transition"
             >
               삭제
             </button>
@@ -152,7 +152,7 @@ export default function EditRecordModal({
         w-[70%]
         max-w-[420px]
         max-h-[80%]
-      bg-white rounded-lg shadow-lg p-2
+        p-2 bg-white rounded-lg shadow-lg 
         transition-all"
       >
         <div className="flex items-center justify-between pb-4">
@@ -160,7 +160,7 @@ export default function EditRecordModal({
             type="button"
             onClick={onClose}
             aria-label="닫기 버튼"
-            className="rounded p-1 hover:bg-gray-200 cursor-pointer"
+            className="p-1 rounded hover:bg-gray-200 cursor-pointer"
           >
             <CircleArrowLeft size={28} />
           </button>
@@ -169,7 +169,7 @@ export default function EditRecordModal({
             onClick={handleDelete}
             aria-label="삭제하기 버튼"
             disabled={isDeleting}
-            className="rounded p-1 text-red-500 hover:bg-gray-200 disabled:opacity-50 cursor-pointer"
+            className="p-1 rounded hover:bg-gray-200 text-red-500 disabled:opacity-50 cursor-pointer"
           >
             <Trash2 size={28} />
           </button>
@@ -190,7 +190,7 @@ export default function EditRecordModal({
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 text-gray-700 cursor-pointer"
+            className="w-full p-2 rounded-md border border-gray-300 text-gray-700 cursor-pointer"
           />
         </div>
 
@@ -240,11 +240,11 @@ export default function EditRecordModal({
           onClick={handleUpdate}
           disabled={!isFormValid || isSubmitting || isDeleting}
           aria-busy={isSubmitting || isDeleting}
-          className={`mt-5 w-full rounded-md py-2 transition-colors ${
+          className={`mt-5 w-full py-2 rounded-md transition-colors ${
             isDeleting
               ? 'bg-red-500 text-white cursor-wait'
               : isFormValid
-                ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
+                ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
         >

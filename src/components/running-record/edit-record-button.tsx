@@ -1,4 +1,3 @@
-// edit-record-button.tsx
 'use client'
 
 import { Loader2, Pencil } from 'lucide-react'
@@ -12,7 +11,7 @@ const EditRecordModal = dynamic(() => import('./edit-record-modal'), {
   ssr: false,
   loading: () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="rounded-lg p-6 bg-white shadow-md text-gray-700">
+      <div className="p-6 rounded-lg bg-white shadow-md text-gray-700">
         <Loader2 className="w-5 h-5 mx-auto animate-spin" aria-hidden="true" />
       </div>
     </div>
