@@ -50,6 +50,9 @@ export default function SignInClient() {
     >
       <img src="/logo.png" alt="로고" className="w-50 h-auto mx-auto mb-4" />
 
+      <label htmlFor="email" className="sr-only">
+        이메일
+      </label>
       <input
         id="email"
         name="email"
@@ -62,6 +65,9 @@ export default function SignInClient() {
         disabled={loading}
       />
 
+      <label htmlFor="password" className="sr-only">
+        비밀번호
+      </label>
       <input
         id="password"
         name="password"
@@ -77,6 +83,8 @@ export default function SignInClient() {
       <button
         type="submit"
         disabled={loading}
+        aria-busy={loading}
+        aria-disabled={loading}
         className="p-3 w-full max-w-[313px] bg-[var(--color-point-200)] text-white text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? '로그인 중...' : '로그인'}
