@@ -60,7 +60,7 @@ export default function SignInClient() {
         placeholder="이메일을 입력해주세요."
         value={email}
         onChange={e => setEmail(e.target.value)}
-        className="p-3 border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)] rounded-sm"
+        className="p-3 rounded-sm border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)]"
         required
         disabled={loading}
       />
@@ -75,7 +75,7 @@ export default function SignInClient() {
         placeholder="비밀번호를 입력해주세요."
         value={password}
         onChange={e => setPassword(e.target.value)}
-        className="p-3 border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)] rounded-sm"
+        className="p-3 rounded-sm border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)]"
         required
         disabled={loading}
       />
@@ -85,7 +85,7 @@ export default function SignInClient() {
         disabled={loading}
         aria-busy={loading}
         aria-disabled={loading}
-        className="p-3 w-full max-w-[313px] bg-[var(--color-point-200)] text-white text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-200)] text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? '로그인 중...' : '로그인'}
       </button>
@@ -94,7 +94,7 @@ export default function SignInClient() {
         type="button"
         onClick={goToSignUp}
         disabled={loading}
-        className="p-3 w-full max-w-[313px] bg-[var(--color-point-100)] text-white text-sm rounded-lg disabled:opacity-50"
+        className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-100)] text-white text-sm disabled:opacity-50"
       >
         회원가입
       </button>

@@ -116,7 +116,7 @@ export default function SignUpClient() {
             placeholder="비밀번호를 입력해주세요."
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="p-3 border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)] rounded-sm"
+            className="p-3 rounded-sm border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)]"
             minLength={6}
             required
             disabled={loading}
@@ -137,7 +137,7 @@ export default function SignUpClient() {
             placeholder="소개글을 입력해주세요"
             value={bio}
             onChange={e => setBio(e.target.value)}
-            className="p-3 h-20 border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)] rounded-sm resize-none"
+            className="p-3 h-20 rounded-sm border border-[var(--color-basic-100)] text-xs placeholder-[var(--color-basic-200)] resize-none"
             disabled={loading}
           />
         </div>
@@ -148,7 +148,7 @@ export default function SignUpClient() {
           disabled={loading}
           aria-busy={loading}
           aria-disabled={loading}
-          className="p-3 w-full max-w-[313px] bg-[var(--color-point-100)] text-sm text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-100)] text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? '처리 중...' : '회원가입'}
         </button>
