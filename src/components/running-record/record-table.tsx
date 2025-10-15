@@ -3,10 +3,12 @@
 import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import {
+  EditRecordButton,
+  EditRecordModal,
+} from '@/components/running-record/index'
 import type { Tables } from '@/lib/supabase/database.types'
-
-import { EditRecordButton, EditRecordModal } from '../components/index'
-import type { RecordTableProps } from '../types'
+import type { RecordTableProps } from '@/types/running-record'
 
 type RunningRecord = Tables<'running_record'>
 
@@ -29,8 +31,8 @@ export default function RecordTable({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-48 text-gray-600 bg-white rounded-lg shadow-md border border-gray-200">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600 mb-2" />
+      <div className="flex items-center justify-center flex-col h-48 bg-white border border-gray-200 rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-600">
+        <Loader2 className="w-6 h-6 mb-2 text-blue-600 animate-spin" />
         열심히 달려오는 중...👟
       </div>
     )
@@ -38,7 +40,7 @@ export default function RecordTable({
 
   if (records.length === 0) {
     return (
-      <div className="flex justify-center items-center h-40 bg-white text-gray-500 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] rounded-md">
+      <div className="flex items-center justify-center h-40 bg-white rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-500">
         러닝 기록이 없습니다...❌
       </div>
     )
@@ -46,8 +48,8 @@ export default function RecordTable({
 
   return (
     <>
-      <table className="hidden md:table min-w-full relative bg-white overflow-hidden rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left text-gray-800">
-        <thead className="bg-blue-100 border-b border-blue-200">
+      <table className="relative hidden min-w-full md:table overflow-hidden bg-white rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left text-gray-800">
+        <thead className="border-b border-blue-200 bg-blue-100">
           <tr>
             <th className="px-4 py-3">날짜</th>
             <th className="px-4 py-3">거리</th>
@@ -61,15 +63,13 @@ export default function RecordTable({
           {records.map((record, index) => (
             <tr
               key={record.id}
-              className={`transition-colors ${
-                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-              } border-t border-gray-200`}
+              className={`border-t border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} transition-colors`}
             >
               <td className="px-4 py-3">{record.date}</td>
               <td className="px-4 py-3">{record.distance} km</td>
               <td className="px-4 py-3">{record.duration}</td>
               <td className="px-4 py-3">{record.pace}</td>
-              <td className="px-4 py-3 flex justify-center items-center">
+              <td className="flex items-center justify-center px-4 py-3">
                 <EditRecordButton
                   record={record}
                   courses={[{ id: record.id, course_name: record.course_name }]}
@@ -88,10 +88,10 @@ export default function RecordTable({
             <button
               type="button"
               onClick={() => setSelectedRecord(record)}
-              className="w-full text-left p-4 bg-white border border-gray-200 rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] cursor-pointer transition hover:bg-gray-100 active:scale-[0.99]"
+              className="w-full rounded-md border border-gray-200 bg-white p-4 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left cursor-pointer transition hover:bg-gray-100 active:scale-[0.99]"
             >
               <div className="flex items-center justify-between">
-                <p className="font-semibold text-gray-800 text-sm">
+                <p className="text-sm font-semibold text-gray-800">
                   {record.course_name}
                 </p>
                 <p className="text-xs text-gray-500">{record.date}</p>
@@ -106,7 +106,7 @@ export default function RecordTable({
                   <span className="font-medium text-gray-600">시간:</span>{' '}
                   {record.duration}
                 </p>
-                <p className="font-medium mt-1">페이스: {record.pace}</p>
+                <p className="mt-1 font-medium">페이스: {record.pace}</p>
               </div>
             </button>
           </li>

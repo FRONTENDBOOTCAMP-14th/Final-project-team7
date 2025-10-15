@@ -1,4 +1,4 @@
-import { RecordClient as CourseRecord } from '@/features/running'
+import { RecordClient as CourseRecord } from '@/app/running-record'
 import { supabase } from '@/lib/supabase/supabase-client'
 
 export default async function RunningPage() {

@@ -4,14 +4,12 @@ import { CircleArrowLeft, Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import InputTimeWithLabel from '@/components/running-record/common/input-time-with-label'
+import DropDown from '@/components/running-record/drop-down'
+import { useModalFocusTrap } from '@/hooks/running-record'
 import { supabase } from '@/lib/supabase/supabase-client'
-
-import { useModalFocusTrap } from '../hooks'
-import type { AddRecordModalProps } from '../types'
-import { calculatePace, isValidRecordForm } from '../utils'
-
-import InputTimeWithLabel from './common/input-time-with-label'
-import DropDown from './drop-down'
+import type { AddRecordModalProps } from '@/types/running-record'
+import { calculatePace, isValidRecordForm } from '@/utils/running-record'
 
 export default function AddRecordModal({
   courses,
@@ -78,25 +76,25 @@ export default function AddRecordModal({
   return (
     <div
       ref={modalRef}
-      className="fixed inset-0 flex items-center justify-center bg-black/30 z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
       role="dialog"
       aria-modal="true"
     >
       <div
         className="
-          bg-white rounded-lg shadow-lg
-          w-[80vw] sm:w-[70vw] md:w-[60vw] lg:w-[50vw]
-          max-w-[800px] min-w-[280px]
-          max-h-[90vh] overflow-y-auto
-          p-5 sm:p-6 md:p-8
-        "
+        overflow-y-auto
+        w-[320px] md:w-[768px] xl:max-w-[1280px]
+        h-[550px] md:max-h-[600px] xl:max-h-[800px]
+        bg-white rounded-lg shadow-lg p-5
+        transition-all
+      "
       >
-        <div className="flex justify-between items-center pb-4">
+        <div className="flex items-center justify-between pb-4">
           <button
             type="button"
             aria-label="닫기"
             onClick={onClose}
-            className="cursor-pointer rounded hover:bg-gray-200 p-1"
+            className="rounded p-1 hover:bg-gray-200 cursor-pointer"
           >
             <CircleArrowLeft size={28} />
           </button>
@@ -109,12 +107,15 @@ export default function AddRecordModal({
         />
 
         <div className="mt-3">
-          <label className="text-gray-700" aria-label="날짜 선택" />
+          <label htmlFor="record-date" className="sr-only">
+            날짜 선택
+          </label>
           <input
+            id="record-date"
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full border border-gray-300 rounded-md p-2 sm:p-3 text-gray-700 cursor-pointer"
+            className="w-full rounded-md border border-gray-300 p-2 text-gray-700 cursor-pointer"
           />
         </div>
 
@@ -128,7 +129,7 @@ export default function AddRecordModal({
           />
         </div>
 
-        <div className="mt-3 flex flex-col gap-2 sm:grid sm:grid-cols-3">
+        <div className="flex flex-col md:grid md:grid-cols-3 mt-3 gap-2">
           <InputTimeWithLabel
             label="시간"
             value={hours}
@@ -153,22 +154,24 @@ export default function AddRecordModal({
         </div>
 
         <div className="mt-4 text-center">
-          <p className="text-sm sm:text-base">km 페이스</p>
+          <p className="text-sm">km 페이스</p>
           <p className="text-lg font-semibold">{pace ?? '--:-- / km'}</p>
         </div>
 
         <button
+          type="button"
           onClick={handleSave}
           disabled={!isFormValid || isSubmitting}
-          className={`w-full mt-5 py-2 sm:py-3 rounded-md transition-colors ${
+          aria-busy={isSubmitting}
+          className={`mt-5 w-full rounded-md py-2 md:py-3 transition-colors ${
             isFormValid
-              ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
+              ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
         >
           {isSubmitting ? (
             <Loader2
-              className="w-5 h-5 animate-spin mx-auto"
+              className="mx-auto h-5 w-5 animate-spin"
               aria-hidden="true"
             />
           ) : (

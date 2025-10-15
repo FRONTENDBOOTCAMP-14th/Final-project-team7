@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 
-import type { RunningRecord } from '../types/record'
+import type { RunningRecord } from '@/types/running-record/record'
 
 export function useRecords(initialRecords: RunningRecord[]) {
   const [records, setRecords] = useState(initialRecords)

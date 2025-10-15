@@ -4,8 +4,7 @@ import { ChevronDown } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { useToggleState } from '@/hooks/use-toggle-state'
-
-import type { CourseOption, DropdownProps } from '../types'
+import type { CourseOption, DropdownProps } from '@/types/running-record'
 
 export default function DropDown({
   courses,
@@ -65,7 +64,6 @@ export default function DropDown({
       onCourseChange(allOptions[focusedIndex].course_name)
       close()
 
-      // 코스 선택 한 후에, 날짜 input에 포커스 이동
       requestAnimationFrame(() => {
         const dateInputfocus =
           document.querySelector<HTMLInputElement>('input[type="date"]')
@@ -100,13 +98,11 @@ export default function DropDown({
         aria-expanded={isOpen}
         onClick={toggle}
         onKeyDown={handleKeyDownOnButton}
-        className="flex relative z-20 justify-between items-center border border-gray-300 bg-white p-3 rounded cursor-pointer transition shadow-[0_0_10px_0_rgba(0,0,0,0.25)]"
+        className="relative z-20 flex items-center justify-between rounded border border-gray-300 bg-white p-3 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] cursor-pointer transition"
       >
         <span aria-label="코스 이름">{selectedCourseLabel}</span>
         <ChevronDown
-          className={`w-4 h-4 transition-transform ${
-            isOpen ? 'rotate-180' : 'rotate-0'
-          }`}
+          className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : 'rotate-0'}`}
           aria-hidden="true"
         />
       </div>
@@ -124,14 +120,11 @@ export default function DropDown({
               role="option"
               aria-selected={selectedCourse === option.course_name}
               tabIndex={focusedIndex === index ? 0 : -1}
-              className={`px-6 py-3 cursor-pointer hover:bg-gray-100 focus-visible:bg-gray-100 ${
-                index < allOptions.length - 1 ? 'border-b border-gray-200' : ''
-              }`}
+              className={`px-6 py-3 cursor-pointer hover:bg-gray-100 focus-visible:bg-gray-100 ${index < allOptions.length - 1 ? 'border-b border-gray-200' : ''}`}
               onClick={() => {
                 onCourseChange(option.course_name)
                 close()
 
-                // ✅ 코스 선택 후 날짜로 포커스 이동
                 requestAnimationFrame(() => {
                   const dateInputfocus =
                     document.querySelector<HTMLInputElement>(

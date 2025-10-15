@@ -2,16 +2,19 @@
 
 import { useState } from 'react'
 
-import { AddRecordButton, DropDown, RecordTable } from '../components/index'
-import { useRecords } from '../hooks'
-import type { CourseOption, RunningRecord } from '../types'
+import {
+  AddRecordButton,
+  DropDown,
+  RecordTable,
+} from '@/components/running-record/index'
+import { useRecords } from '@/hooks/running-record'
+import type { CourseOption, RunningRecord } from '@/types/running-record'
 
 interface CourseRecordProps {
   courses: CourseOption[]
   records: RunningRecord[]
 }
 
-// drop-down, record-table 컴포넌트를 묶어놓은 컨테이너
 export default function RecordContainer({
   courses,
   records,
@@ -22,7 +25,7 @@ export default function RecordContainer({
     updateRecord,
     deleteRecord,
   } = useRecords(records)
-  const [selectedCourse, setSelectedCourse] = useState<string | 'all'>('all')
+  const [selectedCourse, setSelectedCourse] = useState<'all' | string>('all')
 
   const filteredRecords =
     selectedCourse === 'all'
@@ -37,8 +40,8 @@ export default function RecordContainer({
         onCourseChange={courseName => setSelectedCourse(courseName)}
       />
 
-      <div className="flex py-5 items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-800">
+      <div className="flex items-center justify-between py-5">
+        <h2 className="text-gray-800 text-lg font-semibold">
           {selectedCourse === 'all' ? '전체 보기' : null}
         </h2>
         <AddRecordButton courses={courses} onAddSuccess={addRecord} />
