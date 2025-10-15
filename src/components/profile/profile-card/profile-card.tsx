@@ -30,8 +30,8 @@ export default function ProfileCardClient({
           flex 
           relative 
           items-center 
-          gap-4
           w-full max-w-[393px]
+          gap-4
           p-5
           bg-white 
           drop-shadow-[0_0_6px_rgba(0,0,0,0.25)]  
@@ -87,8 +87,8 @@ export default function ProfileCardClient({
       className="
         flex 
         relative
+        items-center
         w-full max-w-[393px]
-        items-center 
         gap-4
         p-5  
         bg-white 

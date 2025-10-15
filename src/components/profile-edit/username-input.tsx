@@ -27,7 +27,7 @@ export default function UsernameInput({
         placeholder="이름을 입력해주세요."
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="p-3 border border-[var(--color-basic-100)] placeholder-[var(--color-basic-200)] rounded-sm"
+        className="p-3 rounded-sm border border-[var(--color-basic-100)] placeholder-[var(--color-basic-200)]"
       />
     </div>
   )

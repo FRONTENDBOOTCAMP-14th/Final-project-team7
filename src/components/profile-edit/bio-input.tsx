@@ -19,7 +19,7 @@ export default function BioInput({ value, onChange }: BioInputProps) {
         placeholder="소개글을 입력해주세요."
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="p-3 h-20 border border-[var(--color-basic-100)] placeholder-[var(--color-basic-200)] rounded-sm resize-none"
+        className="p-3 h-20 rounded-sm border border-[var(--color-basic-100)] placeholder-[var(--color-basic-200)] resize-none"
       />
     </div>
   )

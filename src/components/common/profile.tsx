@@ -20,7 +20,7 @@ export default function Profile({
   return (
     <button
       onClick={onClick}
-      className="overflow-hidden bg-white drop-shadow-[0_0_6px_rgba(0,0,0,0.25)] rounded-full"
+      className="overflow-hidden rounded-full bg-white drop-shadow-[0_0_6px_rgba(0,0,0,0.25)]"
       style={{ width: size, height: size }}
       aria-label="프로필 아이콘"
     >

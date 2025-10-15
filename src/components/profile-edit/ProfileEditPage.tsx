@@ -155,7 +155,7 @@ export default function ProfileEditClient() {
 
   return (
     <form
-      className="flex flex-col w-full justify-center p-4 gap-5 items-center"
+      className="flex flex-col justify-center items-center p-4 w-full gap-5"
       onSubmit={e => {
         e.preventDefault()
         handleSave()

@@ -36,7 +36,7 @@ export default function ProfileEdit({
     <div className="relative w-fit">
       <Profile src={imageUrl ?? undefined} alt="Profile" size={60} />
 
-      <div className="flex items-center justify-center w-4 h-4 absolute bottom-0 right-0 rounded-full bg-white drop-shadow-[0_0_6px_rgba(0,0,0,0.25)]">
+      <div className="flex items-center justify-center absolute w-4 h-4 bottom-0 right-0 rounded-full bg-white drop-shadow-[0_0_6px_rgba(0,0,0,0.25)]">
         <label className="cursor-pointer">
           <Camera className="w-3 h-3 text-gray-600" strokeWidth={1.5} />
           <input

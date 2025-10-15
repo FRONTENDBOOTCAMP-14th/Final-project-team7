@@ -89,14 +89,14 @@ export default function ProfilePageClient() {
 
   if (loading) {
     return (
-      <section className="flex flex-col w-full p-5 gap-5 items-center">
+      <section className="flex flex-col items-center w-full p-5 gap-5">
         <div className="animate-pulse">로딩 중...</div>
       </section>
     )
   }
 
   return (
-    <section className="flex flex-col w-full p-5 gap-5 items-center">
+    <section className="flex flex-col items-center w-full p-5 gap-5">
       <ProfileCardClient profileData={profileData} editable={true} />
       <EmailCardClient email={email} />
       <SignoutButton onClick={handleSignOut} />

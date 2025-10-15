@@ -16,7 +16,7 @@ export default function SaveButton({
     <button
       type={type}
       disabled={loading}
-      className={`w-full max-w-[313px] p-3 text-white font-medium rounded-lg 
+      className={`w-full max-w-[313px] p-3 rounded-lg text-white font-medium
         ${loading ? 'bg-gray-400' : 'bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)]'}`}
     >
       {loading ? '저장 중...' : label}

@@ -8,7 +8,7 @@ interface EmailCardClientProps {
 
 export default function EmailCardClient({ email }: EmailCardClientProps) {
   return (
-    <div className="w-full max-w-[363px] p-5 border-2 rounded-md border-[var(--color-basic-100)]">
+    <div className="w-full max-w-[363px] p-5 rounded-md border-2 border-[var(--color-basic-100)]">
       <h3 className="mb-3 text-base font-medium text-[var(--color-basic-300)]">
         이메일 정보
       </h3>
