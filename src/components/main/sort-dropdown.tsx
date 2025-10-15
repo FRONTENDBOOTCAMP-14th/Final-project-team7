@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 
 import { SORT, type SortKey } from '@/constants/main/sort'
+import { tw } from '@/utils/tw'
 
 export function SortDropdown({
   value,
@@ -23,7 +24,12 @@ export function SortDropdown({
     <div className="relative inline-block text-left">
       <button
         onClick={() => setOpen(open => !open)}
-        className="inline-flex items-center justify-between w-32 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none"
+        className={tw`
+          inline-flex items-center justify-between
+          w-32 px-4 py-2 border border-gray-300 rounded-lg
+          bg-white shadow-sm
+          hover:bg-gray-50 focus:outline-none
+          `}
       >
         <span>{SORT[value]}</span>
         <ChevronDown className="w-4 h-4 ml-2 text-gray-500" />

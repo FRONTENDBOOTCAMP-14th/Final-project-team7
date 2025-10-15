@@ -1,4 +1,5 @@
 import type { Course } from '@/lib/supabase'
+import { tw } from '@/utils/tw'
 
 import DetailButton from './detail-button'
 import KakaoMap from './kakao-map'
@@ -17,7 +18,13 @@ export default function CourseCard({
   const day = course.created_at.slice(8, 10)
 
   return (
-    <div className="flex flex-col items-start bg-white mx-auto mb-4 p-6 w-[362px] min-w-[288px] h-[360px] rounded-md shrink-0 shadow-[0_0_10px_0_rgba(0,0,0,0.25)]">
+    <div
+      className={tw`
+        flex flex-col items-start shrink-0
+        mx-auto mb-4 p-6 w-[362px] min-w-[288px] h-[360px] rounded-md
+        bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+        `}
+    >
       <h3 className="text-[#202020] text-[18px] font-semibold mb-2.5">
         {course.course_name}
       </h3>

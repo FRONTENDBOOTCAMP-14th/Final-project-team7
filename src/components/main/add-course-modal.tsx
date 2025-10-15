@@ -4,6 +4,8 @@ import { CircleArrowLeft, Upload } from 'lucide-react'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 
+import { tw } from '@/utils/tw'
+
 import DrawMap from './draw-map'
 
 interface AddCourseModalProps {
@@ -67,7 +69,10 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               value={courseName}
               onChange={e => setCourseName(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
+              className={tw`
+                w-full border border-gray-300 rounded-md px-3 py-2 outline-none
+                focus:ring-2 focus:ring-blue-400
+                `}
             />
           </div>
 
@@ -78,7 +83,10 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               value={courseDesc}
               name="course_description"
               onChange={e => setCourseDesc(e.target.value)}
-              className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+              className={tw`
+                w-full border border-gray-200 rounded-md px-3 py-2
+                text-sm text-gray-700
+                outline-none focus:ring-2 focus:ring-blue-400 resize-none`}
               rows={3}
             />
           </div>
@@ -88,7 +96,11 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
             onClick={() => fileInputRef.current?.click()}
             onDrop={handleDrop}
             onDragOver={e => e.preventDefault()}
-            className="border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center py-2 text-gray-500 cursor-pointer hover:bg-gray-50 transition"
+            className={tw`
+              flex flex-col items-center justify-center
+              border-2 border-dashed border-gray-300 rounded-md py-2
+              text-gray-500
+              cursor-pointer hover:bg-gray-50 transition`}
           >
             {imagePreview ? (
               <Image
