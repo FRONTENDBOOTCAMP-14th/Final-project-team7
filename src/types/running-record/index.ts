@@ -1,3 +1,3 @@
 export * from './course'
-export * from './dropdown'
-export * from './record'
+export * from './dropdown-props'
+export * from './record-table-props'

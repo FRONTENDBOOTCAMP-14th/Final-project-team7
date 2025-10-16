@@ -1,2 +1,3 @@
-export * from './pace-utils'
-export * from './validation-utils'
+export * from './calculate-pace'
+export * from './parse-duration'
+export * from './valid-record-form'

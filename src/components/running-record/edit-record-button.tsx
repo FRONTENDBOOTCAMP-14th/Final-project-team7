@@ -1,4 +1,3 @@
-// edit-record-button.tsx
 'use client'
 
 import { Loader2, Pencil } from 'lucide-react'
@@ -12,7 +11,7 @@ const EditRecordModal = dynamic(() => import('./edit-record-modal'), {
   ssr: false,
   loading: () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="rounded-lg p-6 bg-white shadow-md text-gray-700">
+      <div className="p-6 rounded-lg bg-white shadow-md text-gray-700">
         <Loader2 className="w-5 h-5 mx-auto animate-spin" aria-hidden="true" />
       </div>
     </div>
@@ -39,7 +38,6 @@ export default function EditRecordButton({
 
   const handleClose = () => {
     setIsModalOpen(false)
-    // 모달 닫힌 뒤 트리거 버튼으로 포커스 복원 (접근성)
     requestAnimationFrame(() => buttonRef.current?.focus())
   }
 
@@ -49,7 +47,7 @@ export default function EditRecordButton({
         ref={buttonRef}
         type="button"
         onClick={handleOpen}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-gray-700 transition cursor-pointer"
         aria-haspopup="dialog"
         aria-expanded={isModalOpen}
       >

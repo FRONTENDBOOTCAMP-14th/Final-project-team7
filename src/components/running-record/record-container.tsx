@@ -24,7 +24,9 @@ export default function RecordContainer({
     addRecord,
     updateRecord,
     deleteRecord,
+    isLoading,
   } = useRecords(records)
+
   const [selectedCourse, setSelectedCourse] = useState<'all' | string>('all')
 
   const filteredRecords =
@@ -51,6 +53,7 @@ export default function RecordContainer({
         records={filteredRecords}
         onUpdateSuccess={updateRecord}
         onDeleteSuccess={deleteRecord}
+        isLoading={isLoading}
       />
     </>
   )

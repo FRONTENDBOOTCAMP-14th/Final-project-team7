@@ -1,33 +1,27 @@
 'use client'
 
 import { Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import {
-  EditRecordButton,
-  EditRecordModal,
-} from '@/components/running-record/index'
+import { EditRecordButton, EditRecordModal } from '@/components/running-record'
 import type { Tables } from '@/lib/supabase/database.types'
 import type { RecordTableProps } from '@/types/running-record'
 
 type RunningRecord = Tables<'running_record'>
 
+interface RecordTableExtendedProps extends RecordTableProps {
+  isLoading: boolean
+}
+
 export default function RecordTable({
   records,
   onUpdateSuccess,
   onDeleteSuccess,
-}: RecordTableProps) {
+  isLoading,
+}: RecordTableExtendedProps) {
   const [selectedRecord, setSelectedRecord] = useState<RunningRecord | null>(
     null
   )
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    if (!records) return
-    setIsLoading(true)
-    const recordLoadingRender = requestAnimationFrame(() => setIsLoading(false))
-    return () => cancelAnimationFrame(recordLoadingRender)
-  }, [records])
 
   if (isLoading) {
     return (
@@ -48,8 +42,8 @@ export default function RecordTable({
 
   return (
     <>
-      <table className="relative hidden min-w-full md:table overflow-hidden bg-white rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left text-gray-800">
-        <thead className="border-b border-blue-200 bg-blue-100">
+      <table className="relative hidden md:table min-w-full overflow-hidden bg-white rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left text-gray-800">
+        <thead className="bg-blue-100 border-b border-blue-200">
           <tr>
             <th className="px-4 py-3">날짜</th>
             <th className="px-4 py-3">거리</th>
@@ -63,13 +57,15 @@ export default function RecordTable({
           {records.map((record, index) => (
             <tr
               key={record.id}
-              className={`border-t border-gray-200 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} transition-colors`}
+              className={`transition-colors ${
+                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+              } border-t border-gray-200`}
             >
               <td className="px-4 py-3">{record.date}</td>
               <td className="px-4 py-3">{record.distance} km</td>
               <td className="px-4 py-3">{record.duration}</td>
               <td className="px-4 py-3">{record.pace}</td>
-              <td className="flex items-center justify-center px-4 py-3">
+              <td className="flex justify-center items-center px-4 py-3">
                 <EditRecordButton
                   record={record}
                   courses={[{ id: record.id, course_name: record.course_name }]}
@@ -88,10 +84,10 @@ export default function RecordTable({
             <button
               type="button"
               onClick={() => setSelectedRecord(record)}
-              className="w-full rounded-md border border-gray-200 bg-white p-4 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left cursor-pointer transition hover:bg-gray-100 active:scale-[0.99]"
+              className="w-full p-4 bg-white border border-gray-200 rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-left transition active:scale-[0.99]"
             >
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-gray-800">
+                <p className="font-semibold text-gray-800 text-sm">
                   {record.course_name}
                 </p>
                 <p className="text-xs text-gray-500">{record.date}</p>
