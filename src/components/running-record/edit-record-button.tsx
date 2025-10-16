@@ -47,7 +47,7 @@ export default function EditRecordButton({
         ref={buttonRef}
         type="button"
         onClick={handleOpen}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-gray-700 transition cursor-pointer"
         aria-haspopup="dialog"
         aria-expanded={isModalOpen}
       >
