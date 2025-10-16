@@ -10,6 +10,25 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
   const [sdkReady, setSdkReady] = useState(false)
   const mapRef = useRef<kakao.maps.Map | null>(null)
   const polylineRef = useRef<kakao.maps.Polyline | null>(null)
+  const [mapReady, setMapReady] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).kakao?.maps) {
+      setSdkReady(true)
+    } else {
+      const w = window as any
+      if (w?.kakao?.maps) setSdkReady(true)
+      else {
+        const iv = setInterval(() => {
+          if (w?.kakao?.maps) {
+            clearInterval(iv)
+            setSdkReady(true)
+          }
+        }, 50)
+        return () => clearInterval(iv)
+      }
+    }
+  }, [])
 
   const avgSource = useMemo(
     () =>
@@ -29,7 +48,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     },
     { lat: 0, lng: 0 }
   )
-  const count = avgSource.length
+  const count = Math.max(1, avgSource.length)
   const CenterLat = sum.lat / count
   const CenterLng = sum.lng / count
 
@@ -39,26 +58,37 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     if (!containerRef.current) return
     if (mapRef.current) return // 이미 초기화됨
 
-    window.kakao.maps.load(() => {
+    const start = () => {
       const rect = containerRef.current?.getBoundingClientRect()
-      if (rect?.height === 0) {
-        return
-      }
-
+      if (!rect || rect.height === 0) return
       const mapOption = {
         center: new window.kakao.maps.LatLng(CenterLat, CenterLng),
         level: 7,
       }
-
       mapRef.current = new window.kakao.maps.Map(
         containerRef.current!,
         mapOption
       )
-    })
+      setMapReady(true)
+    }
+    window.kakao.maps.load(start)
   }, [sdkReady])
 
   useEffect(() => {
     initMap()
+  }, [initMap])
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const el = containerRef.current
+    const ro = new ResizeObserver(() => {
+      const h = el.getBoundingClientRect().height
+      if (h > 0 && !mapRef.current) {
+        initMap() // 높이가 생기면 지도 생성 재시도
+      }
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
   }, [initMap])
 
   const pointsToPath = useCallback((points: Path) => {
@@ -68,6 +98,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
+    if (!mapReady) return
     if (!coordData?.length) return
 
     // 이전 폴리라인 제거
@@ -100,18 +131,18 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
         polylineRef.current = null
       }
     }
-  }, [coordData, pointsToPath])
+  }, [coordData, mapReady, pointsToPath])
 
   return (
     <>
-      <Script
+      {/* <Script
         id="kakao-maps-sdk"
         src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JS_KEY}&autoload=false&libraries=drawing`}
         strategy="afterInteractive"
         onReady={() => {
           setSdkReady(true)
         }}
-      />
+      /> */}
       <div
         ref={containerRef}
         style={{

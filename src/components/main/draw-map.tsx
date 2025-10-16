@@ -1,7 +1,6 @@
 'use client'
 
 import { produce } from 'immer'
-import Script from 'next/script'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Path } from '@/features/main/map-fetching/types'
@@ -45,6 +44,21 @@ export default function DrawMap({
     () => ({ lat: 37.570447943807935, lng: 126.97934326898095 }),
     []
   )
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.kakao?.maps) {
+      setSdkReady(true)
+      return
+    }
+
+    const iv = setInterval(() => {
+      if (window.kakao?.maps) {
+        clearInterval(iv)
+        setSdkReady(true)
+      }
+    }, 100)
+    return () => clearInterval(iv)
+  }, [])
 
   /** 지도 & DrawingManager 초기화 */
   const initMapAndDrawing = useCallback(() => {
@@ -164,14 +178,6 @@ export default function DrawMap({
 
   return (
     <div className="z-50">
-      {/* Kakao SDK */}
-      <Script
-        id="kakao-maps-sdk"
-        src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JS_KEY}&autoload=false&libraries=drawing`}
-        strategy="afterInteractive"
-        onReady={() => setSdkReady(true)}
-      />
-
       <div className="space-y-3">
         {/* 지도 컨테이너 */}
         <div
