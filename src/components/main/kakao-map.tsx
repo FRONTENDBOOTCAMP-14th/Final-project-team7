@@ -1,12 +1,37 @@
 'use client'
 
 import Script from 'next/script'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-export default function KakaoMap() {
+import type { Path } from '@/features/main/map-fetching/types.ts'
+
+export default function KakaoMap({ coordData }: { coordData: Path }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [sdkReady, setSdkReady] = useState(false)
   const mapRef = useRef<kakao.maps.Map | null>(null)
+  const polylineRef = useRef<kakao.maps.Polyline | null>(null)
+
+  const avgSource = useMemo(
+    () =>
+      coordData.length > 1 &&
+      coordData[0].lat === coordData.at(-1)!.lat &&
+      coordData[0].lng === coordData.at(-1)!.lng
+        ? coordData.slice(0, -1)
+        : coordData,
+    [coordData]
+  )
+
+  const sum = avgSource.reduce(
+    (acc, cur) => {
+      acc.lat += cur.lat
+      acc.lng += cur.lng
+      return acc
+    },
+    { lat: 0, lng: 0 }
+  )
+  const count = avgSource.length
+  const CenterLat = sum.lat / count
+  const CenterLng = sum.lng / count
 
   const initMap = useCallback(() => {
     if (!sdkReady) return
@@ -21,8 +46,8 @@ export default function KakaoMap() {
       }
 
       const mapOption = {
-        center: new window.kakao.maps.LatLng(33.450701, 126.570667),
-        level: 3,
+        center: new window.kakao.maps.LatLng(CenterLat, CenterLng),
+        level: 7,
       }
 
       mapRef.current = new window.kakao.maps.Map(
@@ -32,10 +57,50 @@ export default function KakaoMap() {
     })
   }, [sdkReady])
 
-  // SDK가 로드된 뒤에만 init 시도
   useEffect(() => {
     initMap()
   }, [initMap])
+
+  const pointsToPath = useCallback((points: Path) => {
+    return points.map(p => new kakao.maps.LatLng(p.lat, p.lng))
+  }, [])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    if (!coordData?.length) return
+
+    // 이전 폴리라인 제거
+    if (polylineRef.current) {
+      polylineRef.current.setMap(null)
+      polylineRef.current = null
+    }
+    const path = pointsToPath(coordData)
+
+    const polyline = new kakao.maps.Polyline({
+      map,
+      path,
+      strokeColor: '#00E500', // 필요 시 props로 빼기
+      strokeOpacity: 0.9,
+      strokeStyle: 'solid',
+      strokeWeight: 4,
+    })
+    polylineRef.current = polyline
+
+    if (path.length > 0) {
+      const bounds = new kakao.maps.LatLngBounds()
+      path.forEach(latlng => bounds.extend(latlng))
+      map.setBounds(bounds)
+    }
+
+    // 클린업: coordData 변경/언마운트 시 기존 선 제거
+    return () => {
+      if (polylineRef.current) {
+        polylineRef.current.setMap(null)
+        polylineRef.current = null
+      }
+    }
+  }, [coordData, pointsToPath])
 
   return (
     <>
@@ -43,8 +108,7 @@ export default function KakaoMap() {
         id="kakao-maps-sdk"
         src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JS_KEY}&autoload=false&libraries=drawing`}
         strategy="afterInteractive"
-        onLoad={() => {
-          // console.log('[KakaoMap] SDK loaded')
+        onReady={() => {
           setSdkReady(true)
         }}
       />
@@ -52,7 +116,7 @@ export default function KakaoMap() {
         ref={containerRef}
         style={{
           width: '100%',
-          height: 140,
+          height: '100%',
           border: '1px solid #e5e7eb',
           borderRadius: 8,
         }}

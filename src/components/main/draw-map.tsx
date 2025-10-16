@@ -4,6 +4,7 @@ import { produce } from 'immer'
 import Script from 'next/script'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import type { Path } from '@/features/main/map-fetching/types'
 import { useGeolocation } from '@/hooks/main/useGeolocation'
 
 /** kakao 전역 선언 (TS 에러 방지) */
@@ -22,7 +23,11 @@ interface DrawingPoint {
 /** 오버레이 타입(Polyline)만 저장할거라 any로 두되, 필요하면 좁혀도 됨 */
 type OverlayAny = any
 
-export default function DrawMap() {
+export default function DrawMap({
+  onSavePaths,
+}: {
+  onSavePaths: (paths: Path[]) => void
+}) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<any | null>(null) // kakao.maps.Map
   const managerRef = useRef<any | null>(null) // kakao.maps.drawing.DrawingManager
@@ -46,7 +51,7 @@ export default function DrawMap() {
     if (!sdkReady) return
     if (!window.kakao) return
     if (!containerRef.current) return
-    if (mapRef.current) return // 이미 초기화됨
+    if (mapRef.current) return
 
     window.kakao.maps.load(() => {
       // 컨테이너가 실제 크기를 가지는지 확인
@@ -147,45 +152,14 @@ export default function DrawMap() {
       data[OverlayType.POLYLINE] ?? []
 
     // [[{lat,lng}, ...], ...] 형태
-    const paths = lines.map(line =>
+    const paths: Path[] = lines.map(line =>
       line.points.map(point => ({ lat: point.y, lng: point.x }))
     )
+    onSavePaths(paths)
+    // console.log(paths)
 
     // TODO: Supabase 저장 로직 연결 가능
     return paths
-  }
-
-  /** 모든 오버레이 제거 + 현재 그리기 취소 (immer 사용) */
-  const clearAll = () => {
-    if (!managerRef.current) return
-
-    // 현재 그리고 있는 동작 취소
-    managerRef.current.cancel()
-
-    // 라이브러리 레벨 제거 시도
-    try {
-      const { OverlayType } = window.kakao.maps.drawing
-      managerRef.current.remove(OverlayType.POLYLINE)
-    } catch {
-      // (구버전/환경에 따라 remove가 없을 수 있으니) 수동 제거 fallback
-    }
-
-    // 수집해둔 overlay들도 안전하게 제거
-    setOverlays(prev =>
-      produce(prev, draft => {
-        draft.forEach(overlay => {
-          try {
-            overlay.setMap(null)
-          } catch {
-            /* noop */
-          }
-        })
-        // draft를 비우는 2가지 방법 중 택1
-        // 1) 길이 0으로
-        draft.length = 0
-        // 2) return [] // (immer에서 반환으로 대체 가능)
-      })
-    )
   }
 
   return (
@@ -195,17 +169,10 @@ export default function DrawMap() {
         id="kakao-maps-sdk"
         src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JS_KEY}&autoload=false&libraries=drawing`}
         strategy="afterInteractive"
-        onLoad={() => setSdkReady(true)}
+        onReady={() => setSdkReady(true)}
       />
 
       <div className="space-y-3">
-        {/* 컨트롤 패널 */}
-        {/* <div className="flex flex-wrap items-center gap-2">
-          <span className="ml-auto text-xs text-gray-500">
-            overlays: {overlays.length}
-          </span>
-        </div> */}
-
         {/* 지도 컨테이너 */}
         <div
           ref={containerRef}
@@ -225,15 +192,7 @@ export default function DrawMap() {
               onClick={extractPolylineData}
               className="px-2 py-1.5 rounded-md border text-sm bg-white hover:bg-gray-100 hover:cursor-pointer"
             >
-              경로 데이터 추출
-            </button>
-
-            <button
-              type="button"
-              onClick={clearAll}
-              className="px-2 py-1.5 rounded-md border text-sm bg-white hover:bg-gray-100 hover:cursor-pointer"
-            >
-              지우기
+              경로 저장
             </button>
           </div>
           <button

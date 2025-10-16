@@ -3,6 +3,8 @@ import Image from 'next/image'
 
 import type { Course } from '@/lib/supabase'
 
+import KakaoMap from './kakao-map'
+
 interface CourseDetailModalProps {
   onClose: () => void
   course: Course
@@ -17,8 +19,6 @@ export default function CourseDetailModal({
   const year = course.created_at.slice(0, 4)
   const month = course.created_at.slice(5, 7)
   const day = course.created_at.slice(8, 10)
-
-  const path = normalizePath(course.course_map)
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-xs z-50">
@@ -59,31 +59,11 @@ export default function CourseDetailModal({
               </span>
             </div>
           )}
-          {path}
+          <div className="mx-auto my-2 w-[314px] h-[300px]">
+            <KakaoMap coordData={course.course_map} />
+          </div>
         </div>
       </div>
     </div>
   )
-}
-
-interface LatLng {
-  lat: number
-  lng: number
-}
-type CoursePath = LatLng[][]
-
-function normalizePath(input: unknown): CoursePath | null {
-  if (!input) return null
-  // 이미 배열이면 그대로
-  if (Array.isArray(input)) return input as CoursePath
-  // 문자열(JSON)일 수 있음
-  if (typeof input === 'string') {
-    try {
-      const parsed = JSON.parse(input)
-      return Array.isArray(parsed) ? (parsed as CoursePath) : null
-    } catch {
-      return null
-    }
-  }
-  return null
 }

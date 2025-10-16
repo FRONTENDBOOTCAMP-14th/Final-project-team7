@@ -1,9 +1,11 @@
 'use client'
 
-import { CircleArrowLeft, Upload } from 'lucide-react'
+import { CircleArrowLeft, Info, Upload } from 'lucide-react'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 
+import { addCourse } from '@/features/main/course-crud/courses-crud'
+import type { Path } from '@/features/main/map-fetching/types'
 import { tw } from '@/utils/tw'
 
 import DrawMap from './draw-map'
@@ -17,6 +19,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
   const [courseDesc, setCourseDesc] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [drawingMode, setDrawingMode] = useState(false)
+  const [paths, setPaths] = useState<Path[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,11 +43,13 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // TODO: supabase insert 로직 추가 예정
-    onClose()
-  }
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   // TODO: supabase insert 로직 추가 예정
+  //   const formData = new FormData(e.currentTarget)
+  //   console.log(formData)
+  //   onClose()
+  // }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-xs z-50">
@@ -59,7 +64,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
             <CircleArrowLeft />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
+        <form onSubmit={addCourse} className="p-5 flex flex-col gap-4">
           {/* 코스명 */}
           <div>
             <input
@@ -128,8 +133,14 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
 
           {/* 경로 그리기 */}
           <div className="bg-gray-300 rounded-md text-center text-gray-600">
+            <input
+              type="hidden"
+              name="course_map"
+              value={JSON.stringify(paths)}
+              readOnly
+            />
             {drawingMode ? (
-              <DrawMap />
+              <DrawMap onSavePaths={setPaths} />
             ) : (
               <button
                 type="button"
@@ -139,6 +150,14 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
                 경로 추가하기
               </button>
             )}
+          </div>
+
+          <div className="flex gap-2">
+            <Info />
+            <p className="text-gray-500 text-[14px] ">
+              지점을 클릭해 경로를 그리고, '경로 저장' 버튼을 누르면
+              경로데이터가 저장됩니다.
+            </p>
           </div>
 
           {/* 저장하기 버튼 */}

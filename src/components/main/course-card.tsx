@@ -4,8 +4,6 @@ import { tw } from '@/utils/tw'
 import DetailButton from './detail-button'
 import KakaoMap from './kakao-map'
 
-// import RecentRecord from './recent-record'
-
 export default function CourseCard({
   course,
   onOpenDetail,
@@ -32,10 +30,10 @@ export default function CourseCard({
         {course.course_desc}
       </p>
       <DetailButton onOpen={onOpenDetail} />
-      <div className="w-[314px]">
-        <KakaoMap />
+      <div className="w-[314px] h-[140px]">
+        <KakaoMap coordData={course.course_map} />
       </div>
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-12">
         <span className="absolute text-gray-400 font-medium text-[14px] right-0 bottom-0">{`코스 생성 : ${year}년 ${month}월 ${day}일`}</span>
       </div>
     </div>
