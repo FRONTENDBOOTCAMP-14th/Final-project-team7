@@ -11,3 +11,10 @@ export interface GeoCoords {
   longitude: number
   accuracy?: number
 }
+
+export interface LatLng {
+  lat: number
+  lng: number
+}
+
+export type Path = LatLng[]
