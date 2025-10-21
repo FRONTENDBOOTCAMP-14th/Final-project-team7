@@ -1,5 +1,3 @@
-'use client'
-
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -18,7 +16,7 @@ interface ProfileUpdateData {
   profile_image_url?: string | null
 }
 
-export function useProfileEdit() {
+export default function useProfileEdit() {
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [bio, setBio] = useState('')

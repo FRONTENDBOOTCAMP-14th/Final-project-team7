@@ -1,12 +1,12 @@
 'use client'
 
 import BioInput from '@/components/profile-edit/bio-input'
-import ProfileImgEdit from '@/components/profile-edit/profile-edit'
+import ProfileImgEdit from '@/components/profile-edit/profile-img-edit'
 import SaveButton from '@/components/profile-edit/save-button'
 import UsernameInput from '@/components/profile-edit/username-input'
-import { useProfileEdit } from '@/hooks/profile/use-profile-edit'
+import useProfileEdit from '@/hooks/profile/use-profile-edit'
 
-export default function ProfileEdit() {
+export default function ProfileEditClient() {
   const {
     username,
     bio,

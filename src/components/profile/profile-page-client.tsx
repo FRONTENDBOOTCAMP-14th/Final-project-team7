@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import EmailCardClient from '@/components/profile/email-card'
 import ProfileCard from '@/components/profile/profile-card/profile-card'
 import SignoutButton from '@/components/profile/signout-button'
-import { useProfileData } from '@/hooks/profile/use-profile'
+import useProfileData from '@/hooks/profile/use-profile'
 
 import '@/styles/main.css'
 

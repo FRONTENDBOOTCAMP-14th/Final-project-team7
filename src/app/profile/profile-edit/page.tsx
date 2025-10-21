@@ -1,5 +1,5 @@
-import ProfileEdit from '@/components/profile-edit/profile-edit-page'
+import ProfileEditClient from '@/components/profile-edit/profile-edit-client'
 
 export default function ProfileEditPage() {
-  return <ProfileEdit />
+  return <ProfileEditClient />
 }

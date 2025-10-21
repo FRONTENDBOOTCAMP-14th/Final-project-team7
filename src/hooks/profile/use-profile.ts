@@ -1,12 +1,10 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { ProfileData } from '@/types/profile/profile'
 
-export function useProfileData() {
+export default function useProfileData() {
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [email, setEmail] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
