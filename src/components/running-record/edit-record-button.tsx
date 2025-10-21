@@ -4,14 +4,14 @@ import { Loader2, Pencil } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
 
-import type { CourseOption, RunningRecord } from '@/types/running-record'
+import type { CourseOption } from '@/types/running-record/course'
+import type { RunningRecord } from '@/types/running-record/record-table-props'
 
-// 모달 컴포넌트 지연 로딩 (클라이언트 전용)
 const EditRecordModal = dynamic(() => import('./edit-record-modal'), {
   ssr: false,
   loading: () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="p-6 rounded-lg bg-white shadow-md text-gray-700">
+      <div className="p-6 bg-white rounded-lg shadow-md text-gray-700">
         <Loader2 className="w-5 h-5 mx-auto animate-spin" aria-hidden="true" />
       </div>
     </div>
@@ -47,7 +47,7 @@ export default function EditRecordButton({
         ref={buttonRef}
         type="button"
         onClick={handleOpen}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-gray-700 transition cursor-pointer"
+        className="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-gray-700 transition cursor-pointer"
         aria-haspopup="dialog"
         aria-expanded={isModalOpen}
       >

@@ -1,7 +1,0 @@
-export { default as AddRecordButton } from './add-record-button'
-export { default as AddRecordModal } from './add-record-modal'
-export { default as DropDown } from './drop-down'
-export { default as EditRecordButton } from './edit-record-button'
-export { default as EditRecordModal } from './edit-record-modal'
-export { default as RecordContainer } from './record-container'
-export { default as RecordTable } from './record-table'

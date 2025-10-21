@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 
-import {
-  AddRecordButton,
-  DropDown,
-  RecordTable,
-} from '@/components/running-record/index'
-import { useRecords } from '@/hooks/running-record'
-import type { CourseOption, RunningRecord } from '@/types/running-record'
+import { useRecords } from '@/hooks/running-record/use-records'
+import type { CourseOption } from '@/types/running-record/course'
+import type { RunningRecord } from '@/types/running-record/record-table-props'
+
+import AddRecordButton from './add-record-button'
+import DropDown from './drop-down'
+import RecordTable from './record-table'
 
 interface CourseRecordProps {
   courses: CourseOption[]
@@ -37,7 +37,6 @@ export default function RecordContainer({
   return (
     <>
       <DropDown
-        courses={courses}
         selectedCourse={selectedCourse}
         onCourseChange={courseName => setSelectedCourse(courseName)}
       />

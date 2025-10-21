@@ -1,5 +1,3 @@
-'use client'
-
 import { useCallback, useEffect, useState } from 'react'
 
 import { supabase } from '@/lib/supabase/supabase-client'
@@ -13,9 +11,21 @@ export function useRecords(initialRecords: RunningRecord[]) {
     const fetchRecords = async () => {
       setIsLoading(true)
 
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser()
+
+      if (userError || !user) {
+        setRecords([])
+        setIsLoading(false)
+        return
+      }
+
       const { data, error } = await supabase
         .from('running_record')
         .select('*')
+        .eq('user_id', user.id)
         .order('date', { ascending: false })
 
       if (!error && data) {

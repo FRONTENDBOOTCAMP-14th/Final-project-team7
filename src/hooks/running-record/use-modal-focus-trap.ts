@@ -1,14 +1,5 @@
-'use client'
-
 import { useEffect } from 'react'
 
-/**
- * 모달 접근성 포커스 트랩 훅
- * - body 스크롤 잠금
- * - Tab 포커스 내부 순환
- * - ESC로 닫기
- * - DropDown에 초기 포커스
- */
 export function useModalFocusTrap(
   modalRef: React.RefObject<HTMLDivElement | null>,
   onClose: () => void
@@ -63,15 +54,33 @@ export function useModalFocusTrap(
       }
 
       if (e.key === 'Escape') {
+        const openDropdown =
+          modal.querySelector('[role="listbox"]') ??
+          modal.querySelector('[aria-expanded="true"]')
+        if (openDropdown) {
+          e.stopPropagation()
+          const button = modal.querySelector('[aria-haspopup="listbox"]')
+          if (button instanceof HTMLElement) button.focus()
+          return
+        }
+
         e.preventDefault()
         onClose()
       }
     }
 
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modal && e.target instanceof Node && !modal.contains(e.target)) {
+        onClose()
+      }
+    }
+
     document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('mousedown', handleClickOutside)
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('mousedown', handleClickOutside)
       document.body.style.overflow = originalOverflow
       previousActiveElement?.focus()
     }
