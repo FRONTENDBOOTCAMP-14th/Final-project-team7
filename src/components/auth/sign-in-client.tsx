@@ -1,6 +1,6 @@
 'use client'
 
-import { useSignIn } from '@/hooks/auth/use-sign-in'
+import useSignIn from '@/hooks/auth/use-sign-in'
 import '@/styles/main.css'
 
 export default function SignInClient() {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useSignUp } from '@/hooks/auth/use-sign-out'
+import useSignUp from '@/hooks/auth/use-sign-out'
 import '@/styles/main.css'
 
 export default function SignUpClient() {
