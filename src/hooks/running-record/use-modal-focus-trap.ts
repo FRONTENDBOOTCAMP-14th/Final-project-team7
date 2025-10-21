@@ -1,6 +1,13 @@
 import { useEffect } from 'react'
 
-export function useModalFocusTrap(
+/**
+ * 모달 접근성 포커스 트랩 훅
+ * - body 스크롤 잠금
+ * - Tab 포커스 내부 순환
+ * - ESC로 닫기
+ * - DropDown에 초기 포커스
+ */
+export default function useModalFocusTrap(
   modalRef: React.RefObject<HTMLDivElement | null>,
   onClose: () => void
 ) {

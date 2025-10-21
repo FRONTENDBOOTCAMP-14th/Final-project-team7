@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { RunningRecord } from '@/types/running-record/record-table-props'
 
-export function useRecords(initialRecords: RunningRecord[]) {
+export default function useRecords(initialRecords: RunningRecord[]) {
   const [records, setRecords] = useState(initialRecords)
   const [isLoading, setIsLoading] = useState(true)
 
