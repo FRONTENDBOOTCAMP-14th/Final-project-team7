@@ -1,5 +1,3 @@
-'use client'
-
 import { useRouter } from 'next/navigation'
 import type { FormEvent } from 'react'
 import { useState } from 'react'
@@ -7,7 +5,7 @@ import { toast } from 'sonner'
 
 import { supabase } from '@/lib/supabase/supabase-client'
 
-export function useSignIn() {
+export default function useSignIn() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

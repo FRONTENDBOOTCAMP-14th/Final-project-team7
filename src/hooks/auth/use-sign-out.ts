@@ -1,12 +1,10 @@
-'use client'
-
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { supabase } from '@/lib/supabase/supabase-client'
 
-export function useSignUp() {
+export default function useSignUp() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
