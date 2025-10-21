@@ -23,9 +23,9 @@ interface DrawingPoint {
 type OverlayAny = any
 
 export default function DrawMap({
-  onSavePaths,
+  onSavePath,
 }: {
-  onSavePaths: (paths: Path[]) => void
+  onSavePath: (path: Path) => void
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<any | null>(null) // kakao.maps.Map
@@ -60,15 +60,19 @@ export default function DrawMap({
     return () => clearInterval(iv)
   }, [])
 
-  /** 지도 & DrawingManager 초기화 */
   const initMapAndDrawing = useCallback(() => {
     if (!sdkReady) return
     if (!window.kakao) return
     if (!containerRef.current) return
     if (mapRef.current) return
 
+    const el = containerRef.current
+    let mounted = true
+
     window.kakao.maps.load(() => {
-      // 컨테이너가 실제 크기를 가지는지 확인
+      if (!mounted) return
+      if (!el) return
+
       const rect = containerRef.current!.getBoundingClientRect()
       if (rect.height === 0) return
 
@@ -117,6 +121,10 @@ export default function DrawMap({
         )
       })
     })
+
+    return () => {
+      mounted = false
+    }
   }, [sdkReady, coords, DEFAULT_CENTER])
 
   useEffect(() => {
@@ -127,16 +135,24 @@ export default function DrawMap({
     if (!containerRef.current) return
     if (!mapRef.current || !window.kakao) return
 
-    const center = mapRef.current.getCenter()
-    const obs = new ResizeObserver(() => {
-      // 컨테이너가 0이 아니면 레이아웃 갱신
-      const rect = containerRef.current!.getBoundingClientRect()
-      if (rect.width === 0 || rect.height === 0) return
-      mapRef.current!.relayout()
-      mapRef.current!.setCenter(center)
-    })
-    obs.observe(containerRef.current)
+    const el = containerRef.current
+    const map = mapRef.current
+    const initialCenter = map.getCenter()
 
+    const obs = new ResizeObserver(entries => {
+      const entry = entries[0]
+      const target = (entry?.target ?? el) as HTMLElement
+
+      if (!document.body.contains(target)) return
+
+      const rect = target.getBoundingClientRect()
+      if (rect.width === 0 || rect.height === 0) return
+
+      mapRef.current.relayout()
+      mapRef.current.setCenter(initialCenter)
+    })
+
+    obs.observe(el)
     return () => obs.disconnect()
   }, [sdkReady])
 
@@ -157,7 +173,6 @@ export default function DrawMap({
     managerRef.current.select(OverlayType.POLYLINE)
   }
 
-  /** DrawingManager.getData() → [{lat,lng}][][] 형태로 변환해서 반환 */
   const extractPolylineData = () => {
     if (!managerRef.current || !window.kakao) return
     const { OverlayType } = window.kakao.maps.drawing
@@ -165,15 +180,22 @@ export default function DrawMap({
     const lines: Array<{ points: DrawingPoint[]; options: any }> =
       data[OverlayType.POLYLINE] ?? []
 
-    // [[{lat,lng}, ...], ...] 형태
-    const paths: Path[] = lines.map(line =>
-      line.points.map(point => ({ lat: point.y, lng: point.x }))
-    )
-    onSavePaths(paths)
-    // console.log(paths)
+    const raw = lines[0]?.points ?? []
+    if (raw.length < 2) {
+      console.warn('[extractPolylineData] not enough points:', raw)
+      return
+    }
+    const path: Path = raw
+      .map(point => ({ lat: Number(point?.y), lng: Number(point?.x) }))
+      .filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lng))
 
-    // TODO: Supabase 저장 로직 연결 가능
-    return paths
+    if (path.length < 2) {
+      console.warn('[extractPolylineData] invalid numeric points:', raw)
+      return
+    }
+
+    onSavePath(path)
+    return path
   }
 
   return (

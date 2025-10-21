@@ -24,9 +24,13 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [drawingMode, setDrawingMode] = useState(false)
-  const [paths, setPaths] = useState<Path[]>([])
+  const [path, setPath] = useState<Path>([])
   const [isSaving, setIsSaving] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // const serializedPaths = useMemo(() => {
+  //   return paths.length > 0 ? JSON.stringify(paths) : ''
+  // }, [paths])
 
   const { createCourse, refresh } = useCourses()
 
@@ -55,8 +59,8 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
       toast.error('코스명을 입력해주세요.')
       return
     }
-    if (paths.length === 0) {
-      toast.error('경로를 최소 1개 이상 그려주세요.')
+    if (path.length === 0) {
+      toast.error('경로를 최소 2점 이상 그려주세요.')
       return
     }
 
@@ -71,11 +75,6 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
         toast.error('로그인이 필요합니다.')
         return
       }
-
-      const sanitizedPaths = paths.map(p => ({
-        lat: Number((p as any).lat),
-        lng: Number((p as any).lng),
-      }))
 
       let imageUrl: string | null = null
       if (imageFile) {
@@ -107,7 +106,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
         course_name: courseName,
         course_desc: courseDesc,
         image: imageUrl,
-        course_map: sanitizedPaths,
+        course_map: path,
         user_id: user.id,
       } as unknown as Course)
 
@@ -218,14 +217,8 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
 
           {/* 경로 그리기 */}
           <div className="bg-gray-300 rounded-md text-center text-gray-600">
-            <input
-              type="hidden"
-              name="course_map"
-              value={JSON.stringify(paths)}
-              readOnly
-            />
             {drawingMode ? (
-              <DrawMap onSavePaths={setPaths} />
+              <DrawMap onSavePath={setPath} />
             ) : (
               <button
                 type="button"

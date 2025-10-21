@@ -1,6 +1,5 @@
 'use client'
 
-import Script from 'next/script'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Path } from '@/features/main/map-fetching/types.ts'
@@ -66,13 +65,13 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
         level: 7,
       }
       mapRef.current = new window.kakao.maps.Map(
-        containerRef.current!,
+        containerRef.current,
         mapOption
       )
       setMapReady(true)
     }
     window.kakao.maps.load(start)
-  }, [sdkReady])
+  }, [CenterLat, CenterLng, sdkReady])
 
   useEffect(() => {
     initMap()
@@ -101,7 +100,6 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     if (!mapReady) return
     if (!coordData?.length) return
 
-    // 이전 폴리라인 제거
     if (polylineRef.current) {
       polylineRef.current.setMap(null)
       polylineRef.current = null
@@ -111,7 +109,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     const polyline = new kakao.maps.Polyline({
       map,
       path,
-      strokeColor: '#00E500', // 필요 시 props로 빼기
+      strokeColor: '#00E500',
       strokeOpacity: 0.9,
       strokeStyle: 'solid',
       strokeWeight: 4,
@@ -124,7 +122,6 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
       map.setBounds(bounds)
     }
 
-    // 클린업: coordData 변경/언마운트 시 기존 선 제거
     return () => {
       if (polylineRef.current) {
         polylineRef.current.setMap(null)
@@ -135,22 +132,9 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
 
   return (
     <>
-      {/* <Script
-        id="kakao-maps-sdk"
-        src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JS_KEY}&autoload=false&libraries=drawing`}
-        strategy="afterInteractive"
-        onReady={() => {
-          setSdkReady(true)
-        }}
-      /> */}
       <div
         ref={containerRef}
-        style={{
-          width: '100%',
-          height: '100%',
-          border: '1px solid #e5e7eb',
-          borderRadius: 8,
-        }}
+        className="w-[100%] h-[100%] border-[#e5e7eb] rounded-lg"
       />
     </>
   )
