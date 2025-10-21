@@ -1,4 +1,3 @@
-'use client'
 import '@/styles/common/theme.css'
 
 interface SaveButtonProps {
