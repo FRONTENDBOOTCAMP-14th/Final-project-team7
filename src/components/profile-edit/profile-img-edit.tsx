@@ -10,7 +10,7 @@ interface ProfileEditProps {
   onChangeImage: (file: File) => void
 }
 
-export default function ProfileEdit({
+export default function ProfileImgEdit({
   imageUrl,
   onChangeImage,
 }: ProfileEditProps) {
