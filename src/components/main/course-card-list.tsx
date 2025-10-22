@@ -2,13 +2,12 @@
 
 import { useState } from 'react'
 
+import CourseCard from '@/components/main/course-card'
+import CourseDetailModal from '@/components/main/course-detail-modal'
 import { useCourses } from '@/features/main/course-crud/context'
 import type { Course } from '@/lib/supabase'
 
-import CourseCard from './course-card'
-import CourseDetailModal from './course-detail-modal'
-
-export function CourseCardList() {
+export default function CourseCardList() {
   const { courses, loading, error } = useCourses()
   const [selected, setSelected] = useState<Course | null>(null)
 

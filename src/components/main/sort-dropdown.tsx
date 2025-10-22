@@ -42,7 +42,7 @@ export function SortDropdown({
               <li key={key}>
                 <button
                   onClick={() => handleSort(key)}
-                  className={`w-full text-left px-4 py-2 hover:bg-green-50 ${
+                  className={`w-full px-4 py-2 text-left hover:bg-green-50 ${
                     value === key
                       ? 'font-semibold text-[var(--color-point-100)]'
                       : ''

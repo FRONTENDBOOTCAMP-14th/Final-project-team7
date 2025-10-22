@@ -1,8 +1,7 @@
+import DetailButton from '@/components/main/detail-button'
+import KakaoMap from '@/components/main/kakao-map'
 import type { Course } from '@/lib/supabase'
 import { tw } from '@/utils/tw'
-
-import DetailButton from './detail-button'
-import KakaoMap from './kakao-map'
 
 export default function CourseCard({
   course,
@@ -23,7 +22,7 @@ export default function CourseCard({
         bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
         `}
     >
-      <h3 className="text-[#202020] text-[18px] font-semibold mb-2.5">
+      <h3 className="mb-2.5 text-[#202020] text-[18px] font-semibold">
         {course.course_name}
       </h3>
       <p className="mb-2.5 text-[#202020] text-[14px] font-normal">
@@ -34,7 +33,7 @@ export default function CourseCard({
         <KakaoMap coordData={course.course_map} />
       </div>
       <div className="relative w-full h-12">
-        <span className="absolute text-gray-400 font-medium text-[14px] right-0 bottom-0">{`코스 생성 : ${year}년 ${month}월 ${day}일`}</span>
+        <span className="absolute right-0 bottom-0 text-gray-400 font-medium text-[14px]">{`코스 생성 : ${year}년 ${month}월 ${day}일`}</span>
       </div>
     </div>
   )

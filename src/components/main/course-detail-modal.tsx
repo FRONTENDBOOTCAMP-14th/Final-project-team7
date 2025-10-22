@@ -1,9 +1,8 @@
 import { CircleX } from 'lucide-react'
 import Image from 'next/image'
 
+import KakaoMap from '@/components/main/kakao-map'
 import type { Course } from '@/lib/supabase'
-
-import KakaoMap from './kakao-map'
 
 interface CourseDetailModalProps {
   onClose: () => void
@@ -21,9 +20,8 @@ export default function CourseDetailModal({
   const day = course.created_at.slice(8, 10)
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-xs z-50">
-      <div className="relative bg-white w-[400px] rounded-lg shadow-lg overflow-scroll">
-        {/* 상단 헤더 */}
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30 backdrop-blur-xs">
+      <div className="relative w-[400px] bg-white rounded-lg shadow-lg overflow-scroll">
         <div className="flex items-center pt-4">
           <button
             onClick={onClose}
@@ -34,7 +32,7 @@ export default function CourseDetailModal({
           </button>
         </div>
         <div className="flex flex-col p-6">
-          <h3 className="text-[#202020] text-[18px] font-semibold mb-2.5">
+          <h3 className="mb-2.5 text-[#202020] text-[18px] font-semibold">
             {course.course_name}
           </h3>
           <p className="mb-2.5 text-[#202020] text-[14px] font-normal">
@@ -49,11 +47,11 @@ export default function CourseDetailModal({
               alt="코스 이미지"
               width={200}
               height={200}
-              className="rounded-md object-contain mx-auto"
+              className="mx-auto rounded-md object-contain"
               unoptimized
             />
           ) : (
-            <div className="border-2 border-gray-400 rounded-md p-4 mb-[10px] text-center">
+            <div className="mb-[10px] p-4 border-2 border-gray-400 rounded-md text-center">
               <span className="text-[14px] text-center">
                 등록된 이미지가 없습니다.
               </span>

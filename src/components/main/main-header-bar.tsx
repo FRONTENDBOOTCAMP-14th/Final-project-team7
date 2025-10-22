@@ -1,5 +1,5 @@
 'use client'
-import { AddCourseButton } from '@/components/main/add-course-button'
+import AddCourseButton from '@/components/main/add-course-button'
 import { useCourses } from '@/features/main/course-crud/context'
 
 import { SortDropdown } from './sort-dropdown'

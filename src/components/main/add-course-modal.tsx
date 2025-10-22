@@ -5,14 +5,12 @@ import Image from 'next/image'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import DrawMap from '@/components/main/draw-map'
 import { useCourses } from '@/features/main/course-crud/context'
 import type { Path } from '@/features/main/map-fetching/types'
 import type { Course } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase/supabase-client'
 import { tw } from '@/utils/tw'
-
-import { supabase } from '../../lib/supabase/supabase-client'
-
-import DrawMap from './draw-map'
 
 interface AddCourseModalProps {
   onClose: () => void
@@ -27,10 +25,6 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
   const [path, setPath] = useState<Path>([])
   const [isSaving, setIsSaving] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // const serializedPaths = useMemo(() => {
-  //   return paths.length > 0 ? JSON.stringify(paths) : ''
-  // }, [paths])
 
   const { createCourse, refresh } = useCourses()
 
@@ -111,24 +105,20 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
       } as unknown as Course)
 
       if (!createdCourse) {
-        toast.error('코스 추가 실패')
+        toast.error('코스 추가에 실패했습니다.')
         return
       }
 
-      toast.success('코스 추가 성공')
+      toast.success('코스 추가에 성공했습니다.')
       await refresh()
       onClose()
     } catch (err: any) {
-      console.error('ADD_COURSE_FAILED', {
-        message: err?.message,
-        status: err?.status,
-        err,
-      })
+      toast.error('코스 추가에 실패했습니다.')
       const msg = String(err?.message ?? '')
       if (msg.includes('permission') || msg.includes('RLS')) {
         toast.error('권한 문제로 저장 실패: 테이블/스토리지 정책을 확인하세요.')
       } else {
-        toast.error('코스 추가 실패')
+        toast.error('코스 추가에 실패했습니다.')
       }
     } finally {
       setIsSaving(false)
@@ -136,9 +126,8 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-xs z-50">
+    <div className="flex items-center z-50 fixed inset-0 justify-center bg-black/30 backdrop-blur-xs">
       <div className="bg-white w-[400px] rounded-lg shadow-lg overflow-scroll">
-        {/* 상단 헤더 */}
         <div className="flex items-center p-4">
           <button
             onClick={onClose}
@@ -148,8 +137,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
             <CircleArrowLeft />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
-          {/* 코스명 */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
           <div>
             <input
               type="text"
@@ -159,13 +147,12 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               onChange={e => setCourseName(e.target.value)}
               required
               className={tw`
-                w-full border border-gray-300 rounded-md px-3 py-2 outline-none
+                px-3 py-2 w-full 
+                border border-gray-300 rounded-md outline-none
                 focus:ring-2 focus:ring-blue-400
                 `}
             />
           </div>
-
-          {/* 코스 설명 */}
           <div>
             <textarea
               placeholder="코스 설명을 입력해주세요."
@@ -173,14 +160,13 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               name="course_description"
               onChange={e => setCourseDesc(e.target.value)}
               className={tw`
-                w-full border border-gray-200 rounded-md px-3 py-2
+                w-full px-3 py-2 border border-gray-200 rounded-md
                 text-sm text-gray-700
                 outline-none focus:ring-2 focus:ring-blue-400 resize-none`}
               rows={3}
             />
           </div>
 
-          {/* 사진 업로드 */}
           <div
             onClick={() => fileInputRef.current?.click()}
             onDrop={handleDrop}
@@ -214,8 +200,6 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               className="hidden"
             />
           </div>
-
-          {/* 경로 그리기 */}
           <div className="bg-gray-300 rounded-md text-center text-gray-600">
             {drawingMode ? (
               <DrawMap onSavePath={setPath} />
@@ -238,7 +222,6 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
             </p>
           </div>
 
-          {/* 저장하기 버튼 */}
           <button
             type="submit"
             disabled={isSaving}

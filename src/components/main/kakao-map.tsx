@@ -55,7 +55,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     if (!sdkReady) return
     if (!window.kakao) return
     if (!containerRef.current) return
-    if (mapRef.current) return // 이미 초기화됨
+    if (mapRef.current) return
 
     const start = () => {
       const rect = containerRef.current?.getBoundingClientRect()
@@ -83,7 +83,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     const ro = new ResizeObserver(() => {
       const h = el.getBoundingClientRect().height
       if (h > 0 && !mapRef.current) {
-        initMap() // 높이가 생기면 지도 생성 재시도
+        initMap()
       }
     })
     ro.observe(el)
@@ -134,7 +134,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     <>
       <div
         ref={containerRef}
-        className="w-[100%] h-[100%] border-[#e5e7eb] rounded-lg"
+        className="w-[100%] h-[100 %] border-[#e5e7eb] rounded-lg"
       />
     </>
   )
