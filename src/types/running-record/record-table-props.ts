@@ -1,4 +1,5 @@
 import type { Tables } from '@/lib/supabase/database.types'
+import type { CourseOption } from '@/types/running-record/course'
 
 export type RunningRecord = Tables<'running_record'>
 
@@ -9,13 +10,13 @@ export interface RecordTableProps {
 }
 
 export interface AddRecordModalProps {
-  courses: { id: string; course_name: string }[]
+  courses: CourseOption[]
   onClose: () => void
   onAddSuccess: (newRecord: RunningRecord) => void
 }
 
 export interface EditRecordModalProps {
-  courses: { id: string; course_name: string }[]
+  courses: CourseOption[]
   record: RunningRecord
   onClose: () => void
   onUpdateSuccess: (updated: RunningRecord) => void

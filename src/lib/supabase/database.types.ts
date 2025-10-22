@@ -107,6 +107,7 @@ export interface Database {
           duration: string | null
           id: string
           pace: string | null
+          course_id: string
         }
         Insert: {
           course_name?: string
@@ -116,6 +117,7 @@ export interface Database {
           duration?: string | null
           id?: string
           pace?: string | null
+          course_id?: string
         }
         Update: {
           course_name?: string
@@ -125,6 +127,7 @@ export interface Database {
           duration?: string | null
           id?: string
           pace?: string | null
+          course_id?: string
         }
         Relationships: []
       }

@@ -6,9 +6,9 @@ import { toast } from 'sonner'
 
 import DistanceWithTime from '@/components/running-record/common/distance-with-time'
 import DropDown from '@/components/running-record/drop-down'
-import { useModalFocusTrap } from '@/hooks/running-record'
+import { useModalFocusTrap } from '@/hooks/running-record/use-modal-focus-trap'
 import { supabase } from '@/lib/supabase/supabase-client'
-import type { EditRecordModalProps } from '@/types/running-record'
+import type { EditRecordModalProps } from '@/types/running-record/record-table-props'
 import {
   calculatePace,
   parseDuration,
@@ -26,7 +26,9 @@ export default function EditRecordModal({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  const [selectedCourse, setSelectedCourse] = useState(record.course_name)
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(
+    record.course_id
+  )
   const [date, setDate] = useState(record.date ?? '')
   const [distance, setDistance] = useState(record.distance ?? '')
   const [hours, setHours] = useState('')
@@ -51,7 +53,7 @@ export default function EditRecordModal({
 
   const isFormValid =
     validRecordForm({
-      course: selectedCourse,
+      course: selectedCourse ?? '',
       date,
       distance,
       hours,
@@ -67,30 +69,53 @@ export default function EditRecordModal({
     if (!isFormValid) return toast.error('모든 입력 값을 채워주세요.')
     setIsSubmitting(true)
 
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      toast.error('로그인된 사용자만 수정할 수 있습니다.')
+      setIsSubmitting(false)
+      return
+    }
+
+    const selectedCourseData = courses.find(c => c.id === selectedCourse)
+    if (!selectedCourseData) {
+      toast.error('코스를 선택해주세요.')
+      setIsSubmitting(false)
+      return
+    }
+
     const { data, error } = await supabase
       .from('running_record')
       .update({
-        course_name: selectedCourse,
+        course_id: selectedCourseData.id,
+        course_name: selectedCourseData.course_name,
         date,
         distance,
         duration: `${hours}시간 ${minutes}분 ${seconds}초`,
         pace,
       })
       .eq('id', record.id)
-      .select()
-      .single()
+      .eq('user_id', user.id)
+      .select('*')
+      .maybeSingle()
 
     setIsSubmitting(false)
-    if (error) toast.error('기록 수정 실패')
-    else {
+
+    if (error) {
+      toast.error('기록 수정 실패')
+    } else if (data) {
       toast.success('기록이 수정되었습니다!')
       onUpdateSuccess(data)
       onClose()
+    } else {
+      toast.error('수정할 수 있는 기록을 찾지 못했습니다.')
     }
   }
 
-  // 삭제 확인 토스트 커스텀
-  const handleDelete = () => {
+  const handleDelete = async () => {
     toast.custom(
       id => (
         <div className="flex flex-col gap-3 p-3 rounded-lg border border-gray-200 bg-white shadow-md">
@@ -103,18 +128,22 @@ export default function EditRecordModal({
               onClick={async () => {
                 toast.dismiss(id)
                 setIsDeleting(true)
+                const {
+                  data: { user },
+                } = await supabase.auth.getUser()
 
                 const { error } = await supabase
                   .from('running_record')
                   .delete()
                   .eq('id', record.id)
+                  .eq('user_id', user?.id)
 
                 setIsDeleting(false)
 
                 if (error) {
-                  toast.error('기록 삭제 실패했습니다!')
+                  toast.error('기록 삭제 실패')
                 } else {
-                  toast.success('기록이 삭제 되었습니다!')
+                  toast.success('기록이 삭제되었습니다!')
                   onDeleteSuccess(record.id)
                   onClose()
                 }
@@ -133,10 +162,7 @@ export default function EditRecordModal({
           </div>
         </div>
       ),
-      {
-        duration: Infinity,
-        closeButton: false,
-      }
+      { duration: Infinity }
     )
   }
 
@@ -146,14 +172,16 @@ export default function EditRecordModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
       role="dialog"
       aria-modal="true"
+      onClick={onClose}
     >
       <div
         className="overflow-y-auto
         w-[70%]
         max-w-[420px]
         max-h-[80%]
-        p-2 bg-white rounded-lg shadow-lg 
+        p-2 bg-white rounded-lg shadow-lg
         transition-all"
+        onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-4">
           <button
@@ -174,10 +202,8 @@ export default function EditRecordModal({
             <Trash2 size={28} />
           </button>
         </div>
-
         <DropDown
-          courses={courses}
-          selectedCourse={selectedCourse}
+          selectedCourse={selectedCourse ?? 'all'}
           onCourseChange={setSelectedCourse}
         />
 
@@ -204,6 +230,7 @@ export default function EditRecordModal({
             type="number"
           />
         </div>
+
         <div className="flex mt-3 gap-2">
           <DistanceWithTime
             id="record-hours"
