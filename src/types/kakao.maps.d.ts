@@ -13,7 +13,7 @@ declare namespace kakao {
     }
 
     class LatLngBounds {
-      constructor(sw: LatLng, ne: LatLng)
+      constructor(sw?: LatLng, ne?: LatLng)
       extend(latlng: LatLng): void
     }
 
@@ -29,6 +29,7 @@ declare namespace kakao {
       setLevel(level: number): void
       panTo(latlng: LatLng): void
       relayout(): void
+      setBounds(bounds: kakao.maps.LatLngBounds): void
     }
 
     namespace event {
