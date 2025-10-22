@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 
-import PageHeader from '@/components/common/feat-header'
+import FeatHeader from '@/components/common/feat-header'
 
 const PAGE_TITLES: Record<string, string> = {
   '/profile/profile-edit': '프로필 편집',
@@ -16,5 +16,5 @@ export default function HeaderClient() {
   const pageTitle = PAGE_TITLES[pathname]
 
   if (!pageTitle) return null
-  return <PageHeader title={pageTitle} />
+  return <FeatHeader title={pageTitle} />
 }
