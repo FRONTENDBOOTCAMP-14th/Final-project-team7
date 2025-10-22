@@ -22,10 +22,10 @@ export default function CourseCard({
         bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
         `}
     >
-      <h3 className="mb-2.5 text-[#202020] text-[18px] font-semibold">
+      <h3 className="mb-2.5 text-[var(--color-basic-400)] text-[18px] font-semibold">
         {course.course_name}
       </h3>
-      <p className="mb-2.5 text-[#202020] text-[14px] font-normal">
+      <p className="mb-2.5 text-[var(--color-basic-400)] text-[14px] font-normal">
         {course.course_desc}
       </p>
       <DetailButton onOpen={onOpenDetail} />

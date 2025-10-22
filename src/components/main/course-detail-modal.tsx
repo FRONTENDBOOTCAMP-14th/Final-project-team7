@@ -32,10 +32,10 @@ export default function CourseDetailModal({
           </button>
         </div>
         <div className="flex flex-col p-6">
-          <h3 className="mb-2.5 text-[#202020] text-[18px] font-semibold">
+          <h3 className="mb-2.5 text-[var(--color-basic-400)] text-[18px] font-semibold">
             {course.course_name}
           </h3>
-          <p className="mb-2.5 text-[#202020] text-[14px] font-normal">
+          <p className="mb-2.5 text-[var(--color-basic-400)] text-[14px] font-normal">
             {course.course_desc}
           </p>
           <div className="flex flex-row-reverse pb-2 w-full">

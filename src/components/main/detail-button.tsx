@@ -12,7 +12,7 @@ export default function DetailButton({ onOpen }: { onOpen: () => void }) {
         className={tw`
           inline-flex items-center
           mb-5 py-[7px] px-2.5 gap-2.5
-          bg-[#424242] rounded-md
+          bg-[var(--color-basic-300)] rounded-md
           cursor-pointer`}
       >
         <Plus className="size-4 text-white" />
