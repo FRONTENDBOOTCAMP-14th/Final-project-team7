@@ -7,7 +7,7 @@ export function validRecordForm({
   seconds,
   pace,
 }: {
-  course: string
+  course: string | null
   date: string
   distance: string
   hours: string
@@ -17,7 +17,9 @@ export function validRecordForm({
 }) {
   const hasTime =
     Number(hours) > 0 || Number(minutes) > 0 || Number(seconds) > 0
+
   return (
+    !!course &&
     course !== 'all' &&
     !!date &&
     !!distance &&

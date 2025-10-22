@@ -1,13 +1,15 @@
-// add-record-button.tsx
 'use client'
 
 import { Loader2, Plus } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
+import { toast } from 'sonner'
 
-import type { CourseOption, RunningRecord } from '@/types/running-record/index'
+import { supabase } from '@/lib/supabase/supabase-client'
+import type { CourseOption } from '@/types/running-record/course'
+import type { RunningRecord } from '@/types/running-record/record-table-props'
 
-// 모달 컴포넌트 지연 로딩 (클라이언트 전용)
 const AddRecordModal = dynamic(() => import('./add-record-modal'), {
   ssr: false,
   loading: () => (
@@ -30,12 +32,25 @@ export default function AddRecordButton({
 }: AddRecordButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
+  const router = useRouter()
 
-  const handleOpen = () => setIsModalOpen(true)
+  const handleOpen = async () => {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
+
+    if (error || !user) {
+      toast.error('로그인 후 이용해주세요.')
+      router.push('/sign-in')
+      return
+    }
+
+    setIsModalOpen(true)
+  }
 
   const handleClose = () => {
     setIsModalOpen(false)
-    // 모달 언마운트 직후 트리거 버튼으로 포커스 복원 (접근성)
     requestAnimationFrame(() => buttonRef.current?.focus())
   }
 

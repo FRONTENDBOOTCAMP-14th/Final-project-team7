@@ -6,10 +6,10 @@ import { toast } from 'sonner'
 
 import DistanceWithTime from '@/components/running-record/common/distance-with-time'
 import DropDown from '@/components/running-record/drop-down'
-import { useModalFocusTrap } from '@/hooks/running-record'
+import { useModalFocusTrap } from '@/hooks/running-record/use-modal-focus-trap'
 import { supabase } from '@/lib/supabase/supabase-client'
-import type { AddRecordModalProps } from '@/types/running-record'
-import { calculatePace, validRecordForm } from '@/utils/running-record/index'
+import type { AddRecordModalProps } from '@/types/running-record/record-table-props'
+import { calculatePace, validRecordForm } from '@/utils/running-record'
 
 export default function AddRecordModal({
   courses,
@@ -18,8 +18,7 @@ export default function AddRecordModal({
 }: AddRecordModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const [selectedCourse, setSelectedCourse] = useState<'all' | string>('all')
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [date, setDate] = useState('')
   const [distance, setDistance] = useState('')
   const [hours, setHours] = useState('')
@@ -37,7 +36,7 @@ export default function AddRecordModal({
   const isTimeFilled = hours.trim() && minutes.trim() && seconds.trim()
   const isFormValid =
     validRecordForm({
-      course: selectedCourse,
+      course: selectedCourse ?? '',
       date,
       distance,
       hours,
@@ -50,11 +49,32 @@ export default function AddRecordModal({
     if (!isFormValid) return toast.error('모든 입력 값을 채워주세요.')
 
     setIsSubmitting(true)
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      toast.error('로그인된 사용자만 기록을 추가할 수 있습니다.')
+      setIsSubmitting(false)
+      return
+    }
+
+    const selectedCourseData = courses.find(c => c.id === selectedCourse)
+    if (!selectedCourseData) {
+      toast.error('코스를 선택해주세요.')
+      setIsSubmitting(false)
+      return
+    }
+
     const { data, error } = await supabase
       .from('running_record')
       .insert([
         {
-          course_name: selectedCourse,
+          user_id: user.id,
+          course_id: selectedCourseData.id,
+          course_name: selectedCourseData.course_name,
           date,
           distance,
           duration: `${hours}시간 ${minutes}분 ${seconds}초`,
@@ -63,6 +83,7 @@ export default function AddRecordModal({
       ])
       .select()
       .single()
+
     setIsSubmitting(false)
 
     if (error) toast.error('기록 추가에 실패했습니다.')
@@ -79,14 +100,16 @@ export default function AddRecordModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
       role="dialog"
       aria-modal="true"
+      onClick={onClose}
     >
       <div
         className="overflow-y-auto
         w-[70%]
         max-w-[420px]
         max-h-[80%]
-      p-2 bg-white rounded-lg shadow-lg
+        p-2 bg-white rounded-lg shadow-lg
         transition-all"
+        onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-4">
           <button
@@ -100,8 +123,7 @@ export default function AddRecordModal({
         </div>
 
         <DropDown
-          courses={courses}
-          selectedCourse={selectedCourse}
+          selectedCourse={selectedCourse ?? 'all'}
           onCourseChange={setSelectedCourse}
         />
 
@@ -114,7 +136,7 @@ export default function AddRecordModal({
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="w-full p-2 rounded-md border border-gray-300  text-gray-700 cursor-pointer"
+            className="w-full p-2 rounded-md border border-gray-300 text-gray-700 cursor-pointer"
           />
         </div>
 
@@ -128,6 +150,7 @@ export default function AddRecordModal({
             type="number"
           />
         </div>
+
         <div className="flex mt-3 gap-2">
           <DistanceWithTime
             id="record-hours"
