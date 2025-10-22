@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import type { Path } from '@/features/main/map-fetching/types'
-import { useGeolocation } from '@/hooks/main/useGeolocation'
+import useGeolocation from '@/hooks/main/useGeolocation'
 import { tw } from '@/utils/tw'
 
 declare global {
