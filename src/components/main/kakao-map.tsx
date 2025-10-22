@@ -130,7 +130,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     <>
       <div
         ref={containerRef}
-        className="w-[100%] h-[100 %] border-[var(--color-basic-100)] rounded-lg"
+        className="w-[100%] h-[100%] border-[var(--color-basic-100)] rounded-lg"
       />
     </>
   )
