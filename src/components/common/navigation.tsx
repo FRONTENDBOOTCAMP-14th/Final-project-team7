@@ -11,7 +11,7 @@ export default function Navigation() {
   const isActive = (path: string) => pathname === path
 
   return (
-    <nav className="w-full flex items-center justify-center mt-2">
+    <nav className="w-full flex items-center justify-center mt-5">
       <ul className="flex items-center justify-center gap-6">
         {[
           { name: '메인', href: '/main' },
@@ -21,7 +21,7 @@ export default function Navigation() {
           <li key={item.name}>
             <Link
               href={item.href}
-              className={`w-[130px] h-[50px] flex items-center justify-center rounded-lg text-base font-sm text-white
+              className={`w-[160px] h-[60px] flex items-center justify-center rounded-lg text-base font-normal text-white
                 ${
                   isActive(item.href)
                     ? 'bg-[var(--color-point-200)]'

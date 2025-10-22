@@ -2,6 +2,8 @@ import '@/styles/main.css'
 import type { PropsWithChildren } from 'react'
 
 import { Providers } from '@/app/providers'
+import Header from '@/components/common/header'
+import Navigation from '@/components/common/navigation'
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
@@ -11,6 +13,8 @@ export default function RootLayout({ children }: PropsWithChildren) {
       </head> */}
       <body className="md:max-w-[768px] mx-auto border-amber-700 border-4">
         <Providers>
+          <Header />
+          <Navigation />
           <main>{children}</main>
         </Providers>
       </body>
