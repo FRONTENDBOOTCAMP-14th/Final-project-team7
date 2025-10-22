@@ -6,10 +6,11 @@ import { toast } from 'sonner'
 
 import DistanceWithTime from '@/components/running-record/common/distance-with-time'
 import DropDown from '@/components/running-record/drop-down'
-import { useModalFocusTrap } from '@/hooks/running-record/use-modal-focus-trap'
+import useModalFocusTrap from '@/hooks/running-record/use-modal-focus-trap'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { AddRecordModalProps } from '@/types/running-record/record-table-props'
 import { calculatePace, validRecordForm } from '@/utils/running-record'
+import { tw } from '@/utils/tw'
 
 export default function AddRecordModal({
   courses,
@@ -46,7 +47,7 @@ export default function AddRecordModal({
     }) && isTimeFilled
 
   const handleSave = async () => {
-    if (!isFormValid) return toast.error('모든 입력 값을 채워주세요.')
+    if (!isFormValid) return toast.error('모든 입력 값을 채워주세요')
 
     setIsSubmitting(true)
 
@@ -56,14 +57,14 @@ export default function AddRecordModal({
     } = await supabase.auth.getUser()
 
     if (userError || !user) {
-      toast.error('로그인된 사용자만 기록을 추가할 수 있습니다.')
+      toast.error('로그인된 사용자만 기록을 추가할 수 있습니다')
       setIsSubmitting(false)
       return
     }
 
     const selectedCourseData = courses.find(c => c.id === selectedCourse)
     if (!selectedCourseData) {
-      toast.error('코스를 선택해주세요.')
+      toast.error('코스를 선택해주세요')
       setIsSubmitting(false)
       return
     }
@@ -86,9 +87,9 @@ export default function AddRecordModal({
 
     setIsSubmitting(false)
 
-    if (error) toast.error('기록 추가에 실패했습니다.')
+    if (error) toast.error('기록 추가에 실패했습니다')
     else {
-      toast.success('기록이 추가되었습니다!')
+      toast.success('기록이 추가되었습니다')
       onAddSuccess(data)
       onClose()
     }
@@ -103,12 +104,14 @@ export default function AddRecordModal({
       onClick={onClose}
     >
       <div
-        className="overflow-y-auto
+        className={tw(`
+        overflow-y-auto
         w-[70%]
         max-w-[420px]
         max-h-[80%]
         p-2 bg-white rounded-lg shadow-lg
-        transition-all"
+        transition-all
+        `)}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-4">
