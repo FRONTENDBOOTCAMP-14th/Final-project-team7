@@ -1,4 +1,3 @@
-// constants/main/sort.ts
 export const SORT = {
   LATEST: '최신순',
   OLDEST: '오래된순',
