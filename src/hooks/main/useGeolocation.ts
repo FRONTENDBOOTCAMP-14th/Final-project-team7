@@ -6,7 +6,7 @@ import type {
   GeoPermission,
 } from '@/features/main/map-fetching/types'
 
-export function useGeolocation(defaultOptions: GeoOptions = {}) {
+export default function useGeolocation(defaultOptions: GeoOptions = {}) {
   const [coords, setCoords] = useState<GeoCoords | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)

@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { SORT, type SortKey } from '@/constants/main/sort'
 import { tw } from '@/utils/tw'
 
-export function SortDropdown({
+export default function SortDropdown({
   value,
   onChange,
 }: {
