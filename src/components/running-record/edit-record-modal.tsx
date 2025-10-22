@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import DistanceWithTime from '@/components/running-record/common/distance-with-time'
 import DropDown from '@/components/running-record/drop-down'
-import { useModalFocusTrap } from '@/hooks/running-record/use-modal-focus-trap'
+import useModalFocusTrap from '@/hooks/running-record/use-modal-focus-trap'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { EditRecordModalProps } from '@/types/running-record/record-table-props'
 import {
@@ -14,6 +14,7 @@ import {
   parseDuration,
   validRecordForm,
 } from '@/utils/running-record'
+import { tw } from '@/utils/tw'
 
 export default function EditRecordModal({
   courses,
@@ -66,7 +67,7 @@ export default function EditRecordModal({
     seconds
 
   const handleUpdate = async () => {
-    if (!isFormValid) return toast.error('모든 입력 값을 채워주세요.')
+    if (!isFormValid) return toast.error('모든 입력 값을 채워주세요')
     setIsSubmitting(true)
 
     const {
@@ -75,14 +76,14 @@ export default function EditRecordModal({
     } = await supabase.auth.getUser()
 
     if (userError || !user) {
-      toast.error('로그인된 사용자만 수정할 수 있습니다.')
+      toast.error('로그인된 사용자만 수정할 수 있습니다')
       setIsSubmitting(false)
       return
     }
 
     const selectedCourseData = courses.find(c => c.id === selectedCourse)
     if (!selectedCourseData) {
-      toast.error('코스를 선택해주세요.')
+      toast.error('코스를 선택해주세요')
       setIsSubmitting(false)
       return
     }
@@ -105,13 +106,13 @@ export default function EditRecordModal({
     setIsSubmitting(false)
 
     if (error) {
-      toast.error('기록 수정 실패')
+      toast.error('기록 수정 실패했습니다')
     } else if (data) {
-      toast.success('기록이 수정되었습니다!')
+      toast.success('기록이 수정되었습니다')
       onUpdateSuccess(data)
       onClose()
     } else {
-      toast.error('수정할 수 있는 기록을 찾지 못했습니다.')
+      toast.error('수정할 수 있는 기록을 찾지 못했습니다')
     }
   }
 
@@ -141,21 +142,33 @@ export default function EditRecordModal({
                 setIsDeleting(false)
 
                 if (error) {
-                  toast.error('기록 삭제 실패')
+                  toast.error('기록 삭제 실패했습니다')
                 } else {
-                  toast.success('기록이 삭제되었습니다!')
+                  toast.success('기록이 삭제되었습니다')
                   onDeleteSuccess(record.id)
                   onClose()
                 }
               }}
-              className="flex items-center justify-center px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white text-sm transition"
+              className={tw(`
+                flex items-center justify-center
+                px-3 py-1 rounded 
+                bg-red-500 hover:bg-red-600 
+                text-white text-sm 
+                transition cursor-pointer
+                `)}
             >
               삭제
             </button>
             <button
               type="button"
               onClick={() => toast.dismiss(id)}
-              className="flex items-center justify-center px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm transition"
+              className={tw(`
+                flex items-center justify-center 
+                px-3 py-1 rounded 
+                bg-gray-200 hover:bg-gray-300 
+                text-sm 
+                transition cursor-pointer
+                `)}
             >
               취소
             </button>
@@ -176,9 +189,7 @@ export default function EditRecordModal({
     >
       <div
         className="overflow-y-auto
-        w-[70%]
-        max-w-[420px]
-        max-h-[80%]
+        w-[70%] max-w-[420px] max-h-[80%]
         p-2 bg-white rounded-lg shadow-lg
         transition-all"
         onClick={e => e.stopPropagation()}
