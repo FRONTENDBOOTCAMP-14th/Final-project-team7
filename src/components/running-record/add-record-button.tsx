@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { CourseOption } from '@/types/running-record/course'
 import type { RunningRecord } from '@/types/running-record/record-table-props'
+import { tw } from '@/utils/tw'
 
 const AddRecordModal = dynamic(() => import('./add-record-modal'), {
   ssr: false,
@@ -41,7 +42,7 @@ export default function AddRecordButton({
     } = await supabase.auth.getUser()
 
     if (error || !user) {
-      toast.error('로그인 후 이용해주세요.')
+      toast.error('로그인 후 이용해주세요')
       router.push('/sign-in')
       return
     }
@@ -60,7 +61,12 @@ export default function AddRecordButton({
         ref={buttonRef}
         type="button"
         onClick={handleOpen}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+        className={tw(`
+          flex items-center gap-2 px-3 py-2
+          rounded-lg bg-white border border-gray-300
+          shadow-[0_0_10px_0_rgba(0, 0, 0, 0.25)] text-gray-700 
+          hover:bg-gray-50 transition cursor-pointer
+          `)}
         aria-haspopup="dialog"
         aria-expanded={isModalOpen}
       >

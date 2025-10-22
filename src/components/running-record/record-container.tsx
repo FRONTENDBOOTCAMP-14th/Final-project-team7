@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { useRecords } from '@/hooks/running-record/use-records'
+import useRecords from '@/hooks/running-record/use-records'
 import type { CourseOption } from '@/types/running-record/course'
 import type { RunningRecord } from '@/types/running-record/record-table-props'
 
