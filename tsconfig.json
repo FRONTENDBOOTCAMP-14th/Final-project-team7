@@ -38,7 +38,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/features/main/current-coord.ts"
+    "src/types/**/*"
   ],
   "exclude": ["node_modules"]
 }

@@ -3,6 +3,44 @@ import KakaoMap from '@/components/main/kakao-map'
 import type { Course } from '@/lib/supabase'
 import { tw } from '@/utils/tw'
 
+interface LatLng {
+  lat: number
+  lng: number
+}
+type Path = LatLng[]
+
+function toPath(input: unknown): Path {
+  if (!input) return []
+
+  if (
+    Array.isArray(input) &&
+    input.every(
+      p => p && typeof p.lat === 'number' && typeof p.lng === 'number'
+    )
+  ) {
+    return input as Path
+  }
+
+  if (Array.isArray(input) && Array.isArray(input[0])) {
+    const flat = input.flat()
+    if (
+      flat.every(
+        p => p && typeof p.lat === 'number' && typeof p.lng === 'number'
+      )
+    ) {
+      return flat as Path
+    }
+  }
+
+  if (
+    Array.isArray(input) &&
+    input.every(p => p && typeof p.x === 'number' && typeof p.y === 'number')
+  ) {
+    return input.map(p => ({ lat: p.y, lng: p.x }))
+  }
+  return []
+}
+
 export default function CourseCard({
   course,
   onOpenDetail,
@@ -30,7 +68,7 @@ export default function CourseCard({
       </p>
       <DetailButton onOpen={onOpenDetail} />
       <div className="w-[314px] h-[140px]">
-        <KakaoMap coordData={course.course_map} />
+        <KakaoMap coordData={toPath(course.course_map)} />
       </div>
       <div className="relative w-full h-12">
         <span className="absolute right-0 bottom-0 text-gray-400 font-medium text-[14px]">{`코스 생성 : ${year}년 ${month}월 ${day}일`}</span>

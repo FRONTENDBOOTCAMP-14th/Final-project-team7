@@ -9,6 +9,44 @@ interface CourseDetailModalProps {
   course: Course
 }
 
+interface LatLng {
+  lat: number
+  lng: number
+}
+type Path = LatLng[]
+
+function toPath(input: unknown): Path {
+  if (!input) return []
+  // 이미 Path인 경우
+  if (
+    Array.isArray(input) &&
+    input.every(
+      p => p && typeof p.lat === 'number' && typeof p.lng === 'number'
+    )
+  ) {
+    return input as Path
+  }
+  // [[{lat,lng},...]] 같이 2중 배열로 저장된 경우 평탄화
+  if (Array.isArray(input) && Array.isArray(input[0])) {
+    const flat = input.flat()
+    if (
+      flat.every(
+        p => p && typeof p.lat === 'number' && typeof p.lng === 'number'
+      )
+    ) {
+      return flat as Path
+    }
+  }
+  // kakao.drawing getData() 원형 {x,y} 배열이 들어온 경우
+  if (
+    Array.isArray(input) &&
+    input.every(p => p && typeof p.x === 'number' && typeof p.y === 'number')
+  ) {
+    return input.map(p => ({ lat: p.y, lng: p.x }))
+  }
+  return []
+}
+
 export default function CourseDetailModal({
   onClose,
   course,
@@ -58,7 +96,7 @@ export default function CourseDetailModal({
             </div>
           )}
           <div className="mx-auto my-2 w-[314px] h-[300px]">
-            <KakaoMap coordData={course.course_map} />
+            <KakaoMap coordData={toPath(course.course_map)} />
           </div>
         </div>
       </div>

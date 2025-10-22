@@ -24,19 +24,28 @@ declare namespace kakao {
 
     class Map {
       constructor(container: HTMLElement, options: MapOptions)
+      getCenter(): LatLng
       setCenter(latlng: LatLng): void
       setLevel(level: number): void
+      panTo(latlng: LatLng): void
+      relayout(): void
     }
 
-    interface MarkerOptions {
-      map?: Map
-      position: LatLng
-      zIndex?: number
+    namespace event {
+      function addListener(
+        target: object,
+        type: string,
+        handler: (...args: unknown[]) => void
+      ): void
+
+      function addListener(
+        target: kakao.maps.drawing.DrawingManager,
+        type: 'drawend',
+        handler: (evt: { target?: kakao.maps.Polyline }) => void
+      ): void
     }
-    class Marker {
-      constructor(options: MarkerOptions)
-      setMap(map: Map | null): void
-    }
+
+    function load(cb: () => void): void
 
     interface StrokeOptions {
       strokeColor?: string
@@ -66,44 +75,9 @@ declare namespace kakao {
       setMap(map: Map | null): void
     }
 
-    class Rectangle {
-      constructor(
-        options: {
-          map?: Map
-          bounds: LatLngBounds
-        } & StrokeOptions & { fillColor?: string; fillOpacity?: number }
-      )
-      setMap(map: Map | null): void
-    }
-
-    class Circle {
-      constructor(
-        options: {
-          map?: Map
-          center: LatLng
-          radius: number
-        } & StrokeOptions & { fillColor?: string; fillOpacity?: number }
-      )
-      setMap(map: Map | null): void
-    }
-
-    class Polygon {
-      constructor(
-        options: {
-          map?: Map
-          path: LatLng[]
-        } & StrokeOptions & { fillColor?: string; fillOpacity?: number }
-      )
-      setMap(map: Map | null): void
-    }
-
     namespace drawing {
       const OverlayType: {
-        readonly MARKER: 'MARKER'
-        readonly POLYLINE: 'POLYLINE'
-        readonly RECTANGLE: 'RECTANGLE'
-        readonly CIRCLE: 'CIRCLE'
-        readonly POLYGON: 'POLYGON'
+        readonly POLYLINE: 'polyline'
       }
 
       type OverlayTypeKey = keyof typeof OverlayType
@@ -114,7 +88,7 @@ declare namespace kakao {
         map: maps.Map
         drawingMode: Array<(typeof OverlayType)[keyof typeof OverlayType]>
         guideTooltip?: GuideTooltipMode[]
-        markerOptions?: { draggable?: boolean; removable?: boolean }
+
         polylineOptions?: {
           draggable?: boolean
           removable?: boolean
@@ -126,56 +100,29 @@ declare namespace kakao {
           strokeStyle?: maps.StrokeOptions['strokeStyle']
           strokeWeight?: number
         }
-        rectangleOptions?: {
-          draggable?: boolean
-          removable?: boolean
-          editable?: boolean
-          strokeColor?: string
-          fillColor?: string
-          fillOpacity?: number
-          strokeOpacity?: number
-          strokeStyle?: maps.StrokeOptions['strokeStyle']
-          strokeWeight?: number
-        }
-        circleOptions?: {
-          draggable?: boolean
-          removable?: boolean
-          editable?: boolean
-          strokeColor?: string
-          fillColor?: string
-          fillOpacity?: number
-          strokeOpacity?: number
-          strokeStyle?: maps.StrokeOptions['strokeStyle']
-          strokeWeight?: number
-        }
-        polygonOptions?: {
-          draggable?: boolean
-          removable?: boolean
-          editable?: boolean
-          strokeColor?: string
-          fillColor?: string
-          fillOpacity?: number
-          hintStrokeStyle?: 'dash' | 'solid'
-          hintStrokeOpacity?: number
-          strokeOpacity?: number
-          strokeStyle?: maps.StrokeOptions['strokeStyle']
-          strokeWeight?: number
-        }
+      }
+
+      interface DrawingPoint {
+        x: number
+        y: number
+      }
+
+      interface PolylineData {
+        points: DrawingPoint[]
+        options: unknown
       }
 
       // getData()가 반환하는 형태(사용한 필드만 축약 정의)
-      type DrawnData = {
-        [Overlay in (typeof OverlayType)[keyof typeof OverlayType]]: any[]
+      interface DrawingData {
+        polyline?: PolylineData[]
       }
 
       class DrawingManager {
         constructor(options: DrawingManagerOptions)
         cancel(): void
         select(type: (typeof OverlayType)[keyof typeof OverlayType]): void
-        getData(): DrawnData
+        getData(): DrawingData
       }
     }
   }
 }
-
-export {}

@@ -8,28 +8,15 @@ import type { Path } from '@/features/main/map-fetching/types'
 import useGeolocation from '@/hooks/main/useGeolocation'
 import { tw } from '@/utils/tw'
 
-declare global {
-  interface Window {
-    kakao: any
-  }
-}
-
-interface DrawingPoint {
-  x: number
-  y: number
-}
-
-type OverlayAny = any
-
 export default function DrawMap({
   onSavePath,
 }: {
   onSavePath: (path: Path) => void
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const mapRef = useRef<any | null>(null)
-  const managerRef = useRef<any | null>(null)
-  const [, setOverlays] = useState<OverlayAny[]>([])
+  const mapRef = useRef<kakao.maps.Map | null>(null)
+  const managerRef = useRef<kakao.maps.drawing.DrawingManager | null>(null)
+  const [, setOverlays] = useState<kakao.maps.Polyline[]>([])
   const [sdkReady, setSdkReady] = useState(false)
 
   const { coords, loading, requestOnce } = useGeolocation()
@@ -67,20 +54,20 @@ export default function DrawMap({
       if (!mounted) return
       if (!el) return
 
-      const rect = containerRef.current!.getBoundingClientRect()
-      if (rect.height === 0) return
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (rect?.height === 0) return
 
       const centerLat = coords?.latitude ?? DEFAULT_CENTER.lat
       const centerLng = coords?.longitude ?? DEFAULT_CENTER.lng
 
-      const mapOption = {
+      const mapOption: kakao.maps.MapOptions = {
         center: new window.kakao.maps.LatLng(centerLat, centerLng),
         level: 3,
       }
-      const map = new window.kakao.maps.Map(containerRef.current!, mapOption)
+      const map = new window.kakao.maps.Map(el, mapOption)
       mapRef.current = map
       const { OverlayType } = window.kakao.maps.drawing
-      const drawingOptions = {
+      const drawingOptions: kakao.maps.drawing.DrawingManagerOptions = {
         map,
         drawingMode: [OverlayType.POLYLINE],
         guideTooltip: ['draw', 'drag', 'edit'],
@@ -102,15 +89,19 @@ export default function DrawMap({
       )
       managerRef.current = manager
 
-      window.kakao.maps.event.addListener(manager, 'drawend', (data: any) => {
-        const overlay = data?.target
-        if (!overlay) return
-        setOverlays(prev =>
-          produce(prev, draft => {
-            draft.push(overlay)
-          })
-        )
-      })
+      window.kakao.maps.event.addListener(
+        manager,
+        'drawend',
+        (data: { target?: kakao.maps.Polyline }) => {
+          const overlay = data?.target
+          if (!overlay) return
+          setOverlays(prev =>
+            produce(prev, draft => {
+              draft.push(overlay)
+            })
+          )
+        }
+      )
     })
 
     return () => {
@@ -139,8 +130,8 @@ export default function DrawMap({
       const rect = target.getBoundingClientRect()
       if (rect.width === 0 || rect.height === 0) return
 
-      mapRef.current.relayout()
-      mapRef.current.setCenter(initialCenter)
+      mapRef.current?.relayout()
+      mapRef.current?.setCenter(initialCenter)
     })
 
     obs.observe(el)
@@ -163,10 +154,9 @@ export default function DrawMap({
 
   const extractPolylineData = () => {
     if (!managerRef.current || !window.kakao) return
-    const { OverlayType } = window.kakao.maps.drawing
+
     const data = managerRef.current.getData()
-    const lines: Array<{ points: DrawingPoint[]; options: any }> =
-      data[OverlayType.POLYLINE] ?? []
+    const lines = data.polyline ?? []
 
     const raw = lines[0]?.points ?? []
     if (raw.length < 2) {
