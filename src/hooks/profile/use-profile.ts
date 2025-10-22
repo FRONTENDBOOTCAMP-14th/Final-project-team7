@@ -1,27 +1,13 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-import EmailCardClient from '@/components/profile/email-card'
-import ProfileCardClient from '@/components/profile/profile-card/profile-card'
-import SignoutButton from '@/components/profile/signout-button'
 import { supabase } from '@/lib/supabase/supabase-client'
-import '@/styles/main.css'
+import type { ProfileData } from '@/types/profile/profile'
 
-interface ProfileData {
-  user_name: string | null
-  bio: string | null
-  signup_date: string | null
-  profile_image_url: string | null
-}
-
-export default function ProfilePageClient() {
-  const router = useRouter()
+export default function useProfileData() {
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [email, setEmail] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchProfile() {
@@ -29,10 +15,8 @@ export default function ProfilePageClient() {
         const {
           data: { user },
         } = await supabase.auth.getUser()
-
         if (!user) {
           toast.error('로그인이 필요합니다.')
-          router.push('/sign-in')
           return
         }
 
@@ -73,33 +57,7 @@ export default function ProfilePageClient() {
     }
 
     fetchProfile()
-  }, [router])
+  }, [])
 
-  const handleSignOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-
-      toast.success('로그아웃되었습니다.')
-      router.push('/sign-in')
-    } catch {
-      toast.error('로그아웃 중 오류가 발생했습니다.')
-    }
-  }
-
-  if (loading) {
-    return (
-      <section className="flex flex-col items-center w-full p-5 gap-5">
-        <div className="animate-pulse">로딩 중...</div>
-      </section>
-    )
-  }
-
-  return (
-    <section className="flex flex-col items-center w-full p-5 gap-5">
-      <ProfileCardClient profileData={profileData} editable={true} />
-      <EmailCardClient email={email} />
-      <SignoutButton onClick={handleSignOut} />
-    </section>
-  )
+  return { profileData, email, loading }
 }

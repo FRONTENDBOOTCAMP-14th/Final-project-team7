@@ -1,3 +1,5 @@
+'use client'
+
 import '@/styles/common/theme.css'
 
 interface BioInputProps {
