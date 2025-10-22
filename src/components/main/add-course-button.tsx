@@ -6,7 +6,7 @@ import { useState } from 'react'
 import AddCourseModal from '@/components/main/add-course-modal'
 import { tw } from '@/utils/tw'
 
-export function AddCourseButton() {
+export default function AddCourseButton() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
