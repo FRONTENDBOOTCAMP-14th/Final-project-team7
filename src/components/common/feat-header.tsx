@@ -31,7 +31,7 @@ export default function FeatHeader({ title, onBack }: FeatHeaderProps) {
         >
           <ChevronLeft size={24} className="text-[var(--color-basic-300)]" />
         </button>
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-normal text-[var(--color-basic-400)]">
+        <h1 className="absolute left-1/2 text-lg font-normal text-[var(--color-basic-400)] -translate-x-1/2">
           {title}
         </h1>
       </div>
