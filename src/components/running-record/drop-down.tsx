@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { useToggleState } from '@/hooks/use-toggle-state'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { CourseOption } from '@/types/running-record/course'
+import { tw } from '@/utils/tw'
 
 interface DropdownProps {
   selectedCourse: string | 'all'
@@ -128,7 +129,13 @@ export default function DropDown({
         <button
           type="button"
           disabled
-          className="relative z-20 flex w-full items-center justify-center p-3 bg-white rounded border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-500 cursor-wait"
+          className={tw(`
+            relative z-20 flex w-full items-center justify-center p-3 bg-white 
+            rounded border border-gray-300 
+            shadow-[0_0_10px_0_rgba(0, 0, 0, 0.25)] 
+            text-gray-500 
+            cursor-wait
+          `)}
         >
           <Loader2
             className="h-5 w-5 animate-spin text-gray-500"
@@ -148,7 +155,13 @@ export default function DropDown({
           toast.error('로그인 후 이용해주세요.')
           window.location.href = '/sign-in'
         }}
-        className="w-full px-3 py-3 rounded border bg-gray-50 hover:bg-gray-100 border-gray-300  text-gray-500 text-center transition"
+        className={tw(`
+          w-full px-3 py-3
+          rounded border border-gray-300  
+          bg-gray-50 hover:bg-gray-100 
+          text-gray-500 text-center 
+          transition
+        `)}
       >
         로그인 후 이용 가능합니다
       </button>
@@ -162,7 +175,14 @@ export default function DropDown({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         onClick={toggle}
-        className="relative z-20 flex w-full items-center justify-between p-3 bg-white rounded border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] cursor-pointer"
+        className={tw(`
+          relative z-20 flex
+          w-full items-center justify-between p-3
+          bg-white
+          rounded border border-gray-300
+          shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+          cursor-pointer
+        `)}
       >
         <span>{selectedCourseName}</span>
         <ChevronDown
@@ -171,14 +191,19 @@ export default function DropDown({
         />
       </button>
 
-      {/* 리스트 */}
       {isOpen && (
         <ul
           ref={listboxRef}
           role="listbox"
           tabIndex={-1}
           onKeyDown={handleMoveKey}
-          className="absolute z-10 -mt-2 w-full bg-white rounded-md border border-gray-300 outline-none shadow-[0_0_10px_0_rgba(0,0,0,0.25)]"
+          className={tw(`
+          absolute z-10
+          -mt-2 w-full
+          bg-white
+          rounded-md border border-gray-300 outline-none
+          shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+          `)}
         >
           {visibleCourses.length > 0 ? (
             visibleCourses.map((option, index) => (

@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import type { Tables } from '@/lib/supabase/database.types'
 import type { RecordTableProps } from '@/types/running-record/record-table-props'
+import { tw } from '@/utils/tw'
 
 import EditRecordButton from './edit-record-button'
 import EditRecordModal from './edit-record-modal'
@@ -27,7 +28,16 @@ export default function RecordTable({
 
   if (isLoading) {
     return (
-      <div className="h-48 flex flex-col items-center justify-center bg-white border border-gray-200 rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-600">
+      <div
+        className={tw(
+          `flex flex-col items-center justify-center
+          h-48
+          bg-white
+          border border-gray-200 rounded-lg 
+          shadow-[0_0_10px_0_rgba(0,0,0,0.25)] 
+          text-gray-600`
+        )}
+      >
         <Loader2 className="w-6 h-6 mb-2 text-blue-600 animate-spin" />
         열심히 달려오는 중...👟
       </div>
@@ -36,7 +46,16 @@ export default function RecordTable({
 
   if (records.length === 0) {
     return (
-      <div className="h-40 flex items-center justify-center bg-white rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-500">
+      <div
+        className={tw(`
+      flex items-center justify-center
+      h-40
+      bg-white
+      rounded-md
+      shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+      text-gray-500
+      `)}
+      >
         러닝 기록을 추가해주세요
       </div>
     )
@@ -44,7 +63,15 @@ export default function RecordTable({
 
   return (
     <>
-      <table className="relative hidden md:table min-w-full overflow-hidden bg-white rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-left text-gray-800">
+      <table
+        className={tw(`
+        relative hidden md:table min-w-full
+        overflow-hidden bg-white
+        rounded-lg
+        shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+        text-left text-gray-800
+        `)}
+      >
         <caption className="sr-only">러닝 기록 목록</caption>
         <thead className="bg-blue-100 border-b border-blue-200">
           <tr>
@@ -98,7 +125,14 @@ export default function RecordTable({
             <button
               type="button"
               onClick={() => setSelectedRecord(record)}
-              className="w-full p-4 bg-white border border-gray-200 rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-left transition active:scale-[0.99] cursor-pointer"
+              className={tw(`
+                w-full p-4
+                bg-white hover:bg-gray-50
+                border border-gray-200 rounded-md
+                shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+                text-left
+                transition active:scale-[0.99]
+                cursor-pointer`)}
             >
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-gray-800 text-sm">
