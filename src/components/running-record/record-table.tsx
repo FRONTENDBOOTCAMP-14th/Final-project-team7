@@ -27,7 +27,7 @@ export default function RecordTable({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center flex-col h-48 bg-white border border-gray-200 rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-600">
+      <div className="h-48 flex flex-col items-center justify-center bg-white border border-gray-200 rounded-lg shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-600">
         <Loader2 className="w-6 h-6 mb-2 text-blue-600 animate-spin" />
         열심히 달려오는 중...👟
       </div>
@@ -36,7 +36,7 @@ export default function RecordTable({
 
   if (records.length === 0) {
     return (
-      <div className="flex items-center justify-center h-40 bg-white rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-500">
+      <div className="h-40 flex items-center justify-center bg-white rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] text-gray-500">
         러닝 기록을 추가해주세요
       </div>
     )
@@ -83,9 +83,6 @@ export default function RecordTable({
               <td className="flex justify-center items-center px-4 py-3">
                 <EditRecordButton
                   record={record}
-                  courses={[
-                    { id: record.course_id, course_name: record.course_name },
-                  ]}
                   onUpdateSuccess={onUpdateSuccess}
                   onDeleteSuccess={onDeleteSuccess}
                 />
@@ -101,7 +98,7 @@ export default function RecordTable({
             <button
               type="button"
               onClick={() => setSelectedRecord(record)}
-              className="w-full p-4 bg-white border border-gray-200 rounded-md  shadow-[0_0_10px_0_rgba(0,0,0,0.25)]  hover:bg-gray-50 text-left transition active:scale-[0.99]"
+              className="w-full p-4 bg-white border border-gray-200 rounded-md shadow-[0_0_10px_0_rgba(0,0,0,0.25)] hover:bg-gray-50 text-left transition active:scale-[0.99] cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-gray-800 text-sm">
@@ -125,16 +122,9 @@ export default function RecordTable({
           </li>
         ))}
       </ul>
-
       {selectedRecord && (
         <EditRecordModal
           record={selectedRecord}
-          courses={[
-            {
-              id: selectedRecord.course_id,
-              course_name: selectedRecord.course_name,
-            },
-          ]}
           onClose={() => setSelectedRecord(null)}
           onUpdateSuccess={onUpdateSuccess}
           onDeleteSuccess={onDeleteSuccess}
