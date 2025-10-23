@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import Profile from './profile'
+import Profile from '@/components/common/profile'
 
 export default function Header() {
   return (
