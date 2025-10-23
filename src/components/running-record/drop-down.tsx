@@ -74,7 +74,6 @@ export default function DropDown({
       ? courses
       : courses.filter(course => course.id !== selectedCourse)
 
-  // ✅ 포커스
   useEffect(() => {
     if (isOpen) setFocusedIndex(0)
     else setFocusedIndex(-1)
