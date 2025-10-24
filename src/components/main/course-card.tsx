@@ -1,3 +1,5 @@
+import { Pencil, Trash2 } from 'lucide-react'
+
 import DetailButton from '@/components/main/detail-button'
 import KakaoMap from '@/components/main/kakao-map'
 import type { Course } from '@/lib/supabase'
@@ -44,9 +46,11 @@ function toPath(input: unknown): Path {
 export default function CourseCard({
   course,
   onOpenDetail,
+  onOpenEdit,
 }: {
   course: Course
   onOpenDetail: () => void
+  onOpenEdit: () => void
 }) {
   const year = course.created_at.slice(0, 4)
   const month = course.created_at.slice(5, 7)
@@ -55,11 +59,24 @@ export default function CourseCard({
   return (
     <div
       className={tw`
-        flex flex-col items-start shrink-0
+        flex flex-col items-start shrink-0 relative
         mx-auto mb-4 p-6 w-[362px] min-w-[288px] h-[360px] rounded-md
         bg-white shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
         `}
     >
+      <div className="flex gap-2 absolute right-4 text-[14px]">
+        <button
+          type="button"
+          aria-label="코스 수정"
+          onClick={onOpenEdit}
+          className="cursor-pointer"
+        >
+          <Pencil />
+        </button>
+        <button type="button" aria-label="코스 삭제">
+          <Trash2 />
+        </button>
+      </div>
       <h3 className="mb-2.5 text-[var(--color-basic-400)] text-[18px] font-semibold">
         {course.course_name}
       </h3>
