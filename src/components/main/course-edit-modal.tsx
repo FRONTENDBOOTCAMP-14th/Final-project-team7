@@ -99,7 +99,6 @@ export default function EditCourseModal({
     [isLatLngArray, isNestedLatLngArray, isPointArray]
   )
 
-  // 초기값 주입
   useEffect(() => {
     if (!course) return
     setCourseName(course.course_name ?? '')
