@@ -11,7 +11,7 @@ import type { Course } from '@/lib/supabase'
 export default function CourseCardList() {
   const { courses, loading, error } = useCourses()
   const [selected, setSelected] = useState<Course | null>(null)
-  const [editSelect, setEditSelect] = useState<Course | null>(null)
+  const [editSelect, setEditSelect] = useState<string | null>(null)
 
   if (error)
     return <div className="p-4 text-red-600 text-sm">에러: {error}</div>

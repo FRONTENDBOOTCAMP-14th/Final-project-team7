@@ -2,13 +2,13 @@
 
 import { CircleArrowLeft, Info, Upload } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import DrawMap from '@/components/main/draw-map'
 import KakaoMap from '@/components/main/kakao-map'
 import { useCourseById, useCourses } from '@/features/main/course-crud/context'
-import type { Path } from '@/features/main/map-fetching/types'
+import type { LatLng, Path } from '@/features/main/map-fetching/types'
 import type { Course } from '@/lib/supabase'
 import { supabase } from '@/lib/supabase/supabase-client'
 import { tw } from '@/utils/tw'
@@ -16,6 +16,11 @@ import { tw } from '@/utils/tw'
 interface EditCourseModalProps {
   courseId: string
   onClose: () => void
+}
+
+interface Point {
+  x: number
+  y: number
 }
 
 export default function EditCourseModal({
@@ -34,6 +39,66 @@ export default function EditCourseModal({
   const [drawingMode, setDrawingMode] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
+  const isObject = useCallback((u: unknown): u is Record<string, unknown> => {
+    return typeof u === 'object' && u !== null
+  }, [])
+
+  const isLatLng = useCallback(
+    (u: unknown): u is LatLng => {
+      if (!isObject(u)) return false
+      const o = u
+      return typeof o.lat === 'number' && typeof o.lng === 'number'
+    },
+    [isObject]
+  )
+
+  const isLatLngArray = useCallback(
+    (u: unknown): u is LatLng[] => {
+      return Array.isArray(u) && u.every(isLatLng)
+    },
+    [isLatLng]
+  )
+
+  const isNestedLatLngArray = useCallback(
+    (u: unknown): u is LatLng[][] => {
+      return (
+        Array.isArray(u) &&
+        u.length > 0 &&
+        u.every(row => Array.isArray(row) && row.every(isLatLng))
+      )
+    },
+    [isLatLng]
+  )
+
+  const isPoint = useCallback(
+    (u: unknown): u is Point => {
+      if (!isObject(u)) return false
+      const o = u
+      return typeof o.x === 'number' && typeof o.y === 'number'
+    },
+    [isObject]
+  )
+
+  const isPointArray = useCallback(
+    (u: unknown): u is Point[] => {
+      return Array.isArray(u) && u.every(isPoint)
+    },
+    [isPoint]
+  )
+
+  const toPath = useCallback(
+    (input: unknown): Path => {
+      if (!input) return []
+
+      if (isLatLngArray(input)) return input
+      if (isNestedLatLngArray(input)) return input.flat()
+      if (isPointArray(input)) return input.map(p => ({ lat: p.y, lng: p.x }))
+
+      return []
+    },
+    [isLatLngArray, isNestedLatLngArray, isPointArray]
+  )
+
   // 초기값 주입
   useEffect(() => {
     if (!course) return
@@ -41,47 +106,7 @@ export default function EditCourseModal({
     setCourseDesc(course.course_desc ?? '')
     setImagePreview(course.image ?? null)
     setPath(toPath(course.course_map))
-  }, [course])
-
-  function toPath(input: unknown): Path {
-    if (!input) return []
-    if (
-      Array.isArray(input) &&
-      input.every(
-        p => p && typeof p.lat === 'number' && typeof p.lng === 'number'
-      )
-    ) {
-      return input as Path
-    }
-    if (Array.isArray(input) && Array.isArray((input as unknown[])[0])) {
-      const flat = (input as unknown[]).flat()
-      if (
-        flat.every(
-          p =>
-            p &&
-            typeof (p as any).lat === 'number' &&
-            typeof (p as any).lng === 'number'
-        )
-      ) {
-        return flat as Path
-      }
-    }
-    if (
-      Array.isArray(input) &&
-      (input as unknown[]).every(
-        p =>
-          p &&
-          typeof (p as any).x === 'number' &&
-          typeof (p as any).y === 'number'
-      )
-    ) {
-      return input.map(p => ({
-        lat: p.y,
-        lng: p.x,
-      }))
-    }
-    return []
-  }
+  }, [course, toPath])
 
   const hasChanges = useMemo(() => {
     if (!course) return false
@@ -94,7 +119,7 @@ export default function EditCourseModal({
       prev.length === path.length &&
       prev.every((p, i) => p.lat === path[i]?.lat && p.lng === path[i]?.lng)
     return !(sameName && sameDesc && sameImg && samePath)
-  }, [course, courseName, courseDesc, imagePreview, imageFile, path])
+  }, [course, courseName, courseDesc, imagePreview, imageFile, toPath, path])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
