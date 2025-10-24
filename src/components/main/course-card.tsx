@@ -1,9 +1,12 @@
 import { Pencil, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import DetailButton from '@/components/main/detail-button'
 import KakaoMap from '@/components/main/kakao-map'
 import type { Course } from '@/lib/supabase'
 import { tw } from '@/utils/tw'
+
+import { useCourses } from '../../features/main/course-crud/context'
 
 interface LatLng {
   lat: number
@@ -56,6 +59,17 @@ export default function CourseCard({
   const month = course.created_at.slice(5, 7)
   const day = course.created_at.slice(8, 10)
 
+  const { removeCourse, refresh } = useCourses()
+
+  async function handleDelete() {
+    if (!window.confirm(`[${course.course_name}] 코스를 삭제하시겠습니까?`))
+      return
+    const ok = await removeCourse(course.id)
+    if (!ok) return toast.error('코스 삭제에 실패했습니다.')
+    toast.success('코스가 삭제되었습니다.')
+    await refresh()
+  }
+
   return (
     <div
       className={tw`
@@ -69,11 +83,16 @@ export default function CourseCard({
           type="button"
           aria-label="코스 수정"
           onClick={onOpenEdit}
-          className="cursor-pointer"
+          className="hover:text-blue-400 cursor-pointer"
         >
           <Pencil />
         </button>
-        <button type="button" aria-label="코스 삭제">
+        <button
+          type="button"
+          aria-label="코스 삭제"
+          onClick={handleDelete}
+          className="hover:text-red-500 cursor-pointer"
+        >
           <Trash2 />
         </button>
       </div>
