@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import type { PropsWithChildren } from 'react'
 
+import Header from '@/components/common/header'
+import Navigation from '@/components/common/navigation'
+
 import ClientLayout from '@/app/client-layout'
 
 export const metadata: Metadata = {
@@ -45,6 +48,8 @@ export default function RootLayout({ children }: PropsWithChildren) {
       />
       <body className="md:max-w-[768px] mx-auto border-amber-700 border-4">
         <ClientLayout>
+          <Header />
+          <Navigation />
           <main>{children}</main>
         </ClientLayout>
       </body>
