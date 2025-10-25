@@ -175,12 +175,10 @@ export default function DropDown({
         aria-expanded={isOpen}
         onClick={toggle}
         className={tw(`
-          relative z-20 flex
-          w-full items-center justify-between p-3
-          bg-white
-          rounded border border-gray-300
-          shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
-          cursor-pointer
+            relative z-20 flex items-center justify-between
+            w-full p-3
+            bg-white rounded border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+            cursor-pointer
         `)}
       >
         <span>{selectedCourseName}</span>
