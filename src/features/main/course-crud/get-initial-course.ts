@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase/supabase-client'
 
-export async function getInitialCourse() {
+export default async function getInitialCourse() {
   const { data } = await supabase
     .from('course')
     .select('*')
