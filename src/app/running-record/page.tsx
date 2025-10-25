@@ -8,8 +8,8 @@ export default async function RunningPage() {
   ])
 
   return (
-    <>
+    <div className="px-[15px] py-5 min-h-screen">
       <RecordContainer courses={courses ?? []} records={records ?? []} />
-    </>
+    </div>
   )
 }

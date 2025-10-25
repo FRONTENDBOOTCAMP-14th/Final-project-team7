@@ -106,6 +106,7 @@ export interface Database {
           distance: string | null
           duration: string | null
           id: string
+          user_id: string
           pace: string | null
           course_id: string
         }
@@ -116,6 +117,7 @@ export interface Database {
           distance?: string | null
           duration?: string | null
           id?: string
+          user_id?: string
           pace?: string | null
           course_id?: string
         }
@@ -126,6 +128,7 @@ export interface Database {
           distance?: string | null
           duration?: string | null
           id?: string
+          user_id?: string
           pace?: string | null
           course_id?: string
         }

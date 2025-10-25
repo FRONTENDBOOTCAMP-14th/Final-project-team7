@@ -7,7 +7,6 @@ import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { supabase } from '@/lib/supabase/supabase-client'
-import type { CourseOption } from '@/types/running-record/course'
 import type { RunningRecord } from '@/types/running-record/record-table-props'
 import { tw } from '@/utils/tw'
 
@@ -15,7 +14,7 @@ const AddRecordModal = dynamic(() => import('./add-record-modal'), {
   ssr: false,
   loading: () => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-      <div className="rounded-lg p-6 bg-white shadow-md text-gray-700">
+      <div className="p-6 bg-white rounded-lg shadow-md text-gray-700">
         <Loader2 className="w-5 h-5 mx-auto text-blue-600 animate-spin" />
       </div>
     </div>
@@ -23,12 +22,10 @@ const AddRecordModal = dynamic(() => import('./add-record-modal'), {
 })
 
 interface AddRecordButtonProps {
-  courses: CourseOption[]
   onAddSuccess: (newRecord: RunningRecord) => void
 }
 
 export default function AddRecordButton({
-  courses,
   onAddSuccess,
 }: AddRecordButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -63,10 +60,11 @@ export default function AddRecordButton({
         onClick={handleOpen}
         className={tw(`
           flex items-center gap-2 px-3 py-2
-          rounded-lg bg-white border border-gray-300
-          shadow-[0_0_10px_0_rgba(0, 0, 0, 0.25)] text-gray-700 
-          hover:bg-gray-50 transition cursor-pointer
-          `)}
+          bg-white hover:bg-gray-50  
+          rounded-lg border border-gray-300
+          shadow-sm text-gray-700 text-sm
+          transition cursor-pointer
+        `)}
         aria-haspopup="dialog"
         aria-expanded={isModalOpen}
       >
@@ -75,11 +73,7 @@ export default function AddRecordButton({
       </button>
 
       {isModalOpen && (
-        <AddRecordModal
-          courses={courses}
-          onClose={handleClose}
-          onAddSuccess={onAddSuccess}
-        />
+        <AddRecordModal onClose={handleClose} onAddSuccess={onAddSuccess} />
       )}
     </>
   )
