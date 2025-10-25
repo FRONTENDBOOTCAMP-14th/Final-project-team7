@@ -12,32 +12,29 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
   const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).kakao?.maps) {
+    if (typeof window === 'undefined') return
+    if (window.kakao?.maps) {
       setSdkReady(true)
-    } else {
-      const w = window as any
-      if (w?.kakao?.maps) setSdkReady(true)
-      else {
-        const iv = setInterval(() => {
-          if (w?.kakao?.maps) {
-            clearInterval(iv)
-            setSdkReady(true)
-          }
-        }, 50)
-        return () => clearInterval(iv)
-      }
+      return
     }
+    const iv = setInterval(() => {
+      if (window.kakao?.maps) {
+        clearInterval(iv)
+        setSdkReady(true)
+      }
+    }, 50)
+    return () => clearInterval(iv)
   }, [])
 
-  const avgSource = useMemo(
-    () =>
+  const avgSource = useMemo(() => {
+    const last = coordData.at(-1)
+    const isClosed =
       coordData.length > 1 &&
-      coordData[0].lat === coordData.at(-1)!.lat &&
-      coordData[0].lng === coordData.at(-1)!.lng
-        ? coordData.slice(0, -1)
-        : coordData,
-    [coordData]
-  )
+      last &&
+      coordData[0].lat === last.lat &&
+      coordData[0].lng === last.lng
+    return isClosed ? coordData.slice(0, -1) : coordData
+  }, [coordData])
 
   const sum = avgSource.reduce(
     (acc, cur) => {
@@ -64,10 +61,9 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
         center: new window.kakao.maps.LatLng(CenterLat, CenterLng),
         level: 7,
       }
-      mapRef.current = new window.kakao.maps.Map(
-        containerRef.current,
-        mapOption
-      )
+      if (!containerRef.current) return
+      const el = containerRef.current
+      mapRef.current = new window.kakao.maps.Map(el, mapOption)
       setMapReady(true)
     }
     window.kakao.maps.load(start)
@@ -134,7 +130,7 @@ export default function KakaoMap({ coordData }: { coordData: Path }) {
     <>
       <div
         ref={containerRef}
-        className="w-[100%] h-[100 %] border-[var(--color-basic-100)] rounded-lg"
+        className="w-[100%] h-[100%] border-[var(--color-basic-100)] rounded-lg"
       />
     </>
   )

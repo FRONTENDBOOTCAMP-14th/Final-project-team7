@@ -1,15 +1,14 @@
 'use client'
 
-import { produce } from 'immer'
 import type { ReactNode } from 'react'
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
-  useState,
-  useCallback,
   useRef,
+  useState,
 } from 'react'
 
 import { DEFAULT_SORT, SORT_ORDER, type SortKey } from '@/constants/main/sort'
@@ -17,14 +16,32 @@ import type { Course } from '@/lib/supabase'
 import { supabase } from '@/lib/supabase/supabase-client'
 
 function sortByKey(list: Course[], key: SortKey) {
-  const { column, ascending } = SORT_ORDER[key]
-  return [...list].sort((a: any, b: any) => {
-    const av = a[column]
-    const bv = b[column]
+  const { column, ascending } = SORT_ORDER[key] as {
+    column: keyof Course
+    ascending: boolean
+  }
+
+  type Comp = string | number | boolean | Date | null | undefined
+
+  const toComp = (v: unknown): Exclude<Comp, null | undefined> => {
+    if (v instanceof Date) return v
+    return v as string | number | boolean
+  }
+
+  return [...list].sort((a, b) => {
+    const av = a[column] as Comp
+    const bv = b[column] as Comp
     if (av === bv) return 0
     if (av == null) return ascending ? 1 : -1
     if (bv == null) return ascending ? -1 : 1
-    return ascending ? (av > bv ? 1 : -1) : av > bv ? -1 : 1
+
+    const A = toComp(av)
+    const B = toComp(bv)
+
+    const aNum = A instanceof Date ? A.getTime() : A
+    const bNum = B instanceof Date ? B.getTime() : B
+
+    return ascending ? (aNum > bNum ? 1 : -1) : aNum > bNum ? -1 : 1
   })
 }
 
@@ -106,20 +123,18 @@ export function CourseProvider({
     async (payload: Omit<Course, 'id' | 'created_at'>) => {
       setError(null)
 
-      // 서버 생성
       const { data, error } = await supabase
         .from('course')
         .insert(payload)
         .select('*')
         .single()
 
-      if (error) {
-        setError(error.message)
+      if (error || !data) {
+        setError(error?.message ?? '생성 실패')
         return null
       }
 
-      // 성공 시 목록에 추가 + 정렬
-      setCourses(prev => sortByKey([...prev, data!], sortKey))
+      setCourses(prev => sortByKey([...prev, data], sortKey))
       return data as Course
     },
     [sortKey]
@@ -129,17 +144,15 @@ export function CourseProvider({
     async (id: string, patch: Partial<Course>) => {
       setError(null)
 
-      // 기존 스냅샷
       let prevCourse: Course | null = null
-      setCourses(prev =>
-        produce(prev, draft => {
-          const idx = draft.findIndex(c => c.id === id)
-          if (idx >= 0) {
-            prevCourse = { ...draft[idx] }
-            draft[idx] = { ...draft[idx], ...patch }
-          }
-        })
-      )
+      setCourses(prev => {
+        const idx = prev.findIndex(c => c.id === id)
+        if (idx < 0) return prev
+        prevCourse = { ...prev[idx] }
+        const next = [...prev]
+        next[idx] = { ...next[idx], ...patch }
+        return next
+      })
       bumpBusy(id)
 
       // 서버 반영
@@ -152,27 +165,31 @@ export function CourseProvider({
 
       if (error) {
         // 롤백
-        setCourses(prev =>
-          produce(prev, draft => {
-            const idx = draft.findIndex(c => c.id === id)
-            if (idx >= 0 && prevCourse) draft[idx] = prevCourse
-          })
-        )
+        setCourses(prev => {
+          if (!prevCourse) return prev
+          const idx = prev.findIndex(c => c.id === id)
+          if (idx < 0) return prev
+          const next = [...prev]
+          next[idx] = prevCourse
+          return next
+        })
         setError(error.message)
         dropBusy(id)
         return null
       }
 
       // 서버 값으로 동기화 + 정렬 보정
-      setCourses(prev =>
-        produce(prev, draft => {
-          const idx = draft.findIndex(c => c.id === id)
-          if (idx >= 0) draft[idx] = data as Course
-        })
-      )
+      setCourses(prev => {
+        if (!data) return prev
+        const idx = prev.findIndex(c => c.id === id)
+        if (idx < 0) return prev
+        const next = [...prev]
+        next[idx] = data as Course
+        return next
+      })
       setCourses(prev => sortByKey(prev, sortKey))
       dropBusy(id)
-      return data as Course
+      return (data ?? null) as Course | null
     },
     [sortKey]
   )
@@ -182,23 +199,20 @@ export function CourseProvider({
       setError(null)
 
       let removed: Course | null = null
-      setCourses(prev =>
-        produce(prev, draft => {
-          const idx = draft.findIndex(c => c.id === id)
-          if (idx >= 0) removed = draft.splice(idx, 1)[0] ?? null
-        })
-      )
+      setCourses(prev => {
+        const idx = prev.findIndex(c => c.id === id)
+        if (idx < 0) return prev
+        const next = [...prev]
+        removed = next.splice(idx, 1)[0] ?? null
+        return next
+      })
       bumpBusy(id)
 
       const { error } = await supabase.from('course').delete().eq('id', id)
 
       if (error) {
         // 복원
-        setCourses(prev =>
-          produce(prev, draft => {
-            if (removed) draft.push(removed)
-          })
-        )
+        setCourses(prev => (removed ? [...prev, removed] : prev))
         setCourses(prev => sortByKey(prev, sortKey))
         setError(error.message)
         dropBusy(id)
