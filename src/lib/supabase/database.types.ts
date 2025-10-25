@@ -43,28 +43,34 @@ export interface Database {
       }
       music_links: {
         Row: {
-          aritist: string | null
+          artist: string | null
           bpm: string | null
-          link: string[] | null
-          review: string | null
           title: string
           user_id: string
+          album_image: string
+          is_pinned: boolean
+          preview_url: string | null
+          external_url: string
         }
         Insert: {
-          aritist?: string | null
+          artist?: string | null
           bpm?: string | null
-          link?: string[] | null
-          review?: string | null
-          title: string
+          title?: string
           user_id: string
+          album_image?: string
+          is_pinned?: boolean
+          preview_url?: string | null
+          external_url?: string
         }
         Update: {
-          aritist?: string | null
+          artist?: string | null
           bpm?: string | null
-          link?: string[] | null
-          review?: string | null
           title?: string
-          user_id?: string
+          user_id: string
+          album_image?: string
+          is_pinned?: boolean
+          preview_url?: string | null
+          external_url?: string
         }
         Relationships: []
       }

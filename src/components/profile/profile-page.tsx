@@ -6,8 +6,10 @@ import { toast } from 'sonner'
 
 import EmailCardClient from '@/components/profile/email-card'
 import ProfileCardClient from '@/components/profile/profile-card/profile-card'
+import RunningMusicCard from '@/components/profile/running-music-card'
 import SignoutButton from '@/components/profile/signout-button'
 import { supabase } from '@/lib/supabase/supabase-client'
+
 import '@/styles/main.css'
 
 interface ProfileData {
@@ -99,6 +101,7 @@ export default function ProfilePageClient() {
     <section className="flex flex-col items-center w-full p-5 gap-5">
       <ProfileCardClient profileData={profileData} editable={true} />
       <EmailCardClient email={email} />
+      <RunningMusicCard />
       <SignoutButton onClick={handleSignOut} />
     </section>
   )
