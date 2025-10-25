@@ -9,3 +9,4 @@
 @import './common/_a11y.css' layer(utilities);
 @import './common/_animation.css' layer(utilities);
 
+@import './common/calendar.css' layer(calendar);
