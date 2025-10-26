@@ -1,5 +1,3 @@
-import '@/styles/common/theme.css'
-
 interface RunningSummaryCardProps {
   totalDistance: number
   totalRuns: number
@@ -12,7 +10,7 @@ export default function RunningSummaryCard({
   avgPace,
 }: RunningSummaryCardProps) {
   return (
-    <div className="p-5 bg-white rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)] w-full max-w-[363px]">
+    <div className="p-5 w-full max-w-[363px] rounded-lg bg-white shadow-[0_0_6px_0_rgba(0,0,0,0.25)]">
       <div className="flex justify-around">
         <div>
           <p className="text-[var(--color-basic-200)] text-sm">총 거리</p>

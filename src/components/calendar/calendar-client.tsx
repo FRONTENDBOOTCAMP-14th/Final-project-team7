@@ -67,8 +67,8 @@ export default function CalendarClient() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center gap-5">
-        <div className="w-full h-8 bg-gray-200 animate-pulse rounded" />
-        <div className="w-full h-[400px] bg-gray-200 animate-pulse rounded-lg" />
+        <div className="w-full rounded bg-[var(--color-basic-100)] animate-pulse" />
+        <div className="w-full rounded-lg  bg-[var(--color-basic-100)]" />
       </div>
     )
   }

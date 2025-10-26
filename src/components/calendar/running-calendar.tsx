@@ -29,11 +29,11 @@ export default function RunningCalendar({
     if (view !== 'month') return ''
     const month = currentMonth.getMonth()
     if (date.getMonth() !== month) {
-      return 'text-gray-300 min-h-[45px] p-2 rounded-lg text-center text-sm font-light transition-all relative flex flex-col justify-between items-center'
+      return 'flex flex-col justify-between items-center relative min-h-[45px] p-2 rounded-lg text-center text-sm font-light text-gray-200 transition-all'
     }
 
     const classes: string[] = [
-      'min-h-[45px] p-2 rounded-lg text-center text-sm font-light transition-all hover:bg-gray-100 relative flex flex-col justify-between items-center',
+      'flex flex-col justify-between items-center relative p-2 min-h-[45px] rounded-lg text-center text-sm font-light hover:bg-gray-100 transition-all',
     ]
 
     const day = date.getDay()
@@ -78,7 +78,7 @@ export default function RunningCalendar({
 
     return (
       <div
-        className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 text-[10px] font-light px-0.5 rounded z-[2] ${
+        className={`absolute px-0.5 z-[2] bottom-0.5 left-1/2 rounded text-[10px] font-light -translate-x-1/2 ${
           isLongDistance ? 'bg-[#073462] text-white' : 'bg-[#74a9f4] text-white'
         }`}
       >
@@ -104,18 +104,18 @@ export default function RunningCalendar({
       <div className="flex items-center justify-center pb-5 gap-2">
         <button
           onClick={handlePrevMonth}
-          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white cursor-pointer transition-colors hover:bg-[#f3f3f3]"
+          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white cursor-pointer hover:bg-[#f3f3f3] transition-colors"
         >
           <ChevronLeft size={18} />
         </button>
 
-        <span className="text-[var(--color-basic-400)] text-lg font-normal select-none flex items-center gap-1">
+        <span className="flex items-center select-none gap-1 text-[var(--color-basic-400)] text-lg font-normal">
           {currentMonth.getFullYear()}년 {currentMonth.getMonth() + 1}월
         </span>
 
         <button
           onClick={handleNextMonth}
-          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white cursor-pointer transition-colors hover:bg-[#f3f3f3]"
+          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white cursor-pointer hover:bg-[#f3f3f3] transition-colors"
         >
           <ChevronRight size={18} />
         </button>
