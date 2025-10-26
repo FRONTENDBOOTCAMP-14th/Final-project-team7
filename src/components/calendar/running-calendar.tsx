@@ -78,7 +78,7 @@ export default function RunningCalendar({
 
     return (
       <div
-        className={`absolute px-0.5 z-[2] bottom-0.5 left-1/2 rounded text-[10px] font-light -translate-x-1/2 ${
+        className={`absolute z-[2] px-0.5 bottom-0.5 left-1/2 rounded text-[10px] font-light -translate-x-1/2 ${
           isLongDistance ? 'bg-[#073462] text-white' : 'bg-[#74a9f4] text-white'
         }`}
       >
@@ -104,7 +104,7 @@ export default function RunningCalendar({
       <div className="flex items-center justify-center pb-5 gap-2">
         <button
           onClick={handlePrevMonth}
-          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white cursor-pointer hover:bg-[#f3f3f3] transition-colors"
+          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white hover:bg-[#f3f3f3] transition-colors cursor-pointer"
         >
           <ChevronLeft size={18} />
         </button>
@@ -115,7 +115,7 @@ export default function RunningCalendar({
 
         <button
           onClick={handleNextMonth}
-          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white cursor-pointer hover:bg-[#f3f3f3] transition-colors"
+          className="flex justify-center items-center w-7 h-7 rounded-full border border-[var(--color-basic-100)] bg-white hover:bg-[#f3f3f3] transition-colors cursor-pointer"
         >
           <ChevronRight size={18} />
         </button>
