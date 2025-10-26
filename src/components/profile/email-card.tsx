@@ -1,5 +1,3 @@
-import '@/styles/common/theme.css'
-
 interface EmailCardProps {
   email: string | null
 }

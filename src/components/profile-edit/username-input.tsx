@@ -1,7 +1,5 @@
 'use client'
 
-import '@/styles/common/theme.css'
-
 interface UsernameInputProps {
   value: string
   onChange: (value: string) => void

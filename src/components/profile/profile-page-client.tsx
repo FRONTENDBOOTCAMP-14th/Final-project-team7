@@ -9,8 +9,6 @@ import ProfileCard from '@/components/profile/profile-card/profile-card'
 import SignoutButton from '@/components/profile/signout-button'
 import useProfileData from '@/hooks/profile/use-profile'
 
-import '@/styles/main.css'
-
 export default function ProfilePageClient() {
   const router = useRouter()
   const { profileData, email, loading } = useProfileData()

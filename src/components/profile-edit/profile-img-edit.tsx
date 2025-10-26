@@ -3,7 +3,6 @@
 import { Camera } from 'lucide-react'
 
 import Profile from '@/components/common/profile'
-import '@/styles/common/theme.css'
 
 interface ProfileEditProps {
   imageUrl: string | null

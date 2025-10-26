@@ -2,8 +2,6 @@ import Profile from '@/components/common/profile'
 import EditButton from '@/components/profile/profile-card/edit-button'
 import type { ProfileData } from '@/types/profile/profile.ts'
 
-import '@/styles/common/theme.css'
-
 interface ProfileCardProps {
   profileData: ProfileData | null
   editable?: boolean

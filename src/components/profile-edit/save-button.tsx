@@ -1,5 +1,3 @@
-import '@/styles/common/theme.css'
-
 interface SaveButtonProps {
   label?: string
   type?: 'button' | 'submit'

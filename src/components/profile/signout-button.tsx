@@ -5,8 +5,6 @@ import { toast } from 'sonner'
 
 import { supabase } from '@/lib/supabase/supabase-client'
 
-import '@/styles/common/theme.css'
-
 export default function SignoutButton() {
   const router = useRouter()
 
