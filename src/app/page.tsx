@@ -1,10 +1,9 @@
-import type { PropsWithChildren } from 'react'
+import MainPage from './main/page'
 
-export default function Page({ children }: PropsWithChildren) {
+export default function Page() {
   return (
     <section>
-      <h1>Final Project Template</h1>
-      {children}
+      <MainPage />
     </section>
   )
 }

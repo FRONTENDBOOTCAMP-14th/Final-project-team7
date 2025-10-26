@@ -3,10 +3,9 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import type { PropsWithChildren } from 'react'
 
+import ClientLayout from '@/app/client-layout'
 import Header from '@/components/common/header'
 import Navigation from '@/components/common/navigation'
-
-import ClientLayout from '@/app/client-layout'
 
 export const metadata: Metadata = {
   title: {

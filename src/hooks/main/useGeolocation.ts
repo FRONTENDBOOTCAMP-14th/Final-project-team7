@@ -6,6 +6,18 @@ import type {
   GeoPermission,
 } from '@/features/main/map-fetching/types'
 
+// interface PositionLite {
+//   latitude: number
+//   longitude: number
+//   accuracy: number
+// }
+
+// type NavigatorWithPermissions = Navigator & {
+//   permissions?: {
+//     query(args: { name: PermissionName }): Promise<PermissionStatus>
+//   }
+// }
+
 export default function useGeolocation(defaultOptions: GeoOptions = {}) {
   const [coords, setCoords] = useState<GeoCoords | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -58,16 +70,27 @@ export default function useGeolocation(defaultOptions: GeoOptions = {}) {
       const { latitude, longitude, accuracy } = position.coords
       setCoords({ latitude, longitude, accuracy })
       return { latitude, longitude, accuracy }
-    } catch (e: any) {
-      const msg =
-        e?.message ??
-        (e?.code === 1
-          ? 'Permission denied'
-          : e?.code === 2
-            ? 'Position unavailable'
-            : e?.code === 3
-              ? 'Timeout'
-              : 'Unknown geolocation error')
+    } catch (e: unknown) {
+      let msg = 'Unknown geolocation error'
+      if (e && typeof e === 'object') {
+        const maybe = e as Partial<GeolocationPositionError> & {
+          message?: string
+        }
+        if (maybe.message) msg = maybe.message
+        else {
+          switch (maybe.code) {
+            case 1:
+              msg = 'Permission denied'
+              break
+            case 2:
+              msg = 'Position unavailable'
+              break
+            case 3:
+              msg = 'Timeout'
+              break
+          }
+        }
+      }
       setError(msg)
       return null
     } finally {

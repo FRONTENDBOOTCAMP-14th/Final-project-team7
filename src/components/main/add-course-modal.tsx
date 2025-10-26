@@ -112,9 +112,12 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
       toast.success('코스 추가에 성공했습니다.')
       await refresh()
       onClose()
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error('코스 추가에 실패했습니다.')
-      const msg = String(err?.message ?? '')
+      const msg =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as { message?: unknown }).message)
+          : ''
       if (msg.includes('permission') || msg.includes('RLS')) {
         toast.error('권한 문제로 저장 실패: 테이블/스토리지 정책을 확인하세요.')
       } else {
