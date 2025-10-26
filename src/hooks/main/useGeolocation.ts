@@ -6,18 +6,6 @@ import type {
   GeoPermission,
 } from '@/features/main/map-fetching/types'
 
-// interface PositionLite {
-//   latitude: number
-//   longitude: number
-//   accuracy: number
-// }
-
-// type NavigatorWithPermissions = Navigator & {
-//   permissions?: {
-//     query(args: { name: PermissionName }): Promise<PermissionStatus>
-//   }
-// }
-
 export default function useGeolocation(defaultOptions: GeoOptions = {}) {
   const [coords, setCoords] = useState<GeoCoords | null>(null)
   const [error, setError] = useState<string | null>(null)
