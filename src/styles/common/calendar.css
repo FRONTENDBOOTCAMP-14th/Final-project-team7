@@ -1,0 +1,51 @@
+.calendar-custom .react-calendar {
+  width: 100%;
+  max-width: 100%;
+  border: none;
+  font-family: 'Pretendard', 'Arial', sans-serif;
+}
+
+.calendar-custom .react-calendar__navigation {
+  display: none !important;
+}
+
+.calendar-custom .react-calendar__month-view__weekdays {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  font-weight: 300;
+  font-size: 16px;
+  margin-bottom: 0.75rem;
+}
+
+.calendar-custom .react-calendar__month-view__weekdays__weekday {
+  flex: 1;
+  padding: 0.5rem;
+}
+
+.calendar-custom .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  color: #202020;
+}
+
+.calendar-custom
+  .react-calendar__month-view__weekdays__weekday:nth-child(1)
+  abbr {
+  color: #ef4444;
+}
+
+.calendar-custom
+  .react-calendar__month-view__weekdays__weekday:nth-child(7)
+  abbr {
+  color: #3b82f6;
+}
+
+.calendar-custom .react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-custom .react-calendar__tile {
+  position: relative;
+}
