@@ -45,7 +45,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         src={kakaoSdkUrl}
         strategy="afterInteractive"
       />
-      <body className="md:max-w-[768px] mx-auto border-amber-700 border-4">
+      <body className="md:max-w-[768px] mx-auto">
         <ClientLayout>
           <Header />
           <Navigation />
