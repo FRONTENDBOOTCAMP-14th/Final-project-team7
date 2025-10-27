@@ -1,9 +1,9 @@
-import MainPage from './main/page'
+import SignInPage from '@/app/sign-in/page'
 
 export default function Page() {
   return (
     <>
-      <MainPage />
+      <SignInPage />
     </>
   )
 }
