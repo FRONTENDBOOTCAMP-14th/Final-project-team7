@@ -2,7 +2,7 @@
 
 import { CircleArrowLeft, Info, Upload } from 'lucide-react'
 import Image from 'next/image'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import DrawMap from '@/components/main/draw-map'
@@ -24,9 +24,72 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
   const [drawingMode, setDrawingMode] = useState(false)
   const [path, setPath] = useState<Path>([])
   const [isSaving, setIsSaving] = useState(false)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
+  const firstFieldRef = useRef<HTMLInputElement>(null)
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null)
+  const previousOverflowRef = useRef<string>('')
 
   const { createCourse, refresh } = useCourses()
+
+  useEffect(() => {
+    lastFocusedElementRef.current = document.activeElement as HTMLElement | null
+    previousOverflowRef.current = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    if (firstFieldRef.current) {
+      firstFieldRef.current.focus()
+    }
+
+    const focusableSelectors =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        const n = modalRef.current
+        if (!n) return
+        const focusable = Array.from(
+          n.querySelectorAll<HTMLElement>(focusableSelectors)
+        ).filter(
+          el =>
+            !el.hasAttribute('disabled') &&
+            el.tabIndex !== -1 &&
+            !el.getAttribute('aria-hidden')
+        )
+        if (focusable.length === 0) {
+          e.preventDefault()
+          return
+        }
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        const active = document.activeElement as HTMLElement | null
+        if (e.shiftKey) {
+          if (active === first || !n.contains(active)) {
+            e.preventDefault()
+            last.focus()
+          }
+        } else {
+          if (active === last) {
+            e.preventDefault()
+            first.focus()
+          }
+        }
+      } else if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflowRef.current
+      if (lastFocusedElementRef.current) {
+        lastFocusedElementRef.current.focus()
+      }
+    }
+  }, [onClose])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -37,7 +100,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
     reader.readAsDataURL(file)
   }
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault()
     const file = e.dataTransfer.files?.[0]
     if (!file) return
@@ -129,8 +192,20 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
   }
 
   return (
-    <div className="flex items-center z-50 fixed inset-0 justify-center bg-black/30 backdrop-blur-xs">
-      <div className="bg-white w-[400px] rounded-lg shadow-lg overflow-scroll">
+    <div
+      className="flex items-center z-50 fixed inset-0 justify-center bg-black/30 backdrop-blur-xs"
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          onClose()
+        }
+      }}
+    >
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white w-[400px] max-h-[80vh] rounded-lg shadow-lg overflow-y-auto"
+      >
         <div className="flex items-center p-4">
           <button
             onClick={onClose}
@@ -143,6 +218,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
           <div>
             <input
+              ref={firstFieldRef}
               type="text"
               placeholder="코스명"
               name="course_name"
@@ -152,7 +228,7 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               className={tw`
                 px-3 py-2 w-full 
                 border border-gray-300 rounded-md outline-none
-                focus:ring-2 focus:ring-blue-400
+                focus:ring-2
                 `}
             />
           </div>
@@ -165,12 +241,22 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
               className={tw`
                 w-full px-3 py-2 border border-gray-200 rounded-md
                 text-sm text-gray-700
-                outline-none focus:ring-2 focus:ring-blue-400 resize-none`}
+                outline-none focus:ring-2 resize-none`}
               rows={3}
             />
           </div>
 
-          <div
+          <input
+            type="file"
+            name="course_image"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+
+          <button
+            type="button"
             onClick={() => fileInputRef.current?.click()}
             onDrop={handleDrop}
             onDragOver={e => e.preventDefault()}
@@ -194,15 +280,8 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
                 <p className="text-sm">사진 업로드</p>
               </>
             )}
-            <input
-              type="file"
-              name="course_image"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
+          </button>
+
           <div className="bg-gray-300 rounded-md text-center text-gray-600">
             {drawingMode ? (
               <DrawMap onSavePath={setPath} />
@@ -230,7 +309,11 @@ export default function AddCourseModal({ onClose }: AddCourseModalProps) {
             disabled={isSaving}
             className={tw`
               w-full text-white py-2 rounded-md transition cursor-pointer
-              ${isSaving ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}
+              ${
+                isSaving
+                  ? 'bg-blue-300 cursor-not-allowed'
+                  : 'bg-blue-500 hover:bg-blue-600'
+              }
             `}
           >
             저장하기
