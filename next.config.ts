@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
     // 빌드 시, 타입 검사 결과 무시 설정
     ignoreBuildErrors: false,
   },
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
 }
 
 export default nextConfig
