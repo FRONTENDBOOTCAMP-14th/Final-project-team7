@@ -43,7 +43,7 @@ export default function Profile({
           .eq('id', user.id)
           .single()
 
-        if (error || !profileData?.profile_image_url) {
+        if (error ?? !profileData?.profile_image_url) {
           setSrc('/dev_profiles/default_user.png')
           if (error) toast.error(`프로필 조회 실패: ${error.message}`)
           return
@@ -54,7 +54,7 @@ export default function Profile({
             .from('profile_image')
             .createSignedUrl(profileData.profile_image_url, 60)
 
-        if (signedUrlError || !signedUrlData?.signedUrl) {
+        if (signedUrlError ?? !signedUrlData?.signedUrl) {
           setSrc('/dev_profiles/default_user.png')
           if (signedUrlError)
             toast.error(`Signed URL 생성 실패: ${signedUrlError.message}`)
