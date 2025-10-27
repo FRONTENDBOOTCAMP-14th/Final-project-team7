@@ -30,10 +30,12 @@ export default function RunningMusicModal({
   const dialogRef = useRef<HTMLDialogElement | null>(null)
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
+
   const [query, setQuery] = useState(initialTitle)
   const [results, setResults] = useState<SpotifySimplifiedTrack[]>([])
   const [loading, setLoading] = useState(false)
   const [selected, setSelected] = useState<SpotifySimplifiedTrack | null>(null)
+  const [bpm, setBpm] = useState<number | ''>('')
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
@@ -132,6 +134,7 @@ export default function RunningMusicModal({
           album_image: selected.album_image,
           preview_url: selected.preview_url,
           external_url: selected.external_url,
+          bpm: bpm === '' ? null : Number(bpm),
           is_pinned: false,
         })
         toast.success('러닝곡이 추가되었습니다')
@@ -144,6 +147,7 @@ export default function RunningMusicModal({
             album_image: selected.album_image,
             preview_url: selected.preview_url,
             external_url: selected.external_url,
+            bpm: bpm === '' ? null : Number(bpm),
           })
           .eq('id', targetMusicId)
 
@@ -193,7 +197,7 @@ export default function RunningMusicModal({
           </button>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col md:flex-row gap-2">
           <div className="flex flex-1 items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg cursor-pointer">
             <Search className="w-4 h-4 text-gray-400" />
             <input
@@ -209,7 +213,7 @@ export default function RunningMusicModal({
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-sm font-medium text-white cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)] disabled:bg-gray-400 text-sm font-medium text-white cursor-pointer w-full md:w-auto"
           >
             검색
           </button>
@@ -248,7 +252,7 @@ export default function RunningMusicModal({
                       selected?.id === track.id
                         ? 'bg-blue-50'
                         : 'hover:bg-gray-50'
-                    } text-left transition cursor-pointer`}
+                    } text-left cursor-pointer`}
                   >
                     <img
                       src={track.album_image}
@@ -273,6 +277,18 @@ export default function RunningMusicModal({
           )}
         </div>
 
+        <label className="flex flex-col text-sm text-gray-700">
+          BPM (선택 입력)
+          <input
+            type="number"
+            min="0"
+            max="300"
+            placeholder="예: 160"
+            value={bpm}
+            onChange={e => setBpm(e.target.value ? Number(e.target.value) : '')}
+            className="mt-1 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 outline-none"
+          />
+        </label>
         <button
           ref={confirmButtonRef}
           id="confirm-button"
@@ -282,7 +298,7 @@ export default function RunningMusicModal({
           className={tw(`
             flex items-center justify-center 
             px-4 py-2 
-            bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 
+            bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)] rounded-md disabled:bg-gray-400 
             text-sm text-white 
             cursor-pointer
           `)}

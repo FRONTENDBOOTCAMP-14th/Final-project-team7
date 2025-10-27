@@ -107,7 +107,6 @@ export default function RunningMusicItem({
             <p className="overflow-hidden font-medium text-gray-900 text-ellipsis line-clamp-2 break-words">
               {music.title}
             </p>
-
             {!isSelectable && (
               <button
                 onClick={e => {
@@ -134,6 +133,11 @@ export default function RunningMusicItem({
       </div>
       {!disableActions && !isSelectable && (
         <div className="flex items-center flex-shrink-0 gap-3 pl-4">
+          {music.bpm && (
+            <span className="text-sm text-blue-500 font-light">
+              {music.bpm} BPM
+            </span>
+          )}
           {music.preview_url ? (
             <button
               onClick={e => {
@@ -173,7 +177,7 @@ export default function RunningMusicItem({
             isSelected
               ? mode === 'delete'
                 ? 'bg-red-500 border-red-500'
-                : 'bg-blue-500 border-blue-500'
+                : 'bg-[var(--color-point-100)] border-blue-500'
               : 'border-gray-300 bg-white'
           )}
         >

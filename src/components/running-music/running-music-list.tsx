@@ -105,7 +105,6 @@ export default function RunningMusicList({
     setMode('normal')
     setSelectedIds([])
   }
-
   const handleEditConfirm = () => {
     if (selectedIds.length !== 1)
       return toast.error('수정할 곡을 하나만 선택하세요')
@@ -116,7 +115,6 @@ export default function RunningMusicList({
     setEditTarget(target)
     setIsModalOpen(true)
   }
-
   const handleModalClose = (isCompleted = false) => {
     setIsModalOpen(false)
     setEditTarget(null)
@@ -126,7 +124,6 @@ export default function RunningMusicList({
       onReload()
     }
   }
-
   const handleDeleteConfirm = async () => {
     if (selectedIds.length === 0) return toast.error('삭제할 곡을 선택하세요')
     if (!confirm(`${selectedIds.length}개의 곡을 삭제하시겠습니까?`)) return
@@ -137,7 +134,6 @@ export default function RunningMusicList({
     setSelectedIds([])
     await onReload()
   }
-
   return (
     <div className="relative space-y-6">
       <h2 className="border-b border-[var(--color-basic-100)] text-lg font-semibold text-gray-800">
@@ -157,11 +153,9 @@ export default function RunningMusicList({
       ) : (
         <p className="text-gray-400 text-sm">대표 러닝곡을 고정하세요</p>
       )}
-
       <div className="flex items-center justify-between mb-3 border-b border-[var(--color-basic-100)]">
         <div className=" flex items-center justify-center gap-2">
           <h2 className="text-lg font-semibold text-gray-800">러닝곡 리스트</h2>
-
           <div
             className={tw(`
             relative
@@ -180,7 +174,6 @@ export default function RunningMusicList({
             >
               <Info className="w-4 h-4" aria-hidden="true" />
             </button>
-
             {isTooltipVisible && (
               <span
                 id="sort-tooltip"
@@ -204,7 +197,6 @@ export default function RunningMusicList({
             )}
           </div>
         </div>
-
         <RunningMusicMenuButton
           onAddMusic={onAddMusic}
           onEditMode={() => {
@@ -263,11 +255,11 @@ export default function RunningMusicList({
                 onClick={handleEditConfirm}
                 disabled={selectedIds.length !== 1}
                 className={tw(`
-                  px-4 py-2 rounded-md bg-blue-600 text-white text-sm transition
+                  px-4 py-2 rounded-md bg-[var(--color-point-100)] text-white text-sm
                   ${
                     selectedIds.length !== 1
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'hover:bg-blue-700 cursor-pointer'
+                      : 'hover:bg-[var(--color-point-200)] cursor-pointer'
                   }
                 `)}
               >
@@ -287,7 +279,7 @@ export default function RunningMusicList({
                 onClick={handleDeleteConfirm}
                 disabled={selectedIds.length === 0}
                 className={tw(`
-                px-4 py-2 rounded-md text-white text-sm transition ${
+                px-4 py-2 rounded-md text-white text-sm ${
                   selectedIds.length === 0
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-red-500 hover:bg-red-600 cursor-pointer'

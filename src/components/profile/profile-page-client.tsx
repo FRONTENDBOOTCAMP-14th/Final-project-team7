@@ -9,6 +9,8 @@ import ProfileCard from '@/components/profile/profile-card/profile-card'
 import SignoutButton from '@/components/profile/signout-button'
 import useProfileData from '@/hooks/profile/use-profile'
 
+import RunningMusicCard from './running-music-card'
+
 export default function ProfilePageClient() {
   const router = useRouter()
   const { profileData, email, loading } = useProfileData()
@@ -35,6 +37,7 @@ export default function ProfilePageClient() {
       <EmailCardClient email={email} />
       <FeatureButton label="친구" href="/profile/friends" />
       <FeatureButton label="러닝캘린더" href="/profile/calendar" />
+      <RunningMusicCard />
       <SignoutButton />
     </section>
   )

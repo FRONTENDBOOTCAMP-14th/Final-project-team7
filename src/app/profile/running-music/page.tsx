@@ -11,8 +11,6 @@ import {
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { MusicLink } from '@/types/running-music/spotify'
 
-import '@/styles/main.css'
-
 export default function RunningMusicPage() {
   const [musicList, setMusicList] = useState<MusicLink[]>([])
   const [pinned, setPinned] = useState<MusicLink | null>(null)

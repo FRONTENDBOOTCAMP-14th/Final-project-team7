@@ -53,6 +53,7 @@ export default function RunningMusicCard() {
         .select('*')
         .eq('is_pinned', true)
         .maybeSingle()
+
       setMusic(data ?? null)
       setLoading(false)
     }
@@ -65,7 +66,7 @@ export default function RunningMusicCard() {
 
   const handleNavigate = () => {
     setIsNavigating(true)
-    setTimeout(() => router.push('/running-music'))
+    setTimeout(() => router.push('/profile/running-music'))
   }
 
   if (loading)
@@ -139,9 +140,16 @@ export default function RunningMusicCard() {
       <p className="w-full max-w-[300px] font-semibold text-gray-800 line-clamp-2 break-words">
         {music.title}
       </p>
+
       <p className="w-full max-w-[300px] text-sm text-gray-500 line-clamp-2 break-words">
         {music.artist}
       </p>
+
+      {music.bpm && (
+        <p className="w-full max-w-[300px] text-xs text-blue-500 font-light">
+          {music.bpm} BPM
+        </p>
+      )}
 
       {music.preview_url ? (
         <button
@@ -169,7 +177,8 @@ export default function RunningMusicCard() {
           rel="noopener noreferrer"
           className={tw(`
             flex items-center justify-center w-8 h-8
-            rounded-full bg-green-50 hover:bg-green-100 border border-green-300  text-green-600`)}
+            rounded-full bg-green-50 hover:bg-green-100 border border-green-300 text-green-600
+          `)}
           onClick={e => e.stopPropagation()}
         >
           <ExternalLink className="w-4 h-4" aria-label="스포티파이 링크" />

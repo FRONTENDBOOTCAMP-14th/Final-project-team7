@@ -46,5 +46,6 @@ export interface MusicLink {
   album_image: string | null
   preview_url: string | null
   external_url: string | null
+  bpm: number | null
   is_pinned: boolean
 }
