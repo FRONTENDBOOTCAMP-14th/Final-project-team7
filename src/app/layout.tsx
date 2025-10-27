@@ -5,7 +5,6 @@ import type { PropsWithChildren } from 'react'
 
 import ClientLayout from '@/app/client-layout'
 import Header from '@/components/common/header'
-import Navigation from '@/components/common/navigation'
 
 export const metadata: Metadata = {
   title: {
@@ -49,7 +48,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <h1 className="sr-only">러닝 일레븐</h1>
         <ClientLayout>
           <Header />
-          <Navigation />
           <main>{children}</main>
         </ClientLayout>
       </body>
