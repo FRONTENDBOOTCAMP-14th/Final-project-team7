@@ -1,31 +1,78 @@
 'use client'
 
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Loader2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
 import { useToggleState } from '@/hooks/use-toggle-state'
-import type { CourseOption, DropdownProps } from '@/types/running-record'
+import { supabase } from '@/lib/supabase/supabase-client'
+import type { CourseOption } from '@/types/running-record/course'
+import { tw } from '@/utils/tw'
+
+interface DropdownProps {
+  selectedCourse: string | 'all'
+  onCourseChange: (courseId: string | 'all') => void
+}
 
 export default function DropDown({
-  courses,
   selectedCourse,
   onCourseChange,
 }: DropdownProps) {
-  const [isOpen, { on: open, off: close, toggle }] = useToggleState(false)
+  const [isOpen, { off: close, toggle }] = useToggleState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)
-  const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [courses, setCourses] = useState<CourseOption[]>([])
   const listboxRef = useRef<HTMLUListElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
-  const allOptions: CourseOption[] = [...courses]
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
 
-  const selectedIndex = courses.findIndex(c => c.course_name === selectedCourse)
+        if (!user) {
+          setIsAuthenticated(false)
+          setCourses([])
+          setLoading(false)
+          return
+        }
 
-  const selectedCourseLabel =
+        setIsAuthenticated(true)
+
+        const { data, error } = await supabase
+          .from('course')
+          .select('id, course_name')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true })
+
+        if (!error && data) setCourses(data)
+        else toast.error('코스 데이터를 불러오지 못했습니다')
+      } catch {
+        toast.error('코스 정보를 불러오는 중 오류가 발생했습니다')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCourses()
+  }, [])
+
+  const selectedCourseName =
     selectedCourse === 'all'
       ? '코스 선택'
-      : selectedIndex !== -1
-        ? `코스 ${selectedIndex + 1}: ${courses[selectedIndex].course_name}`
-        : selectedCourse
+      : (() => {
+          const index = courses.findIndex(c => c.id === selectedCourse)
+          if (index === -1) return '코스 선택'
+          return `코스 ${index + 1}: ${courses[index].course_name}`
+        })()
+
+  const visibleCourses =
+    selectedCourse === 'all'
+      ? courses
+      : courses.filter(course => course.id !== selectedCourse)
 
   useEffect(() => {
     if (isOpen) setFocusedIndex(0)
@@ -40,47 +87,11 @@ export default function DropDown({
     }
   }, [focusedIndex])
 
-  const handleKeyDownOnButton = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      toggle()
-    }
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      open()
-    }
-  }
-
-  const handleMoveKey = (e: React.KeyboardEvent<HTMLUListElement>) => {
-    const total = allOptions.length
-    if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey)) {
-      e.preventDefault()
-      setFocusedIndex(prev => (prev + 1) % total)
-    } else if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
-      e.preventDefault()
-      setFocusedIndex(prev => (prev - 1 + total) % total)
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      onCourseChange(allOptions[focusedIndex].course_name)
-      close()
-
-      requestAnimationFrame(() => {
-        const dateInputfocus =
-          document.querySelector<HTMLInputElement>('input[type="date"]')
-        dateInputfocus?.focus()
-      })
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      close()
-      dropdownRef.current?.focus()
-    }
-  }
-
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
       ) {
         close()
       }
@@ -89,54 +100,138 @@ export default function DropDown({
     return () => document.removeEventListener('click', handleClickOutside)
   }, [close])
 
+  const handleMoveKey = (e: React.KeyboardEvent<HTMLUListElement>) => {
+    const total = visibleCourses.length
+    if (total === 0) return
+    if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey)) {
+      e.preventDefault()
+      setFocusedIndex(prev => (prev + 1) % total)
+    } else if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
+      e.preventDefault()
+      setFocusedIndex(prev => (prev - 1 + total) % total)
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onCourseChange(visibleCourses[focusedIndex].id)
+      close()
+      requestAnimationFrame(() =>
+        document.querySelector<HTMLInputElement>('input[type="date"]')?.focus()
+      )
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      close()
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="relative w-full">
+        <button
+          type="button"
+          disabled
+          className={tw(`
+            relative z-20 flex w-full items-center justify-center p-3 bg-white 
+            rounded border border-gray-300 
+            shadow-[0_0_10px_0_rgba(0, 0, 0, 0.25)] 
+            text-gray-500 
+            cursor-wait
+          `)}
+        >
+          <Loader2
+            className="h-5 w-5 animate-spin text-gray-500"
+            aria-label="로딩중"
+          />
+          <span className="ml-2 text-sm">코스 목록을 불러오는 중...</span>
+        </button>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          toast.error('로그인 후 이용해주세요.')
+          window.location.href = '/sign-in'
+        }}
+        className={tw(`
+          w-full px-3 py-3
+          rounded border border-gray-300  
+          bg-gray-50 hover:bg-gray-100 
+          text-gray-500 text-center 
+          transition
+        `)}
+      >
+        로그인 후 이용 가능합니다
+      </button>
+    )
+  }
+
   return (
-    <div ref={dropdownRef} className="relative">
-      <div
-        role="button"
-        tabIndex={0}
+    <div ref={containerRef} className="relative w-full">
+      <button
+        type="button"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         onClick={toggle}
-        onKeyDown={handleKeyDownOnButton}
-        className="relative z-20 flex items-center justify-between rounded border border-gray-300 bg-white p-3 shadow-[0_0_10px_0_rgba(0,0,0,0.25)] cursor-pointer transition"
+        className={tw(`
+            relative z-20 flex items-center justify-between
+            w-full p-3
+            bg-white rounded border border-gray-300 shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+            cursor-pointer
+        `)}
       >
-        <span aria-label="코스 이름">{selectedCourseLabel}</span>
+        <span>{selectedCourseName}</span>
         <ChevronDown
           className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : 'rotate-0'}`}
           aria-hidden="true"
         />
-      </div>
+      </button>
+
       {isOpen && (
         <ul
           ref={listboxRef}
           role="listbox"
           tabIndex={-1}
           onKeyDown={handleMoveKey}
-          className="absolute z-10 -mt-2 w-full rounded-md border border-gray-300 bg-white outline-none shadow-[0_0_10px_0_rgba(0,0,0,0.25)]"
+          className={tw(`
+          absolute z-10
+          -mt-2 w-full
+          bg-white
+          rounded-md border border-gray-300 outline-none
+          shadow-[0_0_10px_0_rgba(0,0,0,0.25)]
+          `)}
         >
-          {allOptions.map((option, index) => (
-            <li
-              key={option.id}
-              role="option"
-              aria-selected={selectedCourse === option.course_name}
-              tabIndex={focusedIndex === index ? 0 : -1}
-              className={`px-6 py-3 cursor-pointer hover:bg-gray-100 focus-visible:bg-gray-100 ${index < allOptions.length - 1 ? 'border-b border-gray-200' : ''}`}
-              onClick={() => {
-                onCourseChange(option.course_name)
-                close()
-
-                requestAnimationFrame(() => {
-                  const dateInputfocus =
-                    document.querySelector<HTMLInputElement>(
-                      'input[type="date"]'
-                    )
-                  dateInputfocus?.focus()
-                })
-              }}
-            >
-              {`코스 ${index + 1}: ${option.course_name}`}
+          {visibleCourses.length > 0 ? (
+            visibleCourses.map((option, index) => (
+              <li
+                key={option.id}
+                role="option"
+                aria-selected={selectedCourse === option.id}
+                tabIndex={focusedIndex === index ? 0 : -1}
+                className={`px-6 py-3 hover:bg-gray-100 focus-visible:bg-gray-100 cursor-pointer ${
+                  index < visibleCourses.length - 1
+                    ? 'border-b border-gray-200'
+                    : ''
+                }`}
+                onClick={() => {
+                  onCourseChange(option.id)
+                  close()
+                  requestAnimationFrame(() =>
+                    document
+                      .querySelector<HTMLInputElement>('input[type="date"]')
+                      ?.focus()
+                  )
+                }}
+              >
+                {`코스 ${courses.findIndex(c => c.id === option.id) + 1}: ${option.course_name}`}
+              </li>
+            ))
+          ) : (
+            <li className="px-6 py-3 text-gray-500 text-sm text-center">
+              등록된 코스가 없습니다
             </li>
-          ))}
+          )}
         </ul>
       )}
     </div>

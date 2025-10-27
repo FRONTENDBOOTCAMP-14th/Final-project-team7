@@ -1,12 +1,8 @@
-'use client'
-
-import '@/styles/common/theme.css'
-
-interface EmailCardClientProps {
+interface EmailCardProps {
   email: string | null
 }
 
-export default function EmailCardClient({ email }: EmailCardClientProps) {
+export default function EmailCard({ email }: EmailCardProps) {
   return (
     <div className="w-full max-w-[363px] p-5 rounded-md border-2 border-[var(--color-basic-100)]">
       <h3 className="mb-3 text-base font-medium text-[var(--color-basic-300)]">

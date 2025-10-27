@@ -3,14 +3,13 @@
 import { Camera } from 'lucide-react'
 
 import Profile from '@/components/common/profile'
-import '@/styles/common/theme.css'
 
 interface ProfileEditProps {
   imageUrl: string | null
   onChangeImage: (file: File) => void
 }
 
-export default function ProfileEdit({
+export default function ProfileImgEdit({
   imageUrl,
   onChangeImage,
 }: ProfileEditProps) {

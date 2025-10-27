@@ -1,10 +1,14 @@
-import '@/styles/main.css'
-import type { PropsWithChildren } from 'react'
+import HeaderClient from '@/components/profile/header-client'
 
-export default function ProfileLayout({ children }: PropsWithChildren) {
+export default function ProfileLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <main className="flex justify-center items-start min-h-screen py-10">
+    <>
+      <HeaderClient />
       {children}
-    </main>
+    </>
   )
 }

@@ -1,7 +1,9 @@
+import MainPage from './main/page'
+
 export default function Page() {
   return (
-    <section>
-      <h1>Final Project Template</h1>
-    </section>
+    <>
+      <MainPage />
+    </>
   )
 }

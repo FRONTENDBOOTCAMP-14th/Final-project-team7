@@ -6,27 +6,31 @@ import { toast } from 'sonner'
 
 import DistanceWithTime from '@/components/running-record/common/distance-with-time'
 import DropDown from '@/components/running-record/drop-down'
-import { useModalFocusTrap } from '@/hooks/running-record'
+import useModalFocusTrap from '@/hooks/running-record/use-modal-focus-trap'
 import { supabase } from '@/lib/supabase/supabase-client'
-import type { EditRecordModalProps } from '@/types/running-record'
+import type { CourseOption } from '@/types/running-record/course'
+import type { EditRecordModalProps } from '@/types/running-record/record-table-props'
 import {
   calculatePace,
   parseDuration,
   validRecordForm,
 } from '@/utils/running-record'
+import { tw } from '@/utils/tw'
 
 export default function EditRecordModal({
-  courses,
   record,
   onClose,
   onUpdateSuccess,
   onDeleteSuccess,
-}: EditRecordModalProps) {
+}: Omit<EditRecordModalProps, 'courses'>) {
   const modalRef = useRef<HTMLDivElement | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  const [selectedCourse, setSelectedCourse] = useState(record.course_name)
+  const [courses, setCourses] = useState<CourseOption[]>([])
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(
+    record.course_id
+  )
   const [date, setDate] = useState(record.date ?? '')
   const [distance, setDistance] = useState(record.distance ?? '')
   const [hours, setHours] = useState('')
@@ -35,6 +39,30 @@ export default function EditRecordModal({
   const [pace, setPace] = useState(record.pace ?? '')
 
   useModalFocusTrap(modalRef, onClose)
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('course')
+        .select('id, course_name')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true })
+
+      if (error) {
+        toast.error('코스 목록을 불러오지 못했습니다')
+      } else if (data) {
+        setCourses(data)
+      }
+    }
+
+    fetchCourses()
+  }, [])
 
   useEffect(() => {
     if (!record.duration) return
@@ -51,7 +79,7 @@ export default function EditRecordModal({
 
   const isFormValid =
     validRecordForm({
-      course: selectedCourse,
+      course: selectedCourse ?? '',
       date,
       distance,
       hours,
@@ -63,37 +91,63 @@ export default function EditRecordModal({
     minutes &&
     seconds
 
+  const isCoursesLoading = courses.length === 0
+  const isLoadingState = isSubmitting || isDeleting || isCoursesLoading
+
   const handleUpdate = async () => {
-    if (!isFormValid) return toast.error('모든 입력 값을 채워주세요.')
+    if (!isFormValid) return toast.error('모든 입력 값을 채워주세요')
     setIsSubmitting(true)
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      toast.error('로그인된 사용자만 수정할 수 있습니다')
+      setIsSubmitting(false)
+      return
+    }
+
+    const selectedCourseData = courses.find(c => c.id === selectedCourse)
+    if (!selectedCourseData) {
+      toast.error('코스를 선택해주세요')
+      setIsSubmitting(false)
+      return
+    }
 
     const { data, error } = await supabase
       .from('running_record')
       .update({
-        course_name: selectedCourse,
+        course_id: selectedCourseData.id,
+        course_name: selectedCourseData.course_name,
         date,
         distance,
         duration: `${hours}시간 ${minutes}분 ${seconds}초`,
         pace,
       })
       .eq('id', record.id)
-      .select()
-      .single()
+      .eq('user_id', user.id)
+      .select('*')
+      .maybeSingle()
 
     setIsSubmitting(false)
-    if (error) toast.error('기록 수정 실패')
-    else {
-      toast.success('기록이 수정되었습니다!')
+
+    if (error) {
+      toast.error('기록 수정 실패했습니다')
+    } else if (data) {
+      toast.success('기록이 수정되었습니다')
       onUpdateSuccess(data)
       onClose()
+    } else {
+      toast.error('수정할 수 있는 기록을 찾지 못했습니다')
     }
   }
 
-  // 삭제 확인 토스트 커스텀
-  const handleDelete = () => {
+  const handleDelete = async () => {
     toast.custom(
       id => (
-        <div className="flex flex-col gap-3 p-3 rounded-lg border border-gray-200 bg-white shadow-md">
+        <div className="flex flex-col gap-3 p-3 bg-white rounded-lg border border-gray-200 shadow-md">
           <p className="text-sm font-medium text-gray-800">
             정말 이 기록을 삭제하시겠습니까?
           </p>
@@ -103,40 +157,53 @@ export default function EditRecordModal({
               onClick={async () => {
                 toast.dismiss(id)
                 setIsDeleting(true)
+                const {
+                  data: { user },
+                } = await supabase.auth.getUser()
 
                 const { error } = await supabase
                   .from('running_record')
                   .delete()
                   .eq('id', record.id)
+                  .eq('user_id', user?.id)
 
                 setIsDeleting(false)
 
                 if (error) {
-                  toast.error('기록 삭제 실패했습니다!')
+                  toast.error('기록 삭제 실패했습니다')
                 } else {
-                  toast.success('기록이 삭제 되었습니다!')
+                  toast.success('기록이 삭제되었습니다')
                   onDeleteSuccess(record.id)
                   onClose()
                 }
               }}
-              className="flex items-center justify-center px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white text-sm transition"
+              className={tw(`
+                flex items-center justify-center
+                px-3 py-1 rounded 
+                bg-red-500 hover:bg-red-600 
+                text-white text-sm 
+                transition cursor-pointer
+              `)}
             >
               삭제
             </button>
             <button
               type="button"
               onClick={() => toast.dismiss(id)}
-              className="flex items-center justify-center px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm transition"
+              className={tw(`
+                flex items-center justify-center 
+                px-3 py-1 bg-gray-200 hover:bg-gray-300 
+                rounded 
+                text-sm 
+                transition cursor-pointer
+              `)}
             >
               취소
             </button>
           </div>
         </div>
       ),
-      {
-        duration: Infinity,
-        closeButton: false,
-      }
+      { duration: Infinity }
     )
   }
 
@@ -146,14 +213,14 @@ export default function EditRecordModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
       role="dialog"
       aria-modal="true"
+      onClick={onClose}
     >
       <div
         className="overflow-y-auto
-        w-[70%]
-        max-w-[420px]
-        max-h-[80%]
-        p-2 bg-white rounded-lg shadow-lg 
+        w-[70%] max-w-[420px] max-h-[80%]
+        p-2 bg-white rounded-lg shadow-lg
         transition-all"
+        onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-4">
           <button
@@ -176,8 +243,7 @@ export default function EditRecordModal({
         </div>
 
         <DropDown
-          courses={courses}
-          selectedCourse={selectedCourse}
+          selectedCourse={selectedCourse ?? 'all'}
           onCourseChange={setSelectedCourse}
         />
 
@@ -204,6 +270,7 @@ export default function EditRecordModal({
             type="number"
           />
         </div>
+
         <div className="flex mt-3 gap-2">
           <DistanceWithTime
             id="record-hours"
@@ -238,20 +305,25 @@ export default function EditRecordModal({
 
         <button
           onClick={handleUpdate}
-          disabled={!isFormValid || isSubmitting || isDeleting}
-          aria-busy={isSubmitting || isDeleting}
-          className={`mt-5 w-full py-2 rounded-md transition-colors ${
-            isDeleting
-              ? 'bg-red-500 text-white cursor-wait'
-              : isFormValid
-                ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+          disabled={!isFormValid || isLoadingState}
+          aria-busy={isLoadingState}
+          className={`mt-5 w-full py-2 rounded-md transition-colors
+            ${
+              isCoursesLoading
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : isDeleting
+                  ? 'bg-red-500 text-white cursor-wait'
+                  : isSubmitting
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : isFormValid
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
-          {isSubmitting || isDeleting ? (
+          {isLoadingState ? (
             <Loader2
               className={`mx-auto h-5 w-5 animate-spin ${
-                isDeleting ? 'text-white' : 'text-blue-200'
+                isDeleting ? 'text-white' : 'text-gray-600'
               }`}
               aria-hidden="true"
             />
