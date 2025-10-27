@@ -39,11 +39,15 @@ export async function createMusic(
   return data
 }
 
-export async function removeMusic(musicId: string): Promise<void> {
+export async function removeMusic(
+  userId: string,
+  musicId: string
+): Promise<void> {
   const { error } = await supabase
     .from('music_links')
     .delete()
     .eq('id', musicId)
+    .eq('user_id', userId)
   if (error) throw new Error('러닝곡 삭제 실패')
 }
 
@@ -63,6 +67,7 @@ export async function togglePinnedMusic(
       .from('music_links')
       .update({ is_pinned: false })
       .eq('id', musicId)
+      .eq('user_id', userId)
       .select()
       .single()
 
@@ -79,6 +84,7 @@ export async function togglePinnedMusic(
     .from('music_links')
     .update({ is_pinned: true })
     .eq('id', musicId)
+    .eq('user_id', userId)
     .select()
     .single()
 

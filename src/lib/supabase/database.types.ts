@@ -44,30 +44,33 @@ export interface Database {
       music_links: {
         Row: {
           artist: string | null
-          bpm: string | null
+          bpm: number | null
           title: string
+          id: string
           user_id: string
-          album_image: string
+          album_image: string | null
           is_pinned: boolean
           preview_url: string | null
           external_url: string
         }
         Insert: {
           artist?: string | null
-          bpm?: string | null
+          bpm?: number | null
           title?: string
+          id: string
           user_id: string
-          album_image?: string
+          album_image?: string | null
           is_pinned?: boolean
           preview_url?: string | null
           external_url?: string
         }
         Update: {
           artist?: string | null
-          bpm?: string | null
+          bpm?: number | null
           title?: string
+          id: string
           user_id: string
-          album_image?: string
+          album_image?: string | null
           is_pinned?: boolean
           preview_url?: string | null
           external_url?: string

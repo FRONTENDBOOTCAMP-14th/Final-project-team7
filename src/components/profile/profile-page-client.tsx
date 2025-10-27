@@ -6,10 +6,9 @@ import { useEffect } from 'react'
 import EmailCardClient from '@/components/profile/email-card'
 import FeatureButton from '@/components/profile/feature-button'
 import ProfileCard from '@/components/profile/profile-card/profile-card'
+import RunningMusicCard from '@/components/profile/running-music-card'
 import SignoutButton from '@/components/profile/signout-button'
 import useProfileData from '@/hooks/profile/use-profile'
-
-import RunningMusicCard from './running-music-card'
 
 export default function ProfilePageClient() {
   const router = useRouter()

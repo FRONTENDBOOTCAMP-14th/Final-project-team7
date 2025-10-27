@@ -8,6 +8,7 @@ import RunningMusicItem from '@/components/running-music/running-music-item'
 import RunningMusicMenuButton from '@/components/running-music/running-music-menu-button'
 import RunningMusicModal from '@/components/running-music/running-music-modal'
 import { removeMusic } from '@/lib/api/running-music/get-music-status'
+import { supabase } from '@/lib/supabase/supabase-client'
 import type { MusicLink } from '@/types/running-music/spotify'
 import { tw } from '@/utils/tw'
 
@@ -105,6 +106,7 @@ export default function RunningMusicList({
     setMode('normal')
     setSelectedIds([])
   }
+
   const handleEditConfirm = () => {
     if (selectedIds.length !== 1)
       return toast.error('수정할 곡을 하나만 선택하세요')
@@ -115,6 +117,7 @@ export default function RunningMusicList({
     setEditTarget(target)
     setIsModalOpen(true)
   }
+
   const handleModalClose = (isCompleted = false) => {
     setIsModalOpen(false)
     setEditTarget(null)
@@ -124,16 +127,31 @@ export default function RunningMusicList({
       onReload()
     }
   }
+
   const handleDeleteConfirm = async () => {
     if (selectedIds.length === 0) return toast.error('삭제할 곡을 선택하세요')
     if (!confirm(`${selectedIds.length}개의 곡을 삭제하시겠습니까?`)) return
 
-    for (const id of selectedIds) await removeMusic(id)
-    toast.success('선택한 러닝곡이 삭제되었습니다')
-    setMode('normal')
-    setSelectedIds([])
-    await onReload()
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) throw new Error('로그인이 필요합니다')
+
+      for (const id of selectedIds) {
+        await removeMusic(user.id, id)
+      }
+
+      toast.success('선택한 러닝곡이 삭제되었습니다')
+      setMode('normal')
+      setSelectedIds([])
+      await onReload()
+    } catch {
+      toast.error('러닝곡 삭제 중 오류가 발생했습니다')
+    }
   }
+
   return (
     <div className="relative space-y-6">
       <h2 className="border-b border-[var(--color-basic-100)] text-lg font-semibold text-gray-800">
@@ -153,19 +171,17 @@ export default function RunningMusicList({
       ) : (
         <p className="text-gray-400 text-sm">대표 러닝곡을 고정하세요</p>
       )}
+
       <div className="flex items-center justify-between mb-3 border-b border-[var(--color-basic-100)]">
-        <div className=" flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <h2 className="text-lg font-semibold text-gray-800">러닝곡 리스트</h2>
-          <div
-            className={tw(`
-            relative
-            `)}
-          >
+
+          <div className="relative">
             <button
               type="button"
               aria-label="정렬 안내"
               aria-expanded={isTooltipVisible}
-              aria-describedby="sort tooltip"
+              aria-describedby="sort-tooltip"
               onMouseEnter={() => setIsTooltipVisible(true)}
               onMouseLeave={() => setIsTooltipVisible(false)}
               onFocus={() => setIsTooltipVisible(true)}
@@ -174,6 +190,7 @@ export default function RunningMusicList({
             >
               <Info className="w-4 h-4" aria-hidden="true" />
             </button>
+
             {isTooltipVisible && (
               <span
                 id="sort-tooltip"
@@ -191,12 +208,13 @@ export default function RunningMusicList({
                 </p>
                 <p className="mt-1">
                   새로 <strong>추가</strong>하거나 <strong>수정</strong>된 곡도
-                  자동으로 순서대로 재정렬 됩니다.
+                  자동으로 순서대로 재정렬됩니다.
                 </p>
               </span>
             )}
           </div>
         </div>
+
         <RunningMusicMenuButton
           onAddMusic={onAddMusic}
           onEditMode={() => {
@@ -223,7 +241,7 @@ export default function RunningMusicList({
               role="option"
               aria-selected={selectedIds.includes(music.id)}
               onClick={() => toggleSelect(music.id)}
-              className={'cursor-pointer'}
+              className="cursor-pointer"
             >
               <RunningMusicItem
                 music={music}
@@ -240,6 +258,7 @@ export default function RunningMusicList({
           ))}
         </ul>
       )}
+
       {mode !== 'normal' && (
         <div className="sticky flex justify-end items-center gap-2 bottom-0 left-0 w-full pt-3 bg-white border-t border-gray-200">
           {mode === 'edit' ? (
@@ -292,6 +311,7 @@ export default function RunningMusicList({
           )}
         </div>
       )}
+
       {isModalOpen && editTarget && (
         <RunningMusicModal
           isOpen={isModalOpen}

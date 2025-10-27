@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+import { getMusicStatus } from '@/lib/api/running-music/get-music-status'
 import type { Tables } from '@/lib/supabase/database.types'
 import { supabase } from '@/lib/supabase/supabase-client'
 import { tw } from '@/utils/tw'
@@ -28,7 +29,7 @@ export default function RunningMusicCard() {
 
   const handlePreview = () => {
     if (!music?.preview_url) {
-      toast.error('이 곡은 미리듣기 지원하지 않습니다')
+      toast.error('이 곡은 미리듣기를 지원하지 않습니다')
       return
     }
 
@@ -48,14 +49,31 @@ export default function RunningMusicCard() {
 
   useEffect(() => {
     const fetchPinned = async () => {
-      const { data } = await supabase
-        .from('music_links')
-        .select('*')
-        .eq('is_pinned', true)
-        .maybeSingle()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
-      setMusic(data ?? null)
-      setLoading(false)
+      try {
+        const pinned = await getMusicStatus(user.id)
+        setMusic(
+          pinned
+            ? {
+                ...pinned,
+                external_url: pinned.external_url ?? '',
+                album_image: pinned.album_image ?? '',
+                bpm: pinned.bpm ?? null,
+              }
+            : null
+        )
+      } catch {
+        toast.error('대표 러닝곡 불러오기 실패')
+      } finally {
+        setLoading(false)
+      }
     }
 
     fetchPinned()
@@ -116,7 +134,7 @@ export default function RunningMusicCard() {
       {isNavigating && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm rounded-md">
           <Loader2
-            className="flex items-center justify-center w-5 h-5 animate-spin text-blue-500"
+            className="flex items-center justify-center w-5 h-5 text-blue-500 animate-spin"
             aria-label="로딩중"
           />
         </div>
@@ -140,13 +158,11 @@ export default function RunningMusicCard() {
       <p className="w-full max-w-[300px] font-semibold text-gray-800 line-clamp-2 break-words">
         {music.title}
       </p>
-
       <p className="w-full max-w-[300px] text-sm text-gray-500 line-clamp-2 break-words">
         {music.artist}
       </p>
-
       {music.bpm && (
-        <p className="w-full max-w-[300px] text-xs text-blue-500 font-light">
+        <p className="w-full max-w-[300px] text-xs text-gray-400">
           {music.bpm} BPM
         </p>
       )}
