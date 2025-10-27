@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import NavigationMenu from '@/components/common/navigation-menu'
 import { supabase } from '@/lib/supabase/supabase-client'
 import type { ProfileData } from '@/types/profile/profile'
+import { tw } from '@/utils/tw'
 
 export default function Header() {
   const pathname = usePathname()
@@ -106,13 +107,13 @@ export default function Header() {
         aria-controls="site-navigation-menu"
         aria-expanded={isMenuOpen}
         onClick={handleToggleMenu}
-        className="
+        className={tw(`
           flex items-center justify-center
           w-[40px] h-[40px]
-          bg-transparent border border-transparent rounded-lg
+          bg-transparent hover:bg-gray-100 border border-transparent rounded-lg
           text-gray-800 text-base font-normal
-          cursor-pointer transition hover:bg-gray-100
-        "
+          cursor-pointer transition 
+        `)}
       >
         <Menu className="w-[35px] h-[35px]" aria-hidden="true" />
       </button>
@@ -120,33 +121,33 @@ export default function Header() {
       <Link
         href="/main"
         aria-label="홈으로 이동"
-        className="
+        className={tw(`
           flex items-center justify-center flex-1
           h-full
           bg-transparent border border-transparent
           text-gray-800 text-base font-semibold
           cursor-pointer
-        "
+        `)}
       >
         <img
           src="/logo.png"
           alt="러닝일레븐 로고"
-          className="
+          className={tw(`
             flex
             w-[250px] h-[50px] object-contain
             bg-transparent border border-transparent
             text-gray-800 text-base font-normal
-          "
+          `)}
         />
       </Link>
 
       <div
-        className="
+        className={tw(`
           flex items-center justify-center
           w-[40px] h-[40px]
           bg-transparent border border-transparent rounded-lg
           text-gray-800 text-base font-normal
-        "
+        `)}
         aria-hidden="true"
       />
 

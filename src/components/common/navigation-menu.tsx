@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react'
 
 import Profile from '@/components/common/profile'
 import { NAVIGATION_ITEMS } from '@/constants/main/common/navigation-items'
+import { tw } from '@/utils/tw'
 
 interface NavigationMenuProps {
   isOpen: boolean
@@ -39,7 +40,7 @@ export default function NavigationMenu({
           : 'bg-transparent border border-transparent rounded-lg'
       }
       ${active ? 'text-white text-base' : 'text-gray-800 text-base'}
-      cursor-pointer hover:bg-[var(--color-point-200)] hover:text-white
+      hover:bg-[var(--color-point-200)] hover:text-white cursor-pointer  
     `
       .replace(/\s+/g, ' ')
       .trim()
@@ -148,19 +149,19 @@ export default function NavigationMenu({
         role="dialog"
         aria-modal="true"
         aria-labelledby="site-navigation-menu-label"
-        className="
+        className={tw(`
           fixed inset-y-0 left-0 z-[9999] flex flex-col
           w-[300px] max-w-[85%] h-full p-5 gap-6 overflow-y-auto
           bg-white border-r border-gray-200 rounded-none shadow-[0_4px_24px_rgba(0,0,0,0.12)]
           text-gray-800
-        "
+          `)}
       >
         <div
-          className="
+          className={tw(`
             flex items-center justify-between
             w-full
             text-gray-800 text-base font-semibold
-          "
+          `)}
         >
           <span
             id="site-navigation-menu-label"
@@ -176,13 +177,13 @@ export default function NavigationMenu({
             type="button"
             aria-label="메뉴 닫기"
             onClick={onClose}
-            className="
+            className={tw(`
               flex items-center justify-center
               w-[32px] h-[32px]
-              bg-transparent border border-transparent rounded-lg
+              bg-transparent hover:bg-gray-100 border border-transparent rounded-lg
               text-gray-800 text-base font-normal
-              cursor-pointer transition hover:bg-gray-100
-            "
+              cursor-pointer transition 
+            `)}
           >
             <X className="w-[20px] h-[20px]" aria-hidden="true" />
           </button>
@@ -192,13 +193,13 @@ export default function NavigationMenu({
           <Link
             href="/profile"
             aria-label="프로필로 이동"
-            className="
+            className={tw(`
               flex items-center
               w-full gap-3
-              bg-transparent border border-transparent rounded-lg
+              bg-transparent hover:bg-gray-100 border border-transparent rounded-lg
               text-gray-800 text-base font-normal
-              cursor-pointer transition hover:bg-gray-100
-            "
+              cursor-pointer transition 
+            `)}
           >
             <div
               data-focus-skip="true"
@@ -211,11 +212,11 @@ export default function NavigationMenu({
             </div>
 
             <div
-              className="
+              className={tw(`
                 flex flex-col
                 bg-transparent border border-transparent
                 text-gray-800 text-base font-normal
-              "
+              `)}
             >
               <span className="text-gray-900 text-base font-semibold">
                 {username}
@@ -231,14 +232,14 @@ export default function NavigationMenu({
             onClick={() => {
               router.push('/sign-in')
             }}
-            className="
+            className={tw(`
               flex items-center justify-center
               w-full h-[48px]
               bg-[var(--color-point-200)] hover:bg-[var(--color-point-100)]
               border border-transparent rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)]
               text-white text-base font-semibold
               cursor-pointer
-            "
+            `)}
           >
             로그인
           </button>
@@ -246,19 +247,19 @@ export default function NavigationMenu({
 
         <nav
           aria-label="메뉴 내비게이션"
-          className="
+          className={tw(`
             flex flex-col
             w-full gap-2
             bg-transparent border border-transparent rounded-lg
             text-gray-800 text-base font-normal
-          "
+          `)}
         >
           <ul
-            className="
+            className={tw(`
               flex flex-col
               w-full gap-1
               text-gray-800 text-base font-normal
-            "
+            `)}
           >
             {NAVIGATION_ITEMS.map(item => (
               <li key={item.href} className="w-full">
