@@ -70,15 +70,27 @@ export default function Profile({
     fetchProfileImage()
   }, [externalSrc])
 
+  const baseClass =
+    'overflow-hidden rounded-full bg-white drop-shadow-[0_0_6px_rgba(0,0,0,0.25)]'
+  const style = { width: size, height: size }
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`${baseClass} cursor-pointer`}
+        style={style}
+        aria-label="프로필 아이콘"
+      >
+        <img src={src} alt={alt} className="w-full h-full object-cover" />
+      </button>
+    )
+  }
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="overflow-hidden rounded-full bg-white drop-shadow-[0_0_6px_rgba(0,0,0,0.25)]"
-      style={{ width: size, height: size }}
-      aria-label="프로필 아이콘"
-    >
+    <div className={baseClass} style={style}>
       <img src={src} alt={alt} className="w-full h-full object-cover" />
-    </button>
+    </div>
   )
 }
