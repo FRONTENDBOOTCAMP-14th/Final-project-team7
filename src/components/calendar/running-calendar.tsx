@@ -105,7 +105,7 @@ export default function RunningCalendar({
   }
 
   return (
-    <div className="p-5 w-[363px] max-w-full rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)] bg-white font-['Pretendard','Arial',sans-serif] select-none">
+    <div className="p-5 w-[363px] max-w-full rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)] bg-white select-none">
       <div className="flex items-center justify-center pb-5 gap-2">
         <button
           onClick={handlePrevMonth}
