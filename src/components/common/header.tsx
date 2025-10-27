@@ -85,8 +85,22 @@ export default function Header() {
     }
   }, [])
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMenuOpen])
+
   const shouldHideHeader =
-    pathname.startsWith('/profile/') || pathname === '/sign-in'
+    pathname.startsWith('/profile/') ||
+    pathname === '/sign-in' ||
+    pathname === '/sign-in/sign-up'
 
   if (shouldHideHeader) {
     return null
@@ -112,7 +126,7 @@ export default function Header() {
           w-[40px] h-[40px]
           bg-transparent hover:bg-gray-100 border border-transparent rounded-lg
           text-gray-800 text-base font-normal
-          cursor-pointer transition 
+          cursor-pointer transition
         `)}
       >
         <Menu className="w-[35px] h-[35px]" aria-hidden="true" />
