@@ -27,7 +27,12 @@ export default function EditCourseModal({
   courseId,
   onClose,
 }: EditCourseModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null)
+  const firstFieldRef = useRef<HTMLInputElement>(null)
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null)
+  const previousOverflowRef = useRef<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+
   const { updateCourse, refresh } = useCourses()
   const { course, loading, error } = useCourseById(courseId)
 
@@ -120,6 +125,64 @@ export default function EditCourseModal({
     return !(sameName && sameDesc && sameImg && samePath)
   }, [course, courseName, courseDesc, imagePreview, imageFile, toPath, path])
 
+  useEffect(() => {
+    lastFocusedElementRef.current = document.activeElement as HTMLElement | null
+    previousOverflowRef.current = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    if (firstFieldRef.current) {
+      firstFieldRef.current.focus()
+    }
+
+    const focusableSelectors =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        const n = modalRef.current
+        if (!n) return
+        const focusable = Array.from(
+          n.querySelectorAll<HTMLElement>(focusableSelectors)
+        ).filter(
+          el =>
+            !el.hasAttribute('disabled') &&
+            el.tabIndex !== -1 &&
+            !el.getAttribute('aria-hidden')
+        )
+        if (focusable.length === 0) {
+          e.preventDefault()
+          return
+        }
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        const active = document.activeElement as HTMLElement | null
+        if (e.shiftKey) {
+          if (active === first || !n.contains(active)) {
+            e.preventDefault()
+            last.focus()
+          }
+        } else {
+          if (active === last) {
+            e.preventDefault()
+            first.focus()
+          }
+        }
+      } else if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflowRef.current
+      if (lastFocusedElementRef.current) {
+        lastFocusedElementRef.current.focus()
+      }
+    }
+  }, [onClose])
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
@@ -129,7 +192,7 @@ export default function EditCourseModal({
     reader.readAsDataURL(f)
   }
 
-  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+  function handleDrop(e: React.DragEvent<HTMLElement>) {
     e.preventDefault()
     const f = e.dataTransfer.files?.[0]
     if (!f) return
@@ -210,6 +273,7 @@ export default function EditCourseModal({
         )
       if (pathChanged)
         patch.course_map = path as unknown as Course['course_map']
+
       const updated = await updateCourse(course.id, patch)
       if (!updated) {
         toast.error('수정에 실패했습니다.')
@@ -228,17 +292,18 @@ export default function EditCourseModal({
 
   if (loading) {
     return (
-      <div className="flex items-center z-50 fixed inset-0 justify-center bg-black/30 backdrop-blur-xs">
-        <div className="bg-white w-[400px] rounded-lg shadow-lg p-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xs">
+        <div className="w-[400px] p-6 bg-white rounded-lg shadow-lg">
           로딩 중…
         </div>
       </div>
     )
   }
+
   if (error || !course) {
     return (
-      <div className="flex items-center z-50 fixed inset-0 justify-center bg-black/30 backdrop-blur-xs">
-        <div className="bg-white w-[400px] rounded-lg shadow-lg p-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xs">
+        <div className="w-[400px] p-6 bg-white rounded-lg shadow-lg">
           코스를 불러오지 못했습니다.
         </div>
       </div>
@@ -246,20 +311,44 @@ export default function EditCourseModal({
   }
 
   return (
-    <div className="flex items-center z-50 fixed inset-0 justify-center bg-black/30 backdrop-blur-xs">
-      <div className="bg-white w-[400px] rounded-lg shadow-lg overflow-scroll">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xs"
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          onClose()
+        }
+      }}
+    >
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        className="relative w-[400px] max-h-[80vh] overflow-y-auto bg-white rounded-lg shadow-lg"
+      >
         <div className="flex items-center p-4">
           <button
+            type="button"
             onClick={onClose}
-            className="p-1 rounded-md hover:bg-gray-100 cursor-pointer"
+            className={tw`
+              p-1
+              rounded-md hover:bg-gray-100 focus:outline-none
+              cursor-pointer
+            `}
             aria-label="뒤로가기"
           >
             <CircleArrowLeft />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
+        <form
+          onSubmit={handleSubmit}
+          className={tw`
+            flex flex-col
+            gap-4 p-5
+          `}
+        >
           <input
+            ref={firstFieldRef}
             type="text"
             placeholder="코스명"
             name="course_name"
@@ -267,9 +356,8 @@ export default function EditCourseModal({
             onChange={e => setCourseName(e.target.value)}
             required
             className={tw`
-              px-3 py-2 w-full 
-              border border-gray-300 rounded-md outline-none
-              focus:ring-2 focus:ring-blue-400
+              w-full px-3 py-2
+              border border-gray-300 rounded-md outline-none focus:ring-2
             `}
           />
 
@@ -278,22 +366,35 @@ export default function EditCourseModal({
             value={courseDesc}
             name="course_description"
             onChange={e => setCourseDesc(e.target.value)}
-            className={tw`
-              w-full px-3 py-2 border border-gray-200 rounded-md
-              text-sm text-gray-700
-              outline-none focus:ring-2 focus:ring-blue-400 resize-none`}
             rows={3}
+            className={tw`
+              w-full px-3 py-2 resize-none
+              border border-gray-200 rounded-md outline-none focus:ring-2
+              text-gray-700 text-sm
+            `}
           />
 
-          <div
+          <input
+            type="file"
+            name="course_image"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+
+          <button
+            type="button"
             onClick={() => fileInputRef.current?.click()}
             onDrop={handleDrop}
             onDragOver={e => e.preventDefault()}
             className={tw`
               flex flex-col items-center justify-center
-              border-2 border-dashed border-gray-300 rounded-md py-2
+              py-2 hover:bg-gray-50
+              border-2 border-dashed border-gray-300 rounded-md 
               text-gray-500
-              cursor-pointer hover:bg-gray-50 transition`}
+              cursor-pointer transition
+            `}
           >
             {imagePreview ? (
               <Image
@@ -306,32 +407,30 @@ export default function EditCourseModal({
             ) : (
               <>
                 <Upload className="size-10" />
-                <p className="text-sm">사진 업로드</p>
+                <p className="text-gray-500 text-sm">사진 업로드</p>
               </>
             )}
-            <input
-              type="file"
-              name="course_image"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
+          </button>
 
           <div className="bg-gray-300 rounded-md text-center text-gray-600">
             {drawingMode ? (
               <DrawMap onSavePath={setPath} />
             ) : (
               <div className="flex flex-col items-center p-1">
-                <div className="w-[340px] h-[200px] m-1 rounded-md overflow-hidden bg-white">
+                <div className="w-[340px] h-[200px] m-1 overflow-hidden bg-white rounded-md">
                   <KakaoMap coordData={path} />
                 </div>
-                <div className="m-1 w-[340px]">
+
+                <div className="w-[340px] m-1">
                   <button
                     type="button"
-                    className="bg-black text-white rounded-md cursor-pointer py-3 w-full"
                     onClick={() => setDrawingMode(true)}
+                    className={tw`
+                      w-full py-3
+                      bg-black rounded-md
+                      text-white
+                      cursor-pointer
+                    `}
                   >
                     경로 수정하기
                   </button>
@@ -340,9 +439,9 @@ export default function EditCourseModal({
             )}
           </div>
 
-          <div className="flex gap-2 items-start">
+          <div className="flex items-start gap-2">
             <Info />
-            <p className="text-gray-500 text-[14px] ">
+            <p className="text-gray-500 text-[14px]">
               지점을 클릭해 경로를 그리고, '경로 저장' 버튼을 누르면
               경로데이터가 반영됩니다.
             </p>
@@ -352,8 +451,15 @@ export default function EditCourseModal({
             type="submit"
             disabled={isSaving || !hasChanges}
             className={tw`
-              w-full text-white py-2 rounded-md transition cursor-pointer
-              ${isSaving || !hasChanges ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}
+              w-full py-2
+              rounded-md
+              text-white
+              transition cursor-pointer
+              ${
+                isSaving || !hasChanges
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-blue-500 hover:bg-blue-600'
+              }
             `}
           >
             저장하기
