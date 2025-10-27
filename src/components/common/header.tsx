@@ -2,6 +2,7 @@
 
 import type { Session } from '@supabase/supabase-js'
 import { Menu } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -143,12 +144,15 @@ export default function Header() {
           cursor-pointer
         `)}
       >
-        <img
+        <Image
           src="/logo.png"
           alt="러닝일레븐 로고"
+          width={250}
+          height={50}
+          priority
+          fetchPriority="high"
           className={tw(`
-            flex
-            w-[250px] h-[50px] object-contain
+            flex object-contain
             bg-transparent border border-transparent
             text-gray-800 text-base font-normal
           `)}
