@@ -46,6 +46,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         strategy="afterInteractive"
       />
       <body className="md:max-w-[768px] mx-auto">
+        <h1 className="sr-only">러닝 일레븐</h1>
         <ClientLayout>
           <Header />
           <Navigation />

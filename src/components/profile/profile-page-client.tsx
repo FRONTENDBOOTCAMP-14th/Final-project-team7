@@ -22,6 +22,7 @@ export default function ProfilePageClient() {
   if (loading || !profileData) {
     return (
       <section className="flex flex-col items-center w-full p-5 gap-5">
+        <h2 className="sr-only">프로필 관리 페이지</h2>
         <div className="animate-pulse">로딩 중...</div>
       </section>
     )
@@ -29,6 +30,7 @@ export default function ProfilePageClient() {
 
   return (
     <section className="flex flex-col items-center w-full p-5 gap-5">
+      <h2 className="sr-only">프로필 관리 페이지</h2>
       <ProfileCard profileData={profileData} editable={true} />
       <EmailCardClient email={email} />
       <FeatureButton label="친구" href="/profile/friends" />
