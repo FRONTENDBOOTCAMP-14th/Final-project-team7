@@ -23,16 +23,15 @@ export default function FriendsItem({
     <li
       className={tw(`
         flex items-start justify-between
-        w-full py-3
+        w-full py-3 gap-3
         bg-transparent border-gray-200 rounded-none
         text-gray-800 text-base font-normal
-        gap-3
       `)}
     >
       <div
         className={tw(`
-          flex items-start gap-3
-          flex-1 min-w-0
+          flex items-start flex-1 
+          min-w-0 gap-3
           bg-transparent border border-transparent rounded-none
           text-gray-800 text-base font-normal
         `)}

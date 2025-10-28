@@ -228,8 +228,8 @@ export default function NavigationMenu({
         <nav
           aria-label="메뉴 내비게이션"
           className={tw(`
-            flex flex-col
-            w-full gap-2 flex-1
+            flex flex-col flex-1
+            w-full gap-2 
             bg-transparent border border-transparent rounded-lg
             text-gray-800 text-base font-normal
           `)}
