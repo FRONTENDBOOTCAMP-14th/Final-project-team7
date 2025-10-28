@@ -84,7 +84,9 @@ export default function RunningCalendar({
     return (
       <div
         className={`absolute z-[2] px-0.5 bottom-0.5 left-1/2 rounded text-[10px] font-light -translate-x-1/2 ${
-          isLongDistance ? 'bg-[#073462] text-white' : 'bg-[#1586F9] text-white'
+          isLongDistance
+            ? 'bg-[var(--color-point-200)] text-white'
+            : 'bg-[var(--color-point-100)] text-white'
         }`}
       >
         {distance.toFixed(1)}km
