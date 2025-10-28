@@ -329,7 +329,6 @@ export default function RunningMusicModal({
                 border border-gray-200 rounded-lg
                 bg-white
                 text-gray-800 text-base
-                
               `)}
             >
               {loading ? (
