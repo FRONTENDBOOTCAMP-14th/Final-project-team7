@@ -143,6 +143,30 @@ export interface Database {
         }
         Relationships: []
       }
+      friends: {
+        Row: {
+          id: number
+          created_at: string
+          user_id: string
+          friend_id: string
+          status: string
+        }
+        Insert: {
+          id?: number
+          created_at?: string
+          user_id: string
+          friend_id: string
+          status?: string
+        }
+        Update: {
+          id?: number
+          created_at?: string
+          user_id?: string
+          friend_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
