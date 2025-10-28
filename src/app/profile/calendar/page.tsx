@@ -3,7 +3,7 @@ import '@/styles/main.css'
 
 export default function RunningCalendarPage() {
   return (
-    <div className="flex justify-center items-start min-h-screen py-10">
+    <div className="flex justify-center items-start min-h-screen">
       <CalendarClient />
     </div>
   )
