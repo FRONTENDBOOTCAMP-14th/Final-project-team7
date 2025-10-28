@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react'
 
 import Profile from '@/components/common/profile'
 import { NAVIGATION_ITEMS } from '@/constants/main/common/navigation-items'
+import { supabase } from '@/lib/supabase/supabase-client'
 import { tw } from '@/utils/tw'
 
 interface NavigationMenuProps {
@@ -40,7 +41,7 @@ export default function NavigationMenu({
           : 'bg-transparent border border-transparent rounded-lg'
       }
       ${active ? 'text-white text-base' : 'text-gray-800 text-base'}
-      hover:bg-[var(--color-point-200)] hover:text-white cursor-pointer  
+      hover:bg-[var(--color-point-200)] hover:text-white cursor-pointer
     `
       .replace(/\s+/g, ' ')
       .trim()
@@ -49,82 +50,55 @@ export default function NavigationMenu({
   useEffect(() => {
     if (!isOpen) return
 
-    function isInsideSkipArea(el: HTMLElement | null) {
-      let cur: HTMLElement | null = el
-      while (cur) {
-        if (cur.getAttribute?.('data-focus-skip') === 'true') {
-          return true
-        }
-        cur = cur.parentElement
-      }
-      return false
-    }
+    const root = menuRef.current
+    if (!root) return
 
-    function getFocusableElements(root: HTMLElement) {
-      const raw = Array.from(
-        root.querySelectorAll<
-          HTMLButtonElement | HTMLAnchorElement | HTMLElement
-        >('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+    const focusables = Array.from(
+      root.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
       )
+    ).filter(el => !el.hasAttribute('aria-hidden'))
 
-      return raw.filter(el => {
-        if (el.hasAttribute('aria-hidden')) return false
-        if (isInsideSkipArea(el as HTMLElement)) return false
-        return true
-      }) as HTMLElement[]
-    }
+    if (focusables.length === 0) return
 
-    function focusFirstElement() {
-      const root = menuRef.current
-      if (!root) return
-      const focusables = getFocusableElements(root)
-      if (focusables.length > 0) {
-        focusables[0].focus()
-      }
-    }
+    const firstEl = focusables[0]
+    const lastEl = focusables[focusables.length - 1]
+
+    firstEl.focus()
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         onClose()
         return
       }
-
       if (e.key !== 'Tab') return
 
-      e.preventDefault()
-
-      const root = menuRef.current
-      if (!root) return
-
-      const focusables = getFocusableElements(root)
-      if (focusables.length === 0) {
-        return
-      }
-
-      const activeEl = document.activeElement as HTMLElement | null
-      const currentIndex = focusables.findIndex(el => el === activeEl)
-
       if (e.shiftKey) {
-        const prevIndex =
-          currentIndex === -1
-            ? focusables.length - 1
-            : (currentIndex - 1 + focusables.length) % focusables.length
-        focusables[prevIndex].focus()
+        if (document.activeElement === firstEl) {
+          e.preventDefault()
+          lastEl.focus()
+        }
       } else {
-        const nextIndex =
-          currentIndex === -1 ? 0 : (currentIndex + 1) % focusables.length
-        focusables[nextIndex].focus()
+        if (document.activeElement === lastEl) {
+          e.preventDefault()
+          firstEl.focus()
+        }
       }
     }
 
-    focusFirstElement()
-
     document.addEventListener('keydown', handleKeyDown)
-
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
   }, [isOpen, onClose])
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    onClose()
+    router.replace('/sign-in')
+  }
+
+  const tabbableWhenOpen = isOpen ? 0 : -1
 
   return (
     <>
@@ -136,10 +110,13 @@ export default function NavigationMenu({
           fixed inset-0 z-[9998]
           bg-black/40 backdrop-blur-sm
           transition-opacity
-          ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+          ${
+            isOpen
+              ? 'opacity-100 pointer-events-auto'
+              : 'opacity-0 pointer-events-none'
+          }
         `)}
       />
-
       <aside
         id="site-navigation-menu"
         ref={menuRef}
@@ -172,17 +149,17 @@ export default function NavigationMenu({
           >
             메뉴
           </span>
-
           <button
             type="button"
             aria-label="메뉴 닫기"
             onClick={onClose}
+            tabIndex={tabbableWhenOpen}
             className={tw(`
               flex items-center justify-center
               w-[32px] h-[32px]
               bg-transparent hover:bg-gray-100 border border-transparent rounded-lg
               text-gray-800 text-base font-normal
-              cursor-pointer transition 
+              cursor-pointer transition
             `)}
           >
             <X className="w-[20px] h-[20px]" aria-hidden="true" />
@@ -194,12 +171,13 @@ export default function NavigationMenu({
             href="/profile"
             aria-label="프로필로 이동"
             onClick={onClose}
+            tabIndex={tabbableWhenOpen}
             className={tw(`
               flex items-center
               w-full gap-3
               bg-transparent hover:bg-gray-100 border border-transparent rounded-lg
               text-gray-800 text-base font-normal
-              cursor-pointer transition 
+              cursor-pointer transition
             `)}
           >
             <div
@@ -233,10 +211,11 @@ export default function NavigationMenu({
             onClick={() => {
               router.push('/sign-in')
             }}
+            tabIndex={tabbableWhenOpen}
             className={tw(`
               flex items-center justify-center
               w-full h-[48px]
-              bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)]
+              bg-[var(--color-point-200)] hover:bg-[var(--color-point-100)]
               border border-transparent rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)]
               text-white text-base font-semibold
               cursor-pointer
@@ -250,7 +229,7 @@ export default function NavigationMenu({
           aria-label="메뉴 내비게이션"
           className={tw(`
             flex flex-col
-            w-full gap-2
+            w-full gap-2 flex-1
             bg-transparent border border-transparent rounded-lg
             text-gray-800 text-base font-normal
           `)}
@@ -266,6 +245,7 @@ export default function NavigationMenu({
               <li key={item.href} className="w-full">
                 <Link
                   href={item.href}
+                  tabIndex={tabbableWhenOpen}
                   className={getNavItemClass(isActive(item.href))}
                   aria-current={isActive(item.href) ? 'page' : undefined}
                   onClick={() => {
@@ -280,6 +260,34 @@ export default function NavigationMenu({
             ))}
           </ul>
         </nav>
+
+        {isAuthenticated && (
+          <div
+            className={tw(`
+              mt-auto
+              w-full pt-4
+              border-t border-gray-200
+            `)}
+          >
+            <button
+              type="button"
+              onClick={handleLogout}
+              tabIndex={tabbableWhenOpen}
+              className={tw(`
+                flex items-center justify-center
+                w-full h-[44px]
+                bg-[var(--color-point-200)]
+                hover:bg-[var(--color-point-100)]
+                border border-gray-300 rounded-lg
+                shadow-[0_0_6px_0_rgba(0,0,0,0.15)]
+                text-white text-base font-normal
+                cursor-pointer
+              `)}
+            >
+              로그아웃
+            </button>
+          </div>
+        )}
       </aside>
     </>
   )

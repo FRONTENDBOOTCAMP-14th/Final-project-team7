@@ -1,6 +1,7 @@
 'use client'
 
 import type { Session } from '@supabase/supabase-js'
+import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
@@ -63,6 +64,7 @@ export default function FriendsPage() {
       toast.error('요청 거절에 실패했습니다')
       return
     }
+
     toast.success('친구 요청을 거절했습니다')
 
     setRequests(prev => prev.filter(r => r.relationId !== relationId))
@@ -309,22 +311,28 @@ export default function FriendsPage() {
 
   if (isLoading) {
     return (
-      <main
+      <div
         className={tw(`
-          flex flex-col
-          w-full max-w-[768px] mx-auto p-4 gap-6
-          bg-white border border-transparent rounded-none
-          text-gray-800 text-base font-normal
+          flex flex-col items-center justify-center
+          w-full max-w-[768px] mx-auto px-4
+          min-h-[50vh] gap-4
+          bg-white text-gray-800
         `)}
+        aria-busy="true"
+        aria-live="polite"
       >
-        <p className="text-gray-500 text-base font-normal">불러오는 중</p>
-      </main>
+        <Loader2
+          className="w-8 h-8 text-[var(--color-point-100)] animate-spin"
+          aria-hidden="true"
+        />
+        <p className="text-gray-500 text-base font-normal">불러오는 중...</p>
+      </div>
     )
   }
 
   if (!session) {
     return (
-      <main
+      <div
         className={tw(`
           flex flex-col
           w-full max-w-[768px] mx-auto p-4 gap-6
@@ -353,14 +361,14 @@ export default function FriendsPage() {
           className={tw(`
             flex items-center justify-center
             w-full h-[48px]
-            bg-[var(--color-point-100)] border border-transparent rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)]
+            bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)] border border-transparent rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)]
             text-white text-base
-            cursor-pointer hover:bg-[var(--color-point-200)]
+            cursor-pointer 
           `)}
         >
           로그인하러 가기
         </button>
-      </main>
+      </div>
     )
   }
 
