@@ -126,21 +126,18 @@ export default function NavigationMenu({
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) {
-    return null
-  }
-
   return (
     <>
       <div
         role="presentation"
-        aria-hidden="true"
-        onClick={onClose}
-        className="
+        aria-hidden={isOpen ? 'false' : 'true'}
+        onClick={isOpen ? onClose : undefined}
+        className={tw(`
           fixed inset-0 z-[9998]
           bg-black/40 backdrop-blur-sm
-          cursor-pointer
-        "
+          transition-opacity
+          ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+        `)}
       />
 
       <aside
@@ -148,13 +145,16 @@ export default function NavigationMenu({
         ref={menuRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="site-navigation-menu-label"
+        aria-labelledby={isOpen ? 'site-navigation-menu-label' : undefined}
+        aria-hidden={isOpen ? 'false' : 'true'}
         className={tw(`
           fixed inset-y-0 left-0 z-[9999] flex flex-col
           w-[300px] max-w-[85%] h-full p-5 gap-6 overflow-y-auto
           bg-white border-r border-gray-200 rounded-none shadow-[0_4px_24px_rgba(0,0,0,0.12)]
           text-gray-800
-          `)}
+          transition-transform
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        `)}
       >
         <div
           className={tw(`
@@ -193,6 +193,7 @@ export default function NavigationMenu({
           <Link
             href="/profile"
             aria-label="프로필로 이동"
+            onClick={onClose}
             className={tw(`
               flex items-center
               w-full gap-3
@@ -235,7 +236,7 @@ export default function NavigationMenu({
             className={tw(`
               flex items-center justify-center
               w-full h-[48px]
-              bg-[var(--color-point-200)] hover:bg-[var(--color-point-100)]
+              bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)]
               border border-transparent rounded-lg shadow-[0_0_6px_0_rgba(0,0,0,0.25)]
               text-white text-base font-semibold
               cursor-pointer
@@ -267,6 +268,11 @@ export default function NavigationMenu({
                   href={item.href}
                   className={getNavItemClass(isActive(item.href))}
                   aria-current={isActive(item.href) ? 'page' : undefined}
+                  onClick={() => {
+                    if (!item.href.startsWith('/profile')) {
+                      onClose()
+                    }
+                  }}
                 >
                   {item.label}
                 </Link>

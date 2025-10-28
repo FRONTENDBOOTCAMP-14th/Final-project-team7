@@ -27,9 +27,11 @@ export default function RunningMusicModal({
   targetMusicId = null,
   initialTitle = '',
 }: RunningMusicModalProps) {
-  const dialogRef = useRef<HTMLDialogElement | null>(null)
+  const modalRef = useRef<HTMLDivElement | null>(null)
+  const firstFieldRef = useRef<HTMLInputElement | null>(null)
   const confirmButtonRef = useRef<HTMLButtonElement | null>(null)
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null)
+  const previousOverflowRef = useRef<string>('')
 
   const [query, setQuery] = useState(initialTitle)
   const [results, setResults] = useState<SpotifySimplifiedTrack[]>([])
@@ -39,44 +41,76 @@ export default function RunningMusicModal({
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
+    if (!isOpen) return
 
-    if (isOpen) {
-      dialog.showModal()
-      document.body.style.overflow = 'hidden'
+    lastFocusedElementRef.current = document.activeElement as HTMLElement | null
+    previousOverflowRef.current = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
 
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
+    if (firstFieldRef.current) {
+      firstFieldRef.current.focus()
+    }
+
+    const focusableSelectors =
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose(false)
+        return
+      }
+
+      if (e.key === 'Tab') {
+        const node = modalRef.current
+        if (!node) return
+        const focusable = Array.from(
+          node.querySelectorAll<HTMLElement>(focusableSelectors)
+        ).filter(
+          el =>
+            !el.hasAttribute('disabled') &&
+            el.tabIndex !== -1 &&
+            !el.getAttribute('aria-hidden')
+        )
+
+        if (focusable.length === 0) {
           e.preventDefault()
-          onClose(false)
+          return
+        }
+
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        const active = document.activeElement as HTMLElement | null
+
+        if (e.shiftKey) {
+          if (active === first || !node.contains(active)) {
+            e.preventDefault()
+            last.focus()
+          }
+        } else {
+          if (active === last) {
+            e.preventDefault()
+            first.focus()
+          }
         }
       }
+    }
 
-      const handleOutsideClick = (e: MouseEvent) => {
-        if (dialogRef.current && e.target === dialogRef.current) {
-          onClose(false)
-        }
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflowRef.current
+      if (lastFocusedElementRef.current) {
+        lastFocusedElementRef.current.focus()
       }
-
-      window.addEventListener('keydown', handleKeyDown)
-      dialog.addEventListener('click', handleOutsideClick)
-
-      setTimeout(() => inputRef.current?.focus(), 0)
-
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown)
-        dialog.removeEventListener('click', handleOutsideClick)
-        document.body.style.overflow = ''
-      }
-    } else if (dialog.open) {
-      dialog.close()
-      document.body.style.overflow = ''
     }
   }, [isOpen, onClose])
 
   useEffect(() => {
-    if (mode === 'edit' && initialTitle) setQuery(initialTitle)
+    if (mode === 'edit' && initialTitle) {
+      setQuery(initialTitle)
+    }
   }, [mode, initialTitle])
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -164,154 +198,277 @@ export default function RunningMusicModal({
     }
   }
 
-  return (
-    <dialog
-      ref={dialogRef}
-      className={tw(`
-        fixed inset-0 z-9999 items-center justify-center
-        mx-auto my-auto overflow-y-auto
-        rounded-lg
-      `)}
-      onClose={() => onClose(false)}
-      aria-labelledby="musicModalTitle"
-    >
-      <form
-        method="dialog"
-        onSubmit={handleSearch}
-        className="flex flex-col max-w-[420px] max-h-[80%] gap-5 p-6"
-      >
-        <div className="flex items-center justify-between shrink-0">
-          <h2
-            id="musicModalTitle"
-            className="text-lg font-semibold text-gray-800"
-          >
-            {mode === 'add' ? '러닝곡 추가' : '러닝곡 수정'}
-          </h2>
-          <button
-            type="button"
-            onClick={() => onClose(false)}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer"
-            aria-label="닫기 버튼"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+  if (!isOpen) {
+    return null
+  }
 
-        <div className="flex flex-col md:flex-row gap-2">
-          <div className="flex flex-1 items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg cursor-pointer">
-            <Search className="w-4 h-4 text-gray-400" />
-            <input
-              ref={inputRef}
-              type="search"
-              placeholder="검색어 입력 (노래, 가수명)"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              className="flex-1 text-sm text-gray-700"
-            />
+  return (
+    <div
+      className={tw(`
+        fixed inset-0 z-[9999] flex justify-center items-start md:items-center
+        p-4
+        bg-black/30 backdrop-blur-xs
+      `)}
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          onClose(false)
+        }
+      }}
+    >
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="musicModalTitle"
+        className={tw(`
+          flex flex-col
+          w-[400px] max-w-[90%] max-h-[80vh]
+          overflow-y-auto
+          bg-white border border-transparent rounded-lg shadow-lg
+          text-gray-800
+        `)}
+      >
+        <form
+          onSubmit={handleSearch}
+          className={tw(`
+            flex flex-col
+            w-full min-h-0
+            p-5 gap-4
+          `)}
+        >
+          <div
+            className={tw(`
+              flex items-center justify-between
+              w-full
+            `)}
+          >
+            <h2
+              id="musicModalTitle"
+              className={tw(`
+                text-gray-800 text-lg font-semibold
+              `)}
+            >
+              {mode === 'add' ? '러닝곡 추가' : '러닝곡 수정'}
+            </h2>
+
+            <button
+              type="button"
+              onClick={() => onClose(false)}
+              aria-label="닫기 버튼"
+              className={tw(`
+                flex items-center justify-center
+                w-[24px] h-[24px]
+                bg-transparent border border-transparent rounded-md
+                text-gray-400 text-base
+                hover:text-gray-600
+                cursor-pointer
+              `)}
+            >
+              <X className="w-5 h-5" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div
+            className={tw(`
+              flex flex-col
+              gap-4
+              min-h-0
+            `)}
+          >
+            <div
+              className={tw(`
+                flex flex-col md:flex-row
+                gap-2
+              `)}
+            >
+              <div
+                className={tw(`
+                  flex items-center
+                  flex-1 gap-2 px-3 py-2
+                  border border-gray-300 rounded-lg
+                  bg-white
+                  text-gray-700 text-sm
+                  cursor-text
+                `)}
+              >
+                <Search className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                <input
+                  ref={firstFieldRef}
+                  type="search"
+                  placeholder="검색어 입력 (노래, 가수명)"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  className={tw(`
+                    flex-1
+                    bg-transparent border border-transparent outline-none
+                    text-gray-700 text-sm
+                  `)}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={tw(`
+                  flex items-center justify-center
+                  px-4 py-2 w-full md:w-auto
+                  bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)] disabled:bg-gray-400
+                  border border-transparent rounded-lg shadow-none
+                  text-white text-sm font-medium
+                  cursor-pointer
+                `)}
+              >
+                검색
+              </button>
+            </div>
+
+            <div
+              className={tw(`
+                flex flex-col
+                max-h-[240px] overflow-y-auto
+                border border-gray-200 rounded-lg
+                bg-white
+                text-gray-800 text-base
+              `)}
+            >
+              {loading ? (
+                <div
+                  className={tw(`
+                    flex justify-center items-center
+                    py-12
+                    text-gray-500 text-sm
+                  `)}
+                >
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                </div>
+              ) : results.length === 0 ? (
+                <p
+                  className={tw(`
+                    py-10 text-center
+                    text-gray-400 text-sm
+                  `)}
+                >
+                  검색 결과가 없습니다.
+                </p>
+              ) : (
+                <ul role="listbox" aria-label="음악 검색 결과">
+                  {results.map(track => (
+                    <li key={track.id}>
+                      <button
+                        type="button"
+                        role="option"
+                        tabIndex={0}
+                        aria-selected={selected?.id === track.id}
+                        onClick={() => {
+                          setSelected(track)
+                          confirmButtonRef.current?.focus()
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            setSelected(track)
+                            confirmButtonRef.current?.focus()
+                          }
+                        }}
+                        className={tw(`
+                          flex items-center
+                          w-full gap-3 p-3
+                          rounded-md
+                          ${
+                            selected?.id === track.id
+                              ? 'bg-blue-50'
+                              : 'hover:bg-gray-50'
+                          }
+                          text-left
+                          cursor-pointer
+                        `)}
+                      >
+                        <img
+                          src={track.album_image}
+                          alt={`${track.title} 앨범 이미지`}
+                          className={tw(`
+                            flex-shrink-0
+                            w-12 h-12
+                            rounded-md
+                            object-cover
+                          `)}
+                        />
+                        <div
+                          className={tw(`
+                            flex-1 min-w-0
+                            text-gray-900 text-base
+                          `)}
+                        >
+                          <p className="truncate text-gray-900 text-[15px] font-medium">
+                            {track.title}
+                          </p>
+                          <p className="truncate text-gray-600 text-sm font-normal">
+                            {track.artist}
+                          </p>
+                        </div>
+
+                        {selected?.id === track.id && (
+                          <Check className="flex-shrink-0 w-4 h-4 text-blue-600" />
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <label
+              className={tw(`
+                flex flex-col
+                text-gray-700 text-sm font-normal
+              `)}
+            >
+              BPM (선택 입력)
+              <input
+                type="number"
+                min="0"
+                max="300"
+                placeholder="예: 160"
+                value={bpm}
+                onChange={e =>
+                  setBpm(e.target.value ? Number(e.target.value) : '')
+                }
+                className={tw(`
+                  mt-1 px-3 py-2
+                  border border-gray-300 rounded-md
+                  bg-white
+                  text-gray-700 text-sm
+                  outline-none
+                `)}
+              />
+            </label>
           </div>
 
           <button
-            type="submit"
-            disabled={loading}
-            className="px-4 py-2 w-full md:w-auto bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)] disabled:bg-gray-400 rounded-lg text-sm font-medium text-white cursor-pointer"
+            ref={confirmButtonRef}
+            id="confirm-button"
+            type="button"
+            onClick={handleConfirm}
+            disabled={submitting}
+            className={tw(`
+              flex items-center justify-center
+              w-full px-4 py-2
+              bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)] disabled:bg-gray-400
+              border border-transparent rounded-md shadow-none
+              text-white text-sm font-medium
+              cursor-pointer
+            `)}
           >
-            검색
-          </button>
-        </div>
-
-        <div className="max-h-[360px] overflow-y-auto rounded-lg border border-gray-200">
-          {loading ? (
-            <div className="flex justify-center py-12 text-gray-500">
+            {submitting ? (
               <Loader2 className="h-5 w-5 animate-spin" />
-            </div>
-          ) : results.length === 0 ? (
-            <p className="py-10 text-center text-sm text-gray-400">
-              검색 결과가 없습니다.
-            </p>
-          ) : (
-            <ul role="listbox" aria-label="음악 검색 결과">
-              {results.map(track => (
-                <li key={track.id}>
-                  <button
-                    type="button"
-                    role="option"
-                    tabIndex={0}
-                    aria-selected={selected?.id === track.id}
-                    onClick={() => {
-                      setSelected(track)
-                      confirmButtonRef.current?.focus()
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        setSelected(track)
-                        confirmButtonRef.current?.focus()
-                      }
-                    }}
-                    className={`flex items-center w-full gap-3 p-3 rounded-md ${
-                      selected?.id === track.id
-                        ? 'bg-blue-50'
-                        : 'hover:bg-gray-50'
-                    } text-left cursor-pointer`}
-                  >
-                    <img
-                      src={track.album_image}
-                      alt={`${track.title} 앨범 이미지`}
-                      className="flex-shrink-0 w-12 h-12 rounded-md object-cover"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="truncate font-medium text-gray-900">
-                        {track.title}
-                      </p>
-                      <p className="truncate text-sm text-gray-600">
-                        {track.artist}
-                      </p>
-                    </div>
-                    {selected?.id === track.id && (
-                      <Check className="flex-shrink-0 w-4 h-4 text-blue-600" />
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <label className="flex flex-col text-sm text-gray-700">
-          BPM (선택 입력)
-          <input
-            type="number"
-            min="0"
-            max="300"
-            placeholder="예: 160"
-            value={bpm}
-            onChange={e => setBpm(e.target.value ? Number(e.target.value) : '')}
-            className="mt-1 px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 outline-none"
-          />
-        </label>
-        <button
-          ref={confirmButtonRef}
-          id="confirm-button"
-          type="button"
-          onClick={handleConfirm}
-          disabled={submitting}
-          className={tw(`
-            flex items-center justify-center 
-            px-4 py-2 
-            bg-[var(--color-point-100)] hover:bg-[var(--color-point-200)] rounded-md disabled:bg-gray-400 
-            text-sm text-white 
-            cursor-pointer
-          `)}
-        >
-          {submitting ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : mode === 'add' ? (
-            '추가하기'
-          ) : (
-            '수정하기'
-          )}
-        </button>
-      </form>
-    </dialog>
+            ) : mode === 'add' ? (
+              '추가하기'
+            ) : (
+              '수정하기'
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }

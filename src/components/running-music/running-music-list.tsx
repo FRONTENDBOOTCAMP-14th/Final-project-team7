@@ -231,7 +231,12 @@ export default function RunningMusicList({
       {normalList.length === 0 ? (
         <p className="py-8 text-sm text-gray-400">러닝곡을 등록하세요</p>
       ) : (
-        <ul ref={listRef}>
+        <ul
+          ref={listRef}
+          className="
+            max-h-[300px] overflow-y-auto
+          "
+        >
           {normalList.map(music => (
             <li
               key={music.id}
