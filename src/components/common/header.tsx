@@ -118,9 +118,10 @@ export default function Header() {
     >
       <button
         type="button"
-        aria-label="메뉴 열기"
-        aria-controls="site-navigation-menu"
+        aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
+        aria-haspopup="dialog"
         aria-expanded={isMenuOpen}
+        aria-controls={isMenuOpen ? 'site-navigation-menu' : undefined}
         onClick={handleToggleMenu}
         className={tw(`
           flex items-center justify-center
