@@ -26,7 +26,7 @@ export default function FeatHeader({ title, onBack }: FeatHeaderProps) {
         <button
           type="button"
           onClick={handleBack}
-          className="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+          className="flex items-center justify-center w-10 h-10 -ml-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors"
           aria-label="뒤로가기"
         >
           <ChevronLeft size={24} className="text-[var(--color-basic-300)]" />

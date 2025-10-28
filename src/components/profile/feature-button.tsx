@@ -16,7 +16,7 @@ export default function FeatureButton({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center justify-between w-full max-w-[363px] px-5 py-4 bg-white border-b border-[var(--color-basic-100)] hover:bg-gray-50 transition-colors"
+      className="flex items-center justify-between w-full max-w-[363px] px-5 py-4 bg-white border-b border-[var(--color-basic-100)] hover:bg-gray-50 cursor-pointer transition-colors"
     >
       <span className="text-base font-normal text-[var(--color-basic-400)]">
         {label}

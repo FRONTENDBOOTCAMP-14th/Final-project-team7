@@ -24,7 +24,7 @@ export default function SignoutButton() {
     <button
       type="button"
       onClick={handleSignOut}
-      className="w-full max-w-[363px] p-4 border-2 border-[var(--color-basic-100)]"
+      className="w-full max-w-[363px] p-4 border-2 border-[var(--color-basic-100)] cursor-pointer"
       aria-label="로그아웃"
     >
       <p className="text-center">로그아웃</p>

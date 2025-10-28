@@ -56,7 +56,7 @@ export default function SignInClient() {
         disabled={loading}
         aria-busy={loading}
         aria-disabled={loading}
-        className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-200)] text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-200)] text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? '로그인 중...' : '로그인'}
       </button>
@@ -65,7 +65,7 @@ export default function SignInClient() {
         type="button"
         onClick={goToSignUp}
         disabled={loading}
-        className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-100)] text-white text-sm disabled:opacity-50"
+        className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-100)] text-white text-sm disabled:opacity-50 cursor-pointer"
       >
         회원가입
       </button>
