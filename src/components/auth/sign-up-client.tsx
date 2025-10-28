@@ -102,7 +102,7 @@ export default function SignUpClient() {
           disabled={loading}
           aria-busy={loading}
           aria-disabled={loading}
-          className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-100)] text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-3 w-full max-w-[313px] rounded-lg bg-[var(--color-point-100)] text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? '처리 중...' : '회원가입'}
         </button>

@@ -22,7 +22,7 @@ export default function EditButton({
   return (
     <button
       onClick={handleClick}
-      className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+      className="p-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors"
       aria-label={ariaLabel}
       type="button"
     >
