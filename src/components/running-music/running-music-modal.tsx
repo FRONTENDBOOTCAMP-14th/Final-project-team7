@@ -325,10 +325,11 @@ export default function RunningMusicModal({
             <div
               className={tw(`
                 flex flex-col
+                max-h-[240px] overflow-y-auto
                 border border-gray-200 rounded-lg
                 bg-white
                 text-gray-800 text-base
-                max-h-[240px] overflow-y-auto
+                
               `)}
             >
               {loading ? (
