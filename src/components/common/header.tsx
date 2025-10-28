@@ -99,9 +99,7 @@ export default function Header() {
   }, [isMenuOpen])
 
   const shouldHideHeader =
-    pathname.startsWith('/profile/') ||
-    pathname === '/sign-in' ||
-    pathname === '/sign-in/sign-up'
+    pathname.startsWith('/profile/') || pathname.startsWith('/sign-in')
 
   if (shouldHideHeader) {
     return null
@@ -118,9 +116,10 @@ export default function Header() {
     >
       <button
         type="button"
-        aria-label="메뉴 열기"
-        aria-controls="site-navigation-menu"
+        aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
+        aria-haspopup="dialog"
         aria-expanded={isMenuOpen}
+        aria-controls={isMenuOpen ? 'site-navigation-menu' : undefined}
         onClick={handleToggleMenu}
         className={tw(`
           flex items-center justify-center
