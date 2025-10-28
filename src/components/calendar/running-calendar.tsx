@@ -1,11 +1,20 @@
 'use client'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useEffect } from 'react'
 import type { CalendarProps } from 'react-calendar'
-import Calendar from 'react-calendar'
 
 import type { RunningRecord } from '@/hooks/calednar/use-running-records'
+
+const Calendar = dynamic(() => import('react-calendar'), {
+  ssr: false,
+  loading: () => (
+    <div className="text-center text-sm text-[var(--color-basic-200)]">
+      달력 불러오는 중...
+    </div>
+  ),
+})
 
 interface RunningCalendarProps {
   courses: RunningRecord[]
