@@ -3,10 +3,9 @@ import { toast } from 'sonner'
 
 import DetailButton from '@/components/main/detail-button'
 import KakaoMap from '@/components/main/kakao-map'
+import { useCourses } from '@/features/main/course-crud/context'
 import type { Course } from '@/lib/supabase'
 import { tw } from '@/utils/tw'
-
-import { useCourses } from '../../features/main/course-crud/context'
 
 interface LatLng {
   lat: number

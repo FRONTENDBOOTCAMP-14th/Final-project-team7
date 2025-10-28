@@ -99,7 +99,9 @@ export default function Header() {
   }, [isMenuOpen])
 
   const shouldHideHeader =
-    pathname.startsWith('/profile/') || pathname.startsWith('/sign-in')
+    pathname === '/' ||
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/profile/')
 
   if (shouldHideHeader) {
     return null
@@ -157,17 +159,6 @@ export default function Header() {
           `)}
         />
       </Link>
-
-      <div
-        className={tw(`
-          flex items-center justify-center
-          w-[40px] h-[40px]
-          bg-transparent border border-transparent rounded-lg
-          text-gray-800 text-base font-normal
-        `)}
-        aria-hidden="true"
-      />
-
       <NavigationMenu
         isOpen={isMenuOpen}
         onClose={handleCloseMenu}
