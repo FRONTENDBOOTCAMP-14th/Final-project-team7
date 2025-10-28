@@ -99,9 +99,7 @@ export default function Header() {
   }, [isMenuOpen])
 
   const shouldHideHeader =
-    pathname.startsWith('/profile/') ||
-    pathname === '/sign-in' ||
-    pathname === '/sign-in/sign-up'
+    pathname.startsWith('/profile/') || pathname.startsWith('/sign-in')
 
   if (shouldHideHeader) {
     return null
