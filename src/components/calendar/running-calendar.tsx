@@ -52,7 +52,7 @@ export default function RunningCalendar({
       date.getMonth() === today.getMonth() &&
       date.getFullYear() === today.getFullYear()
     ) {
-      classes.push('bg-yellow-50')
+      classes.push('bg-yellow-100')
     }
 
     const dayString = formatDateToYMD(date)
@@ -60,7 +60,7 @@ export default function RunningCalendar({
       c => formatDateToYMD(new Date(c.date)) === dayString
     )
     if (hasData) {
-      classes.push('bg-blue-50 bg-opacity-10')
+      classes.push('bg-blue-100 bg-opacity-10')
     }
 
     return classes.join(' ')
