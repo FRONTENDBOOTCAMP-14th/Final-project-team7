@@ -2,13 +2,11 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { useEffect } from 'react'
 import type { CalendarProps } from 'react-calendar'
 
 import type { RunningRecord } from '@/hooks/calednar/use-running-records'
 
 const Calendar = dynamic(() => import('react-calendar'), {
-  ssr: false,
   loading: () => (
     <div className="text-center text-sm text-[var(--color-basic-200)]">
       달력 불러오는 중...
@@ -32,15 +30,6 @@ export default function RunningCalendar({
   currentMonth,
   onMonthChange,
 }: RunningCalendarProps) {
-  useEffect(() => {
-    const tiles = document.querySelectorAll('.react-calendar__tile')
-    tiles.forEach(tile => {
-      tile.setAttribute('tabindex', '-1')
-      tile.setAttribute('disabled', 'true')
-      tile.classList.add('cursor-default', 'pointer-events-none')
-    })
-  }, [currentMonth])
-
   const tileClassName: CalendarProps['tileClassName'] = ({ date, view }) => {
     if (view !== 'month') return ''
 
@@ -136,7 +125,6 @@ export default function RunningCalendar({
           <ChevronRight size={18} />
         </button>
       </div>
-
       <div className="calendar-custom w-full">
         <Calendar
           locale="ko-KR"
@@ -148,6 +136,7 @@ export default function RunningCalendar({
           formatDay={(_, date) => String(date.getDate())}
           tileClassName={tileClassName}
           tileContent={renderTileContent}
+          tileDisabled={() => true}
           maxDetail="month"
           minDetail="month"
           calendarType="gregory"
