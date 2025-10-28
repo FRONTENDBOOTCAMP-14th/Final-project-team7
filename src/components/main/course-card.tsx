@@ -17,8 +17,9 @@ interface LatLng {
 }
 type Path = LatLng[]
 
+// user_id를 선택적(optional)으로 바꿔줌
 type CourseWithOwner = Course & {
-  user_id: string
+  user_id?: string
 }
 
 function toPath(input: unknown): Path {
@@ -75,16 +76,22 @@ export default function CourseCard({
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    let isLoginUserMounted = true
+    let isMounted = true
 
     async function fetchOwnerName() {
+      if (!course.user_id) {
+        if (!isMounted) return
+        setOwnerName('알 수 없음')
+        return
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('user_name')
         .eq('id', course.user_id)
         .single()
 
-      if (!isLoginUserMounted) return
+      if (!isMounted) return
 
       if (error) {
         setOwnerName('알 수 없음')
@@ -97,26 +104,26 @@ export default function CourseCard({
     fetchOwnerName()
 
     return () => {
-      isLoginUserMounted = false
+      isMounted = false
     }
   }, [course.user_id])
 
   useEffect(() => {
-    let isLoginUserMounted = true
+    let isMounted = true
 
     async function fetchCurrentUser() {
       const {
         data: { user },
       } = await supabase.auth.getUser()
 
-      if (!isLoginUserMounted) return
+      if (!isMounted) return
       setCurrentUserId(user?.id ?? null)
     }
 
     fetchCurrentUser()
 
     return () => {
-      isLoginUserMounted = false
+      isMounted = false
     }
   }, [])
 
@@ -172,21 +179,21 @@ export default function CourseCard({
           </button>
         </div>
       )}
-
       <h3 className="mb-1 text-[var(--color-basic-400)] text-[18px] font-semibold">
         {course.course_name}
       </h3>
-
-      <p className="mb-2.5 text-[var(--color-basic-400)] text-[14px] font-normal break-words">
+      <p
+        className={tw(`
+          mb-2.5
+          text-[var(--color-basic-400)] text-[14px] font-normal break-words
+        `)}
+      >
         {course.course_desc}
       </p>
-
       <DetailButton onOpen={onOpenDetail} />
-
       <div className="w-[314px] h-[140px]">
         <KakaoMap coordData={toPath(course.course_map)} />
       </div>
-
       <div className="relative w-full h-12">
         <span className="absolute right-0 bottom-0 text-gray-400 font-medium text-[14px]">
           {metaInfo}
