@@ -312,14 +312,14 @@ export default function FriendsPage() {
   if (isLoading) {
     return (
       <div
-        className={tw(`
-          flex flex-col items-center justify-center
-          w-full max-w-[768px] mx-auto px-4
-          min-h-[50vh] gap-4
-          bg-white text-gray-800
-        `)}
-        aria-busy="true"
+        role="status"
         aria-live="polite"
+        className={tw(`
+        flex flex-col items-center justify-center
+        w-full max-w-[768px] mx-auto px-4
+        min-h-[50vh] gap-4
+        bg-white text-gray-800
+      `)}
       >
         <Loader2
           className="w-8 h-8 text-[var(--color-point-100)] animate-spin"

@@ -1,9 +1,10 @@
 import '@/styles/main.css'
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import type { PropsWithChildren } from 'react'
+import { Suspense, type PropsWithChildren } from 'react'
 
 import ClientLayout from '@/app/client-layout'
+import Loading from '@/app/loading'
 import Header from '@/components/common/header'
 
 export const metadata: Metadata = {
@@ -48,7 +49,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <h1 className="sr-only">러닝 일레븐</h1>
         <ClientLayout>
           <Header />
-          <main>{children}</main>
+          <Suspense fallback={<Loading />}>
+            <main>{children}</main>
+          </Suspense>
         </ClientLayout>
       </body>
     </html>

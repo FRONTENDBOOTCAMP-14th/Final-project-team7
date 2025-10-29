@@ -29,6 +29,8 @@ export default function RecordTable({
   if (isLoading) {
     return (
       <div
+        role="status"
+        aria-live="polite"
         className={tw(
           `flex flex-col items-center justify-center
           h-48
