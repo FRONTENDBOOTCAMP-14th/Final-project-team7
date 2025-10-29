@@ -80,7 +80,9 @@ export default function RunningMusicPage() {
           className="w-8 h-8 text-[var(--color-point-100)] animate-spin"
           aria-hidden="true"
         />
-        <p className="text-gray-500 text-base font-normal">불러오는 중...</p>
+        <p className="text-gray-500 text-base font-normal">
+          열심히 달려오는 중...👟
+        </p>
       </div>
     )
   }

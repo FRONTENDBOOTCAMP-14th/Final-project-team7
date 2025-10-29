@@ -147,8 +147,8 @@ export default function CourseCard({
 
   const createdDateStr = `${year}년 ${month}월 ${day}일`
   const metaInfo = ownerName
-    ? `${ownerName} • 코스 생성 ${createdDateStr}`
-    : `코스 생성 ${createdDateStr}`
+    ? `${ownerName} • ${createdDateStr}`
+    : `${createdDateStr}`
 
   return (
     <div

@@ -1,5 +1,6 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import RunningCalendar from '@/components/calendar/running-calendar'
@@ -7,6 +8,7 @@ import RunningSummaryCard from '@/components/calendar/running-summary-card'
 import useRunningRecords from '@/hooks/calednar/use-running-records'
 import { supabase } from '@/lib/supabase/supabase-client'
 import { paceToSeconds, secondsToPace } from '@/utils/calendar/calendar-record'
+import { tw } from '@/utils/tw'
 
 export default function CalendarClient() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
@@ -66,9 +68,23 @@ export default function CalendarClient() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center gap-5">
-        <div className="w-full rounded bg-[var(--color-basic-100)] animate-pulse" />
-        <div className="w-full rounded-lg  bg-[var(--color-basic-100)]" />
+      <div
+        className={tw(`
+          flex flex-col items-center justify-center
+          w-full max-w-[768px] mx-auto p-4
+          min-h-[50vh] gap-4
+          bg-white text-gray-800
+        `)}
+        role="status"
+        aria-live="polite"
+      >
+        <Loader2
+          className="w-8 h-8 text-[var(--color-point-100)] animate-spin"
+          aria-hidden="true"
+        />
+        <p className="text-gray-500 text-base font-normal">
+          열심히 달려오는 중...👟
+        </p>
       </div>
     )
   }
